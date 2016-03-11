@@ -8,7 +8,7 @@ Stable tag: 4.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.txt
 
-An opinionated reconfigureation of the default wordpress TinyMCE settings.
+An opinionated reconfiguration of the default WordPress TinyMCE settings.
 
 == Description ==
 
@@ -40,6 +40,7 @@ As the description states, this plugin makes **opinionated** changes to the defa
 1. Activate the plugin through the 'Plugins' screen in WordPress.
 1. Use the Settings->Writing screen to configure custom colors and other settings if you would like to.
 1. Check that the plugin is working by editing an existing page or post.
+1. If you want to make changes to `editor-style.css` or `frontend-style.css` just copy them into the root of your active theme directory and they will override the plugin's versions. Don't edit the css in the plugin folder because it may get overwritten on updates. Note that `editor-style.css` applies to the TinyMCE editor on the backend only and `frontend-style.css` applies to both the editor and the front end of WordPress.
 
 
 == Screenshots ==
@@ -50,4 +51,3 @@ As the description states, this plugin makes **opinionated** changes to the defa
 
 = 1.0 =
 * The very first version
-
