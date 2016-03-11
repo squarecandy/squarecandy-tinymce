@@ -23,11 +23,12 @@ class squarecandy_tinymce_writing_setting
     }
     public function register_fields()
     {
+        // TODO setup column width setting and css implementation
         register_setting('writing', 'sqcdy_theme_color1', 'esc_attr');
         register_setting('writing', 'sqcdy_theme_color2', 'esc_attr');
         register_setting('writing', 'sqcdy_theme_color3', 'esc_attr');
         register_setting('writing', 'sqcdy_theme_color4', 'esc_attr');
-        register_setting('writing', 'sqcdy_theme_colwidth', 'esc_attr');
+        // register_setting('writing', 'sqcdy_theme_colwidth', 'esc_attr');
         register_setting('writing', 'sqcdy_theme_css', 'esc_attr');
 
         add_settings_section('squarecandy_tinymce', 'TinyMCE Reboot', 'squarecandy_tinymce_section_callback', 'writing');
@@ -36,7 +37,7 @@ class squarecandy_tinymce_writing_setting
         add_settings_field('sqcdy_theme_color2', '<label for="sqcdy_theme_color2">'.__('Theme Color 2', 'sqcdy_theme_color2').'</label>', array(&$this, 'fields2_html'), 'writing', 'squarecandy_tinymce');
         add_settings_field('sqcdy_theme_color3', '<label for="sqcdy_theme_color3">'.__('Theme Color 3', 'sqcdy_theme_color3').'</label>', array(&$this, 'fields3_html'), 'writing', 'squarecandy_tinymce');
         add_settings_field('sqcdy_theme_color4', '<label for="sqcdy_theme_color4">'.__('Theme Color 4', 'sqcdy_theme_color4').'</label>', array(&$this, 'fields4_html'), 'writing', 'squarecandy_tinymce');
-        add_settings_field('sqcdy_theme_colwidth', '<label for="sqcdy_theme_colwidth">'.__('Typical Theme Content Column Max Width', 'sqcdy_theme_colwidth').'</label>', array(&$this, 'fields_colwidth_html'), 'writing', 'squarecandy_tinymce');
+        // add_settings_field('sqcdy_theme_colwidth', '<label for="sqcdy_theme_colwidth">'.__('Typical Theme Content Column Max Width', 'sqcdy_theme_colwidth').'</label>', array(&$this, 'fields_colwidth_html'), 'writing', 'squarecandy_tinymce');
         add_settings_field('sqcdy_theme_css', '<label for="sqcdy_theme_css">'.__('Additional CSS files for TinyMCE (absolute urls, comma separated)', 'sqcdy_theme_css').'</label>', array(&$this, 'fields_css_html'), 'writing', 'squarecandy_tinymce');
     }
     public function fields1_html()
