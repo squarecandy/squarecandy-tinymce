@@ -23,13 +23,14 @@ class squarecandy_tinymce_writing_setting
     }
     public function register_fields()
     {
-        // TODO setup column width setting, other further options
         register_setting('writing', 'sqcdy_theme_color1', 'esc_attr');
         register_setting('writing', 'sqcdy_theme_color2', 'esc_attr');
         register_setting('writing', 'sqcdy_theme_color3', 'esc_attr');
         register_setting('writing', 'sqcdy_theme_color4', 'esc_attr');
-        // register_setting('writing', 'sqcdy_theme_colwidth', 'esc_attr');
+        register_setting('writing', 'sqcdy_theme_colwidth', 'esc_attr');
         register_setting('writing', 'sqcdy_theme_css', 'esc_attr');
+        register_setting('writing', 'sqcdy_include_theme_style_css', 'esc_attr');
+        register_setting('writing', 'sqcdy_remove_theme_editor_css', 'esc_attr');
 
         add_settings_section('squarecandy_tinymce', 'TinyMCE Reboot', 'squarecandy_tinymce_section_callback', 'writing');
 
@@ -37,8 +38,11 @@ class squarecandy_tinymce_writing_setting
         add_settings_field('sqcdy_theme_color2', '<label for="sqcdy_theme_color2">'.__('Theme Color 2', 'sqcdy_theme_color2').'</label>', array(&$this, 'fields2_html'), 'writing', 'squarecandy_tinymce');
         add_settings_field('sqcdy_theme_color3', '<label for="sqcdy_theme_color3">'.__('Theme Color 3', 'sqcdy_theme_color3').'</label>', array(&$this, 'fields3_html'), 'writing', 'squarecandy_tinymce');
         add_settings_field('sqcdy_theme_color4', '<label for="sqcdy_theme_color4">'.__('Theme Color 4', 'sqcdy_theme_color4').'</label>', array(&$this, 'fields4_html'), 'writing', 'squarecandy_tinymce');
-        // add_settings_field('sqcdy_theme_colwidth', '<label for="sqcdy_theme_colwidth">'.__('Typical Theme Content Column Max Width', 'sqcdy_theme_colwidth').'</label>', array(&$this, 'fields_colwidth_html'), 'writing', 'squarecandy_tinymce');
-        add_settings_field('sqcdy_theme_css', '<label for="sqcdy_theme_css">'.__('Additional CSS files for TinyMCE (absolute urls, comma separated)', 'sqcdy_theme_css').'</label>', array(&$this, 'fields_css_html'), 'writing', 'squarecandy_tinymce');
+        add_settings_field('sqcdy_theme_colwidth', '<label for="sqcdy_theme_colwidth">'.__('Typical Theme Content Column Max Width', 'sqcdy_theme_colwidth').'</label>', array(&$this, 'fields_colwidth_html'), 'writing', 'squarecandy_tinymce');
+        add_settings_field('sqcdy_theme_css', '<label for="sqcdy_theme_css">'.__('Additional CSS files for TinyMCE (absolute urls, one per line)', 'sqcdy_theme_css').'</label>', array(&$this, 'fields_css_html'), 'writing', 'squarecandy_tinymce');
+        add_settings_field('sqcdy_include_theme_style_css', '<label for="sqcdy_include_theme_style_css">'.__('Include Active Theme style.css file in TinyMCE?', 'sqcdy_include_theme_style_css').'</label>', array(&$this, 'include_theme_style_css_html'), 'writing', 'squarecandy_tinymce');
+        add_settings_field('sqcdy_remove_theme_editor_css', '<label for="sqcdy_remove_theme_editor_css">'.__('Remove Active Theme editor.css or editor-style.css files in TinyMCE?', 'sqcdy_remove_theme_editor_css').'</label>', array(&$this, 'remove_theme_editor_css_html'), 'writing', 'squarecandy_tinymce');
+
     }
     public function fields1_html()
     {
@@ -69,6 +73,20 @@ class squarecandy_tinymce_writing_setting
     {
         $value = get_option('sqcdy_theme_css', '');
         echo '<textarea id="sqcdy_theme_css" name="sqcdy_theme_css" rows="4" cols="100">'.$value.'</textarea>';
+    }
+    public function include_theme_style_css_html()
+    {
+        $value = get_option('sqcdy_include_theme_style_css', 'on');
+        echo '<input type="checkbox" id="sqcdy_include_theme_style_css" name="sqcdy_include_theme_style_css"';
+        if ($value=='on') echo ' checked="checked"';
+        echo '>';
+    }
+    public function remove_theme_editor_css_html()
+    {
+        $value = get_option('sqcdy_remove_theme_editor_css', 'on');
+        echo '<input type="checkbox" id="sqcdy_remove_theme_editor_css" name="sqcdy_remove_theme_editor_css"';
+        if ($value=='on') echo ' checked="checked"';
+        echo '>';
     }
     public function squarecandy_tinymce_section_callback()
     {
@@ -139,15 +157,26 @@ function squarecandy_tinymce_toolbars($toolbars)
 add_filter('acf/fields/wysiwyg/toolbars', 'squarecandy_tinymce_toolbars');
 
 
-// remove the default editor styles
+// remove some stylesheets
 function squarecandy_tinymce_remove_mce_css($stylesheets)
 {
     $stylesheets = explode(',',$stylesheets);
+
+    $remove = get_option('sqcdy_remove_theme_editor_css', 'on');
+
     foreach ($stylesheets as $key => $sheet) {
+
+        // remove default wordpress TinyMCE css
         if (preg_match('/wp\-includes/',$sheet)) {
             unset($stylesheets[$key]);
         }
+        // remove editor styles from Theme
+        if ( $remove=="on" && preg_match('/editor/',$sheet) && !preg_match('/squarecandy\-tinymce/',$sheet) ) {
+            unset($stylesheets[$key]);
+        }
+
     }
+
     $stylesheets = implode(',',$stylesheets);
     return $stylesheets;
 }
@@ -158,8 +187,15 @@ add_filter("mce_css", "squarecandy_tinymce_remove_mce_css");
 function squarecandy_tinymce_add_editor_styles()
 {
 
-    // TODO add a checkbox to make this optional
-    add_editor_style(get_stylesheet_directory_uri().'/style.css');
+    $sqcdy_include_theme_style_css = get_option('sqcdy_include_theme_style_css');
+    if ($sqcdy_include_theme_style_css == 'on') {
+        add_editor_style(get_stylesheet_directory_uri().'/style.css');
+    }
+
+    $sqcdy_theme_colwidth = get_option('sqcdy_theme_colwidth');
+    if (!empty($sqcdy_theme_colwidth)) {
+        add_editor_style(plugins_url('dynamic.css.php', __FILE__));
+    }
 
     $sqcdy_theme_css = get_option('sqcdy_theme_css');
     if (!empty($sqcdy_theme_css)) {
@@ -170,10 +206,10 @@ function squarecandy_tinymce_add_editor_styles()
         }
     }
 
-    if (file_exists(get_stylesheet_directory().'/editor-style.css')) {
-        add_editor_style(get_stylesheet_directory_uri().'/editor-style.css');
+    if (file_exists(get_stylesheet_directory().'/squarecandy-tinymce-editor-style.css')) {
+        add_editor_style(get_stylesheet_directory_uri().'/squarecandy-tinymce-editor-style.css');
     } else {
-        add_editor_style(plugins_url('editor-style.css', __FILE__));
+        add_editor_style(plugins_url('squarecandy-tinymce-editor-style.css', __FILE__));
     }
 
     if (file_exists(get_stylesheet_directory().'/frontend-style.css')) {
