@@ -23,7 +23,7 @@ class squarecandy_tinymce_writing_setting
     }
     public function register_fields()
     {
-        // TODO setup column width setting and css implementation
+        // TODO setup column width setting, other further options
         register_setting('writing', 'sqcdy_theme_color1', 'esc_attr');
         register_setting('writing', 'sqcdy_theme_color2', 'esc_attr');
         register_setting('writing', 'sqcdy_theme_color3', 'esc_attr');
@@ -76,13 +76,15 @@ class squarecandy_tinymce_writing_setting
     }
 }
 
-// add colorpicker js to the admin
-add_action('admin_enqueue_scripts', 'squarecandy_tinymce_enqueue_color_picker');
-function squarecandy_tinymce_enqueue_color_picker()
+
+function squarecandy_tinymce_enqueue_scripts()
 {
+    // add colorpicker js to the admin
     wp_enqueue_style('wp-color-picker');
     wp_enqueue_script('squarecandy-tinymce', plugins_url('colorpick.js', __FILE__), array('wp-color-picker'), false, true);
 }
+add_action('admin_enqueue_scripts', 'squarecandy_tinymce_enqueue_scripts');
+
 
 // TinyMCE Customization
 function make_mce_awesome($in)
@@ -121,6 +123,7 @@ function make_mce_awesome($in)
 }
 add_filter('tiny_mce_before_init', 'make_mce_awesome');
 
+
 // make the same changes to ACF editors too
 function squarecandy_tinymce_toolbars($toolbars)
 {
@@ -135,35 +138,53 @@ function squarecandy_tinymce_toolbars($toolbars)
 }
 add_filter('acf/fields/wysiwyg/toolbars', 'squarecandy_tinymce_toolbars');
 
+
+// remove the default editor styles
+function squarecandy_tinymce_remove_mce_css($stylesheets)
+{
+    $stylesheets = explode(',',$stylesheets);
+    foreach ($stylesheets as $key => $sheet) {
+        if (preg_match('/wp\-includes/',$sheet)) {
+            unset($stylesheets[$key]);
+        }
+    }
+    $stylesheets = implode(',',$stylesheets);
+    return $stylesheets;
+}
+add_filter("mce_css", "squarecandy_tinymce_remove_mce_css");
+
+
 // Add styles to the TinyMCE editor window to make it look more like your site's front end
 function squarecandy_tinymce_add_editor_styles()
 {
-    $editorstyle = get_stylesheet_directory().'/editor-style.css';
-    if (file_exists($editorstyle)) {
-        add_editor_style($editorstyle);
-    } else {
-        add_editor_style(plugins_url('editor-style.css', __FILE__));
-    }
 
-    $frontendstyle = get_stylesheet_directory().'/frontend-style.css';
-    if (file_exists($frontendstyle)) {
-        add_editor_style($frontendstyle);
-    } else {
-        add_editor_style(plugins_url('frontend-style.css', __FILE__));
-    }
-
+    // TODO add a checkbox to make this optional
     add_editor_style(get_stylesheet_directory_uri().'/style.css');
 
     $sqcdy_theme_css = get_option('sqcdy_theme_css');
     if (!empty($sqcdy_theme_css)) {
-        $all_css = explode(',', $sqcdy_theme_css);
+        $all_css = explode("\n", $sqcdy_theme_css);
         foreach ($all_css as $css) {
+            $css = preg_replace('/\s/', '', $css);
             add_editor_style($css);
         }
-        add_editor_style(get_stylesheet_directory_uri().'/style.css');
     }
+
+    if (file_exists(get_stylesheet_directory().'/editor-style.css')) {
+        add_editor_style(get_stylesheet_directory_uri().'/editor-style.css');
+    } else {
+        add_editor_style(plugins_url('editor-style.css', __FILE__));
+    }
+
+    if (file_exists(get_stylesheet_directory().'/frontend-style.css')) {
+        add_editor_style(get_stylesheet_directory_uri().'/frontend-style.css');
+    } else {
+        add_editor_style(plugins_url('frontend-style.css', __FILE__));
+    }
+
 }
 add_action('admin_init', 'squarecandy_tinymce_add_editor_styles');
+
 
 // add the frontend-style.css to the front end display as well
 function squarecandy_tinymce_frontendstyle()
@@ -177,17 +198,18 @@ function squarecandy_tinymce_frontendstyle()
 }
 add_action('wp_enqueue_scripts', 'squarecandy_tinymce_frontendstyle');
 
+
 // Callback function to insert 'styleselect' into the $buttons array
 function squarecandy_tinymce_mce_buttons($buttons)
 {
     $buttons[] = 'styleselect';
-
     return $buttons;
 }
-// Register our callback to the appropriate filter
 add_filter('mce_buttons', 'squarecandy_tinymce_mce_buttons');
+
+
 // Callback function to filter the MCE settings
-function my_mce_before_init_insert_formats($init_array)
+function squarecandy_tinymce_mce_before_init($init_array)
 {
     // Define the style_formats array
     $style_formats = array(
@@ -214,5 +236,4 @@ function my_mce_before_init_insert_formats($init_array)
     $init_array['style_formats'] = json_encode($style_formats);
     return $init_array;
 }
-// Attach callback to 'tiny_mce_before_init'
-add_filter('tiny_mce_before_init', 'my_mce_before_init_insert_formats');
+add_filter('tiny_mce_before_init', 'squarecandy_tinymce_mce_before_init');
