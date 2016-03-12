@@ -68,7 +68,7 @@ class squarecandy_tinymce_writing_setting
     public function fields_css_html()
     {
         $value = get_option('sqcdy_theme_css', '');
-        echo '<input type="text" id="sqcdy_theme_css" name="sqcdy_theme_css" value="'.$value.'" />';
+        echo '<textarea id="sqcdy_theme_css" name="sqcdy_theme_css" rows="4" cols="100">'.$value.'</textarea>';
     }
     public function squarecandy_tinymce_section_callback()
     {
