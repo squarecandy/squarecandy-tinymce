@@ -4,7 +4,7 @@ Donate link: http://squarecandy.github.io/squarecandy-tinymce/
 Tags: tinymce, editor
 Requires at least: 4.0.1
 Tested up to: 4.4
-Stable tag: 4.4
+Stable tag: 1.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.txt
 
@@ -32,7 +32,7 @@ WordPress is awesome, but some of the TinyMCE rich text editing options that com
 
 = Scope =
 
-As the description states, this plugin makes **opinionated** changes to the default setup. I don't plan to grow this into a bulkier plugin that allows you to modify and customize all aspects of TinyMCE.  Try [TinyMCE Advanced](https://wordpress.org/plugins/tinymce-advanced/) or other existing plugins for tha
+As the description states, this plugin makes **opinionated** changes to the default setup. I don't plan to grow this into a bulkier plugin that allows you to modify and customize all aspects of TinyMCE.  Try [TinyMCE Advanced](https://wordpress.org/plugins/tinymce-advanced/) or other existing plugins for that purpose.
 
 == Installation ==
 
@@ -50,4 +50,17 @@ As the description states, this plugin makes **opinionated** changes to the defa
 == Changelog ==
 
 = 1.0 =
+
 * The very first version
+
+= 1.1 =
+
+* Adds column width option
+* Adds checkbox to optionally add the theme style.css
+* Adds a check to optionally remove editor-style.css or editor.css from the existing theme
+
+= 1.2 = 
+
+* bugfixes
+* adds dotted line to define right side of editor column width
+* use tabs and other corrections to conform to WordPress coding standards
