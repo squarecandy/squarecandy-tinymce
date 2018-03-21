@@ -247,6 +247,12 @@ function squarecandy_tinymce_mce_before_init($init_array) {
 			'classes' => 'big',
 			'wrapper' => false,
 		),
+		array(
+			'title' => 'quote author',
+			'block' => 'p',
+			'classes' => 'quote-author',
+			'wrapper' => false,
+		),
 	);
 	// Insert the array, JSON ENCODED, into 'style_formats'
 	$init_array['style_formats'] = json_encode($style_formats);
