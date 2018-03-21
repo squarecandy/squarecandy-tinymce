@@ -30,7 +30,7 @@ class squarecandy_tinymce_writing_setting {
 		register_setting('writing', 'sqcdy_remove_theme_editor_css', 'esc_attr');
 
 		add_settings_section('squarecandy_tinymce', 'TinyMCE Reboot', 'squarecandy_tinymce_section_callback', 'writing');
-		public function squarecandy_tinymce_section_callback() {
+		function squarecandy_tinymce_section_callback() {
 			// blank on purpose
 		}
 
