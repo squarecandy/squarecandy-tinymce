@@ -119,7 +119,7 @@ function make_mce_awesome($in) {
 	$in['textcolor_map'] = '['.$custom_colors.']';
 
 	$in['block_formats'] = 'paragraph=p;big heading (h2)=h2;medium heading (h3)=h3;small heading (h4)=h4;generic box (div)=div';
-	$in['toolbar1'] = 'formatselect,styleselect,bold,italic,alignleft,aligncenter,alignright,bullist,numlist,blockquote,hr,forecolor,forecolorpicker,link,unlink,pastetext,undo,redo';
+	$in['toolbar1'] = 'formatselect,styleselect,bold,italic,alignleft,aligncenter,alignright,bullist,numlist,blockquote,hr,forecolor,forecolorpicker,link,unlink,pastetext,undo,redo,removeformat';
 	$in['toolbar2'] = '';
 	$in['toolbar3'] = '';
 	$in['toolbar4'] = '';
@@ -132,11 +132,11 @@ add_filter('tiny_mce_before_init', 'make_mce_awesome');
 // make the same changes to ACF editors too
 function squarecandy_tinymce_toolbars($toolbars) {
 	$toolbars['Full'] = array();
-	$toolbars['Full'][1] = array('formatselect', 'styleselect', 'bold', 'italic', 'alignleft', 'aligncenter', 'alignright', 'bullist', 'numlist', 'blockquote', 'hr', 'forecolor', 'forecolorpicker', 'link', 'unlink', 'pastetext', 'undo', 'redo');
+	$toolbars['Full'][1] = array('formatselect', 'styleselect', 'bold', 'italic', 'alignleft', 'aligncenter', 'alignright', 'bullist', 'numlist', 'blockquote', 'hr', 'forecolor', 'forecolorpicker', 'link', 'unlink', 'pastetext', 'undo', 'redo', 'removeformat');
 	$toolbars['Full'][2] = array();
 
 	$toolbars['Basic'] = array();
-	$toolbars['Basic'][1] = array('bold', 'italic', 'alignleft', 'aligncenter', 'alignright', 'forecolor', 'forecolorpicker', 'link', 'unlink');
+	$toolbars['Basic'][1] = array('bold', 'italic', 'alignleft', 'aligncenter', 'alignright', 'forecolor', 'forecolorpicker', 'link', 'unlink', 'removeformat');
 
 	return $toolbars;
 }
