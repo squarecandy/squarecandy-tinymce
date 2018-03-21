@@ -249,7 +249,7 @@ function squarecandy_tinymce_mce_before_init($init_array) {
 		),
 		array(
 			'title' => 'quote author',
-			'block' => 'p',
+			'block' => 'cite',
 			'classes' => 'quote-author',
 			'wrapper' => false,
 		),

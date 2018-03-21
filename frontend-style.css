@@ -32,7 +32,8 @@
 	line-height: 1.4;
 }
 
-p.quote-author {
+cite.quote-author {
+	display: block;
 	font-size: 0.85em;
 	color: #999;
 	text-align: right;
@@ -40,5 +41,5 @@ p.quote-author {
 	margin: 0;
 }
 .quote-author::before {
-	content: '—';
+	content: '— ';
 }
