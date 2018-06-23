@@ -16,7 +16,7 @@ Text Domain: squarecandy-tinymce
 $new_writing_setting = new squarecandy_tinymce_writing_setting();
 
 class squarecandy_tinymce_writing_setting {
-	public function squarecandy_tinymce_writing_setting() {
+	public function __construct() {
 		add_filter('admin_init', array(&$this, 'register_fields'));
 	}
 	public function register_fields() {
@@ -249,7 +249,7 @@ function squarecandy_tinymce_mce_before_init($init_array) {
 		),
 		array(
 			'title' => 'quote author',
-			'block' => 'cite',
+			'block' => 'div',
 			'classes' => 'quote-author',
 			'wrapper' => false,
 		),
