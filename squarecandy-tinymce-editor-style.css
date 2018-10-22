@@ -1,0 +1,23 @@
+html, body {
+	/* make sure user styles defining body or html height don't break the editor */
+	height: auto !important;
+}
+body {
+	/* add some margin and padding so the content isn't crammed agains the left edge of the editor */
+	margin: 0 20px !important;
+	padding: 10px;
+
+	/* You should add your own theme's colors and fonts here if your style.css or other file doens't already override the defaults set in TinyMCE */
+
+	/*
+	background-color: #fff;
+	color: #000;
+	font-family: Ariel, sans-serif;
+	font-size: 16px;
+	*/
+}
+body img {
+	/* very basic responsive images */
+	max-width: 100%;
+	height: auto;
+}

@@ -1,0 +1,45 @@
+.button-container a,
+.button-container a:visited {
+	background-color: #777;
+	color: #fff;
+	text-decoration: none;
+	display: inline-block;
+	padding: 5px 10px;
+	font-size: 1.2em;
+	border-radius: 5px;
+	transition: background-color 0.3s;
+	margin: 0 10px 10px 0;
+}
+
+.button-container a:hover {
+	background-color: #555;
+	color: #fff;
+}
+
+.button-container a:active,
+.button-container a:focus {
+	background-color: #444;
+	outline: none;
+}
+
+.big {
+	font-size: 1.3em;
+	line-height: 1.4;
+}
+
+.small {
+	font-size: 0.85em;
+	line-height: 1.4;
+}
+
+cite.quote-author {
+	display: block;
+	font-size: 0.85em;
+	color: #999;
+	text-align: right;
+	font-style: italic;
+	margin: 0;
+}
+.quote-author::before {
+	content: '— ';
+}
