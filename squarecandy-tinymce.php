@@ -4,10 +4,10 @@ Plugin Name: Square Candy TinyMCE Reboot
 Plugin URI: https://github.com/squarecandy/squarecandy-tinymce
 GitHub Plugin URI: https://github.com/squarecandy/squarecandy-tinymce
 Description: An opinionated reconfiguration of the default wordpress TinyMCE settings.
-Version:	 1.2.1
-Author:	  Peter Wise
-Author URI:  http://squarecandy.net
-License:	 GPLv3
+Version: 1.2.1
+Author: Peter Wise
+Author URI: http://squarecandydesign.com
+License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.txt
 Text Domain: squarecandy-tinymce
 */
@@ -17,7 +17,7 @@ Text Domain: squarecandy-tinymce
 $new_writing_setting = new squarecandy_tinymce_writing_setting();
 
 class squarecandy_tinymce_writing_setting {
-	public function squarecandy_tinymce_writing_setting() {
+	public function __construct() {
 		add_filter('admin_init', array(&$this, 'register_fields'));
 	}
 	public function register_fields() {
@@ -250,7 +250,7 @@ function squarecandy_tinymce_mce_before_init($init_array) {
 		),
 		array(
 			'title' => 'quote author',
-			'block' => 'cite',
+			'block' => 'div',
 			'classes' => 'quote-author',
 			'wrapper' => false,
 		),
