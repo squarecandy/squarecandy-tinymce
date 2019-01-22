@@ -29,6 +29,7 @@ class squarecandy_tinymce_writing_setting {
 		register_setting('writing', 'sqcdy_theme_css', 'esc_attr');
 		register_setting('writing', 'sqcdy_include_theme_style_css', 'esc_attr');
 		register_setting('writing', 'sqcdy_remove_theme_editor_css', 'esc_attr');
+		register_setting('writing', 'sqcdy_remove_frontend_style_css', 'esc_attr');
 
 		add_settings_section('squarecandy_tinymce', 'TinyMCE Reboot', 'squarecandy_tinymce_section_callback', 'writing');
 		function squarecandy_tinymce_section_callback() {
@@ -43,7 +44,7 @@ class squarecandy_tinymce_writing_setting {
 		add_settings_field('sqcdy_theme_css', '<label for="sqcdy_theme_css">'.__('Additional CSS files for TinyMCE (absolute urls, one per line)', 'sqcdy_theme_css').'</label>', array(&$this, 'fields_css_html'), 'writing', 'squarecandy_tinymce');
 		add_settings_field('sqcdy_include_theme_style_css', '<label for="sqcdy_include_theme_style_css">'.__('Include Active Theme style.css file in TinyMCE?', 'sqcdy_include_theme_style_css').'</label>', array(&$this, 'include_theme_style_css_html'), 'writing', 'squarecandy_tinymce');
 		add_settings_field('sqcdy_remove_theme_editor_css', '<label for="sqcdy_remove_theme_editor_css">'.__('Remove Active Theme editor.css or editor-style.css files in TinyMCE?', 'sqcdy_remove_theme_editor_css').'</label>', array(&$this, 'remove_theme_editor_css_html'), 'writing', 'squarecandy_tinymce');
-
+		add_settings_field('sqcdy_remove_frontend_style_css', '<label for="sqcdy_remove_frontend_style_css">'.__('Remove the basic button, small text and quote styles provided by this plugin. (frontend-style.css)', 'sqcdy_remove_theme_editor_css').'</label>', array(&$this, 'remove_frontend_style_css_html'), 'writing', 'squarecandy_tinymce');
 	}
 	public function fields1_html() {
 		$value = get_option('sqcdy_theme_color1', '');
@@ -78,6 +79,12 @@ class squarecandy_tinymce_writing_setting {
 	public function remove_theme_editor_css_html() {
 		$value = get_option('sqcdy_remove_theme_editor_css', 'on');
 		echo '<input type="checkbox" id="sqcdy_remove_theme_editor_css" name="sqcdy_remove_theme_editor_css"';
+		if ($value=='on') echo ' checked="checked"';
+		echo '>';
+	}
+	public function remove_frontend_style_css_html() {
+		$value = get_option('sqcdy_remove_frontend_style_css', '');
+		echo '<input type="checkbox" id="sqcdy_remove_frontend_style_css" name="sqcdy_remove_frontend_style_css"';
 		if ($value=='on') echo ' checked="checked"';
 		echo '>';
 	}
@@ -209,9 +216,15 @@ add_action('admin_init', 'squarecandy_tinymce_add_editor_styles');
 
 // add the frontend-style.css to the front end display as well
 function squarecandy_tinymce_frontendstyle() {
+	// check if an admin has disabled frontend-style.css
+	if ( get_option('sqcdy_remove_frontend_style_css',false) ) return;
+
+
 	if (file_exists(get_stylesheet_directory().'/frontend-style.css')) {
+		// check if an override exists
 		wp_enqueue_style('onebeat-style', get_stylesheet_directory_uri().'/frontend-style.css');
 	} else {
+		// load the default copy
 		wp_enqueue_style('onebeat-style', plugins_url('frontend-style.css', __FILE__));
 	}
 }
