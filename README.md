@@ -34,6 +34,10 @@ Continued use of this plugin should be used in conjunction with the [Classic Edi
 
 ## History
 
+### v1.2.3
+
+* add option to turn off colorpicker
+
 ### v1.2.2
 
 * add option to turn off frontend-style.css
