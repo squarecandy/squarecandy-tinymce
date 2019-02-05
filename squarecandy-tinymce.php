@@ -25,6 +25,7 @@ class squarecandy_tinymce_writing_setting {
 		register_setting('writing', 'sqcdy_theme_color2', 'esc_attr');
 		register_setting('writing', 'sqcdy_theme_color3', 'esc_attr');
 		register_setting('writing', 'sqcdy_theme_color4', 'esc_attr');
+		register_setting('writing', 'sqcdy_allow_color_picker', 'esc_attr');
 		register_setting('writing', 'sqcdy_theme_colwidth', 'esc_attr');
 		register_setting('writing', 'sqcdy_theme_css', 'esc_attr');
 		register_setting('writing', 'sqcdy_include_theme_style_css', 'esc_attr');
@@ -40,6 +41,7 @@ class squarecandy_tinymce_writing_setting {
 		add_settings_field('sqcdy_theme_color2', '<label for="sqcdy_theme_color2">'.__('Theme Color 2', 'sqcdy_theme_color2').'</label>', array(&$this, 'fields2_html'), 'writing', 'squarecandy_tinymce');
 		add_settings_field('sqcdy_theme_color3', '<label for="sqcdy_theme_color3">'.__('Theme Color 3', 'sqcdy_theme_color3').'</label>', array(&$this, 'fields3_html'), 'writing', 'squarecandy_tinymce');
 		add_settings_field('sqcdy_theme_color4', '<label for="sqcdy_theme_color4">'.__('Theme Color 4', 'sqcdy_theme_color4').'</label>', array(&$this, 'fields4_html'), 'writing', 'squarecandy_tinymce');
+		add_settings_field('sqcdy_allow_color_picker', '<label for="sqcdy_allow_color_picker">'.__('Allow Color Picker Use?', 'sqcdy_allow_color_picker').'</label>', array(&$this, 'allow_color_picker_html'), 'writing', 'squarecandy_tinymce');
 		add_settings_field('sqcdy_theme_colwidth', '<label for="sqcdy_theme_colwidth">'.__('Typical Theme Content Column Max Width', 'sqcdy_theme_colwidth').'</label>', array(&$this, 'fields_colwidth_html'), 'writing', 'squarecandy_tinymce');
 		add_settings_field('sqcdy_theme_css', '<label for="sqcdy_theme_css">'.__('Additional CSS files for TinyMCE (absolute urls, one per line)', 'sqcdy_theme_css').'</label>', array(&$this, 'fields_css_html'), 'writing', 'squarecandy_tinymce');
 		add_settings_field('sqcdy_include_theme_style_css', '<label for="sqcdy_include_theme_style_css">'.__('Include Active Theme style.css file in TinyMCE?', 'sqcdy_include_theme_style_css').'</label>', array(&$this, 'include_theme_style_css_html'), 'writing', 'squarecandy_tinymce');
@@ -61,6 +63,12 @@ class squarecandy_tinymce_writing_setting {
 	public function fields4_html() {
 		$value = get_option('sqcdy_theme_color4', '');
 		echo '<input type="text" id="sqcdy_theme_color4" name="sqcdy_theme_color4" value="'.$value.'" />';
+	}
+	public function allow_color_picker_html() {
+		$value = get_option('sqcdy_allow_color_picker', 'on');
+		echo '<input type="checkbox" id="sqcdy_allow_color_picker" name="sqcdy_allow_color_picker"';
+		if ($value=='on') echo ' checked="checked"';
+		echo '>';
 	}
 	public function fields_colwidth_html() {
 		$value = get_option('sqcdy_theme_colwidth', '');
@@ -93,9 +101,11 @@ class squarecandy_tinymce_writing_setting {
 
 
 function squarecandy_tinymce_enqueue_scripts() {
-	// add colorpicker js to the admin
-	wp_enqueue_style('wp-color-picker');
-	wp_enqueue_script('squarecandy-tinymce', plugins_url('colorpick.js', __FILE__), array('wp-color-picker'), false, true);
+	if ( get_option('sqcdy_allow_color_picker') ) :
+		// add colorpicker js to the admin
+		wp_enqueue_style('wp-color-picker');
+		wp_enqueue_script('squarecandy-tinymce', plugins_url('colorpick.js', __FILE__), array('wp-color-picker'), false, true);
+	endif;
 }
 add_action('admin_enqueue_scripts', 'squarecandy_tinymce_enqueue_scripts');
 
@@ -127,7 +137,9 @@ function make_mce_awesome($in) {
 	$in['textcolor_map'] = '['.$custom_colors.']';
 
 	$in['block_formats'] = 'paragraph=p;big heading (h2)=h2;medium heading (h3)=h3;small heading (h4)=h4;generic box (div)=div';
-	$in['toolbar1'] = 'formatselect,styleselect,bold,italic,alignleft,aligncenter,alignright,bullist,numlist,blockquote,hr,forecolor,forecolorpicker,link,unlink,pastetext,undo,redo,removeformat';
+
+	$colorpicker = get_option('sqcdy_allow_color_picker') ? 'forecolor,' : '';
+	$in['toolbar1'] = 'formatselect,styleselect,bold,italic,alignleft,aligncenter,alignright,bullist,numlist,blockquote,hr,' . $colorpicker . 'link,unlink,pastetext,undo,redo,removeformat';
 	$in['toolbar2'] = '';
 	$in['toolbar3'] = '';
 	$in['toolbar4'] = '';
@@ -139,12 +151,16 @@ add_filter('tiny_mce_before_init', 'make_mce_awesome');
 
 // make the same changes to ACF editors too
 function squarecandy_tinymce_toolbars($toolbars) {
+
+	$colorpicker = get_option('sqcdy_allow_color_picker') ? 'forecolor' : '';
+
 	$toolbars['Full'] = array();
-	$toolbars['Full'][1] = array('formatselect', 'styleselect', 'bold', 'italic', 'alignleft', 'aligncenter', 'alignright', 'bullist', 'numlist', 'blockquote', 'hr', 'forecolor', 'forecolorpicker', 'link', 'unlink', 'pastetext', 'undo', 'redo', 'removeformat');
+	$toolbars['Full'][1] = array('formatselect', 'styleselect', 'bold', 'italic', 'alignleft', 'aligncenter', 'alignright', 'bullist', 'numlist', 'blockquote', 'hr', $colorpicker, 'link', 'unlink', 'pastetext', 'undo', 'redo', 'removeformat');
 	$toolbars['Full'][2] = array();
 
+
 	$toolbars['Basic'] = array();
-	$toolbars['Basic'][1] = array('bold', 'italic', 'alignleft', 'aligncenter', 'alignright', 'forecolor', 'forecolorpicker', 'link', 'unlink', 'removeformat');
+	$toolbars['Basic'][1] = array('bold', 'italic', 'alignleft', 'aligncenter', 'alignright', $colorpicker, 'link', 'unlink', 'removeformat');
 
 	return $toolbars;
 }
