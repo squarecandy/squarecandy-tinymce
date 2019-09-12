@@ -286,6 +286,24 @@ function squarecandy_tinymce_mce_before_init($init_array) {
 	);
 	// Insert the array, JSON ENCODED, into 'style_formats'
 	$init_array['style_formats'] = json_encode($style_formats);
+	
+	// clean code on paste (works with Word, Google Docs, copy-paste from other web pages)
+	$init_array['paste_preprocess'] = "function(plugin, args){
+		// Strip all HTML tags except those we have whitelisted
+		var whitelist = 'p,b,strong,i,em,h2,h3,h4,h5,h6,ul,li,ol,a,href';
+		var stripped = jQuery('<div>' + args.content + '</div>');
+		var els = stripped.find('*').not(whitelist);
+		for (var i = els.length - 1; i >= 0; i--) {
+			var e = els[i];
+			jQuery(e).replaceWith(e.innerHTML);
+		}
+		// Strip all class and id attributes
+		stripped.find('*').removeAttr('id').removeAttr('class').removeAttr('style');
+		// Return the clean HTML
+		args.content = stripped.html();
+	}";
+
 	return $init_array;
 }
 add_filter('tiny_mce_before_init', 'squarecandy_tinymce_mce_before_init');
+
