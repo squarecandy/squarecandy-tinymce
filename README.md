@@ -21,6 +21,7 @@ WordPress is awesome, but some of the TinyMCE rich text editing options that com
 * Allows for adding up to 4 custom colors that compliment the site's design and branding that the user may use. (Under Settings > Writing)
 * Adds the current theme's style.css to the editor to make what you see in TinyMCE match the live site better
 * Allows for adding additional css files to the editor styles.  These could be external resources such as google font stylesheets, additional theme css you want to load in the editor, or a custom stylesheet. Just add the URL you want to add in the Additional CSS field under Settings > Writing. For multiple files, add one per line.
+* Cleans up pasted content copied from other websites, Word, Google Docs, etc.
 
 ## Scope
 
@@ -33,6 +34,11 @@ Gutenberg will be great for some things, but we also believe that using custom f
 Continued use of this plugin should be used in conjunction with the [Classic Editor](https://wordpress.org/plugins/classic-editor/) plugin in most circumstances.
 
 ## History
+
+### v1.3.0
+
+* add phpcs rules and do plugin code cleanup
+* New feature: Clean HTML pasted into the visual editor
 
 ### v1.2.3
 
