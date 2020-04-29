@@ -74,7 +74,7 @@ function make_mce_awesome( $in ) {
 		'generic box (div)=div',
 	);
 	$block_formats       = apply_filters( 'squarecandy_tinymce_filter_block_formats', $block_formats );
-	$block_formats       = implode( ',', $block_formats );
+	$block_formats       = implode( '; ', $block_formats );
 	$in['block_formats'] = $block_formats;
 
 	$colorpicker = get_option( 'sqcdy_allow_color_picker' ) ? 'forecolor' : false;
