@@ -34,8 +34,14 @@ add_action( 'admin_enqueue_scripts', 'squarecandy_tinymce_enqueue_scripts' );
 
 // TinyMCE Customization
 function make_mce_awesome( $in ) {
-	$customcolors       = array();
-	$custom_colors      = '"000000","Black","222222","Almost Black","404040","Dark Gray","636363","Gray","939393","Light Gray","AAAAAA","Lightest Gray"';
+	$custom_colors      = array(
+		'"000000","Black"',
+		'"222222","Almost Black"',
+		'"404040","Dark Gray"',
+		'"636363","Gray"',
+		'"939393","Light Gray"',
+		'"AAAAAA","Lightest Gray"',
+	);
 	$sqcdy_theme_color1 = get_option( 'sqcdy_theme_color1' );
 	$sqcdy_theme_color1 = preg_replace( '/[^A-Fa-f0-9]/', '', $sqcdy_theme_color1 );
 	$sqcdy_theme_color2 = get_option( 'sqcdy_theme_color2' );
@@ -45,30 +51,66 @@ function make_mce_awesome( $in ) {
 	$sqcdy_theme_color4 = get_option( 'sqcdy_theme_color4' );
 	$sqcdy_theme_color4 = preg_replace( '/[^A-Fa-f0-9]/', '', $sqcdy_theme_color4 );
 	if ( ! empty( $sqcdy_theme_color1 ) ) {
-		$custom_colors .= ',"' . $sqcdy_theme_color1 . '","Branding Color 1"';
+		$custom_colors[] = '"' . $sqcdy_theme_color1 . '","Branding Color 1"';
 	}
 	if ( ! empty( $sqcdy_theme_color2 ) ) {
-		$custom_colors .= ',"' . $sqcdy_theme_color2 . '","Branding Color 2"';
+		$custom_colors[] = '"' . $sqcdy_theme_color2 . '","Branding Color 2"';
 	}
 	if ( ! empty( $sqcdy_theme_color3 ) ) {
-		$custom_colors .= ',"' . $sqcdy_theme_color3 . '","Branding Color 3"';
+		$custom_colors[] = '"' . $sqcdy_theme_color3 . '","Branding Color 3"';
 	}
 	if ( ! empty( $sqcdy_theme_color4 ) ) {
-		$custom_colors .= ',"' . $sqcdy_theme_color4 . '","Branding Color 4"';
+		$custom_colors[] = '"' . $sqcdy_theme_color4 . '","Branding Color 4"';
 	}
+	$custom_colors       = apply_filters( 'squarecandy_tinymce_filter_colors', $custom_colors );
+	$custom_colors       = implode( ',', $custom_colors );
 	$in['textcolor_map'] = '[' . $custom_colors . ']';
 
-	$in['block_formats'] = 'paragraph=p;big heading (h2)=h2;medium heading (h3)=h3;small heading (h4)=h4;generic box (div)=div';
+	$block_formats       = array(
+		'paragraph=p',
+		'big heading (h2)=h2',
+		'medium heading (h3)=h3',
+		'small heading (h4)=h4',
+		'generic box (div)=div',
+	);
+	$block_formats       = apply_filters( 'squarecandy_tinymce_filter_block_formats', $block_formats );
+	$block_formats       = implode( ',', $block_formats );
+	$in['block_formats'] = $block_formats;
 
-	$colorpicker    = get_option( 'sqcdy_allow_color_picker' ) ? 'forecolor,' : '';
-	$in['toolbar1'] = 'formatselect,styleselect,bold,italic,alignleft,aligncenter,alignright,bullist,numlist,blockquote,hr,' . $colorpicker . 'link,unlink,pastetext,undo,redo,removeformat';
+	$colorpicker = get_option( 'sqcdy_allow_color_picker' ) ? 'forecolor' : false;
+	$toolbar1    = array(
+		'formatselect',
+		'styleselect',
+		'bold',
+		'italic',
+		'alignleft',
+		'aligncenter',
+		'alignright',
+		'bullist',
+		'numlist',
+		'blockquote',
+		'hr',
+	);
+	if ( $colorpicker ) {
+		$toolbar1[] = $colorpicker;
+	}
+	$toolbar1[] = 'link';
+	$toolbar1[] = 'unlink';
+	$toolbar1[] = 'pastetext';
+	$toolbar1[] = 'undo';
+	$toolbar1[] = 'redo';
+	$toolbar1[] = 'removeformat';
+
+	$toolbar1       = apply_filters( 'squarecandy_tinymce_filter_toolbar', $toolbar1 );
+	$toolbar1       = implode( ',', $toolbar1 );
+	$in['toolbar1'] = $toolbar1;
 	$in['toolbar2'] = '';
 	$in['toolbar3'] = '';
 	$in['toolbar4'] = '';
 
 	return $in;
 }
-add_filter( 'tiny_mce_before_init', 'make_mce_awesome' );
+add_filter( 'tiny_mce_before_init', 'make_mce_awesome', 99 );
 
 
 // make the same changes to ACF editors too
@@ -77,11 +119,15 @@ function squarecandy_tinymce_toolbars( $toolbars ) {
 	$colorpicker = get_option( 'sqcdy_allow_color_picker' ) ? 'forecolor' : '';
 
 	$toolbars['Full']    = array();
-	$toolbars['Full'][1] = array( 'formatselect', 'styleselect', 'bold', 'italic', 'alignleft', 'aligncenter', 'alignright', 'bullist', 'numlist', 'blockquote', 'hr', $colorpicker, 'link', 'unlink', 'pastetext', 'undo', 'redo', 'removeformat' );
+	$toolbar1            = array( 'formatselect', 'styleselect', 'bold', 'italic', 'alignleft', 'aligncenter', 'alignright', 'bullist', 'numlist', 'blockquote', 'hr', $colorpicker, 'link', 'unlink', 'pastetext', 'undo', 'redo', 'removeformat' );
+	$toolbar1            = apply_filters( 'squarecandy_tinymce_filter_toolbar', $toolbar1 );
+	$toolbars['Full'][1] = $toolbar1;
 	$toolbars['Full'][2] = array();
 
 	$toolbars['Basic']    = array();
-	$toolbars['Basic'][1] = array( 'bold', 'italic', 'alignleft', 'aligncenter', 'alignright', $colorpicker, 'link', 'unlink', 'removeformat' );
+	$toolbar_basic        = array( 'bold', 'italic', 'alignleft', 'aligncenter', 'alignright', $colorpicker, 'link', 'unlink', 'removeformat' );
+	$toolbar_basic        = apply_filters( 'squarecandy_tinymce_filter_toolbar_basic', $toolbar_basic );
+	$toolbars['Basic'][1] = $toolbar_basic;
 
 	return $toolbars;
 }
@@ -161,10 +207,10 @@ function squarecandy_tinymce_frontendstyle() {
 
 	if ( file_exists( get_stylesheet_directory() . '/frontend-style.css' ) ) {
 		// check if an override exists
-		wp_enqueue_style( 'onebeat-style', get_stylesheet_directory_uri() . '/frontend-style.css', array(), '1.3.0' );
+		wp_enqueue_style( 'squarecandy-tinymce-style', get_stylesheet_directory_uri() . '/frontend-style.css', array(), '1.3.0' );
 	} else {
 		// load the default copy
-		wp_enqueue_style( 'onebeat-style', plugins_url( 'frontend-style.css', __FILE__ ), array(), '1.3.0' );
+		wp_enqueue_style( 'squarecandy-tinymce-style', plugins_url( 'frontend-style.css', __FILE__ ), array(), '1.3.0' );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'squarecandy_tinymce_frontendstyle' );
@@ -182,31 +228,32 @@ add_filter( 'mce_buttons', 'squarecandy_tinymce_mce_buttons' );
 function squarecandy_tinymce_mce_before_init( $init_array ) {
 	// Define the style_formats array
 	$style_formats = array(
-		array(
+		'button'       => array(
 			'title'   => 'button',
 			'block'   => 'p',
 			'classes' => 'button-container',
 			'wrapper' => false,
 		),
-		array(
+		'smaller_text' => array(
 			'title'   => 'smaller text',
 			'block'   => 'span',
 			'classes' => 'small',
 			'wrapper' => false,
 		),
-		array(
+		'bigger_text'  => array(
 			'title'   => 'bigger text',
 			'block'   => 'span',
 			'classes' => 'big',
 			'wrapper' => false,
 		),
-		array(
+		'quote_author' => array(
 			'title'   => 'quote author',
 			'block'   => 'div',
 			'classes' => 'quote-author',
 			'wrapper' => false,
 		),
 	);
+	$style_formats = apply_filters( 'squarecandy_tinymce_filter_style_formats', $style_formats );
 	// Insert the array, JSON ENCODED, into 'style_formats'
 	$init_array['style_formats'] = wp_json_encode( $style_formats );
 
