@@ -3,7 +3,7 @@
 	header( 'Content-type: text/css' );
 
 	// Load WordPress Bootstrap */
-	require_once $_SERVER[ DOCUMENT_ROOT ] . '/wp-load.php';
+	require_once $_SERVER['DOCUMENT_ROOT'] . '/wp-load.php';
 
 	/** Allow for cross-domain requests (from the frontend). */
 	send_origin_headers();
