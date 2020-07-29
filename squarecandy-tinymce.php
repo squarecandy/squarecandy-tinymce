@@ -180,6 +180,22 @@ function squarecandy_tinymce_add_editor_styles() {
 		}
 	}
 
+	// if both child and parent override files exist (meaning a child theme is active), load both
+	if (
+		file_exists( get_stylesheet_directory() . '/squarecandy-tinymce-editor-style.css' ) &&
+		file_exists( get_template_directory() . '/squarecandy-tinymce-editor-style.css' ) &&
+		get_stylesheet_directory() !== get_template_directory()
+	) {
+		add_editor_style( get_template_directory_uri() . '/squarecandy-tinymce-editor-style.css' );
+	} elseif (
+		file_exists( get_stylesheet_directory() . '/dist/css/squarecandy-tinymce-editor-style.min.css' ) &&
+		file_exists( get_template_directory() . '/dist/css/squarecandy-tinymce-editor-style.min.css' ) &&
+		get_stylesheet_directory() !== get_template_directory()
+	) {
+		add_editor_style( get_template_directory_uri() . '/dist/css/squarecandy-tinymce-editor-style.min.css' );
+	}
+
+	// add override stylesheets from theme or child theme directory locations
 	if ( file_exists( get_stylesheet_directory() . '/squarecandy-tinymce-editor-style.css' ) ) {
 		add_editor_style( get_stylesheet_directory_uri() . '/squarecandy-tinymce-editor-style.css' );
 	} elseif ( file_exists( get_stylesheet_directory() . '/dist/css/squarecandy-tinymce-editor-style.min.css' ) ) {
