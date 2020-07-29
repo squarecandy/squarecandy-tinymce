@@ -188,11 +188,14 @@ function squarecandy_tinymce_add_editor_styles() {
 		add_editor_style( plugins_url( 'squarecandy-tinymce-editor-style.css', __FILE__ ) );
 	}
 
-	if ( file_exists( get_stylesheet_directory() . '/frontend-style.css' ) ) {
-		add_editor_style( get_stylesheet_directory_uri() . '/frontend-style.css' );
-	} else {
-		add_editor_style( plugins_url( 'frontend-style.css', __FILE__ ) );
-	}
+	// fontend-style overrides
+	if ( ! get_option( 'sqcdy_remove_frontend_style_css', false ) ) :
+		if ( file_exists( get_stylesheet_directory() . '/frontend-style.css' ) ) {
+			add_editor_style( get_stylesheet_directory_uri() . '/frontend-style.css' );
+		} else {
+			add_editor_style( plugins_url( 'frontend-style.css', __FILE__ ) );
+		}
+	endif;
 
 }
 add_action( 'admin_init', 'squarecandy_tinymce_add_editor_styles' );
