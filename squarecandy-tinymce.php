@@ -279,7 +279,7 @@ function squarecandy_tinymce_mce_before_init( $init_array ) {
 	// clean code on paste (works with Word, Google Docs, copy-paste from other web pages)
 	$init_array['paste_preprocess'] = "function(plugin, args){
 		// Strip all HTML tags except those we have whitelisted
-		var whitelist = 'p,b,strong,i,em,h2,h3,h4,h5,h6,ul,li,ol,a,href';
+		var whitelist = 'p,b,strong,i,em,h2,h3,h4,h5,h6,ul,li,ol,a,href,br,hr,blockquote';
 		var stripped = jQuery('<div>' + args.content + '</div>');
 		var els = stripped.find('*').not(whitelist);
 		for (var i = els.length - 1; i >= 0; i--) {
