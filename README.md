@@ -40,7 +40,7 @@ Continued use of this plugin should be used in conjunction with the [Classic Edi
 * fix: don't strip br, hr, blockquote on paste
 * fix: css file overrides, allow in both child and parent theme.
 * fix: don't load frontend-style.css in editor if disabled in settings
-* fix: $_SERVER vars must be quoted in php 7.4+
+* fix: `$_SERVER` vars must be quoted in php 7.4+
 
 ### v1.3.0
 
