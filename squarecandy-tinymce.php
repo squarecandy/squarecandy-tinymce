@@ -13,6 +13,7 @@ Text Domain: squarecandy-tinymce
 */
 
 define( 'SQUARECANDY_TINYMCE_DIR_PATH', plugin_dir_path( __FILE__ ) );
+define( 'SQUARECANDY_TINYMCE_VERSION', '1.3.1' );
 
 /**
  * Add options to the Writing options page
@@ -27,7 +28,7 @@ function squarecandy_tinymce_enqueue_scripts() {
 	if ( get_option( 'sqcdy_allow_color_picker' ) ) :
 		// add colorpicker js to the admin
 		wp_enqueue_style( 'wp-color-picker' );
-		wp_enqueue_script( 'squarecandy-tinymce', plugins_url( 'colorpick.js', __FILE__ ), array( 'wp-color-picker' ), '1.3.1', true );
+		wp_enqueue_script( 'squarecandy-tinymce', plugins_url( 'colorpick.js', __FILE__ ), array( 'wp-color-picker' ), SQUARECANDY_TINYMCE_VERSION, true );
 	endif;
 }
 add_action( 'admin_enqueue_scripts', 'squarecandy_tinymce_enqueue_scripts' );
@@ -160,10 +161,13 @@ add_filter( 'mce_css', 'squarecandy_tinymce_remove_mce_css' );
 
 // Add styles to the TinyMCE editor window to make it look more like your site's front end
 function squarecandy_tinymce_add_editor_styles() {
+	$stylesheet_directory_uri = get_stylesheet_directory_uri();
+	$stylesheet_directory     = get_stylesheet_directory();
+	$template_directory       = get_template_directory();
 
 	$sqcdy_include_theme_style_css = get_option( 'sqcdy_include_theme_style_css' );
 	if ( 'on' === $sqcdy_include_theme_style_css ) {
-		add_editor_style( get_stylesheet_directory_uri() . '/style.css' );
+		add_editor_style( $stylesheet_directory_uri . '/style.css' );
 	}
 
 	$sqcdy_theme_colwidth = get_option( 'sqcdy_theme_colwidth' );
@@ -182,32 +186,32 @@ function squarecandy_tinymce_add_editor_styles() {
 
 	// if both child and parent override files exist (meaning a child theme is active), load both
 	if (
-		file_exists( get_stylesheet_directory() . '/squarecandy-tinymce-editor-style.css' ) &&
-		file_exists( get_template_directory() . '/squarecandy-tinymce-editor-style.css' ) &&
-		get_stylesheet_directory() !== get_template_directory()
+		file_exists( $stylesheet_directory . '/squarecandy-tinymce-editor-style.css' ) &&
+		file_exists( $template_directory . '/squarecandy-tinymce-editor-style.css' ) &&
+		$stylesheet_directory !== $template_directory
 	) {
 		add_editor_style( get_template_directory_uri() . '/squarecandy-tinymce-editor-style.css' );
 	} elseif (
-		file_exists( get_stylesheet_directory() . '/dist/css/squarecandy-tinymce-editor-style.min.css' ) &&
-		file_exists( get_template_directory() . '/dist/css/squarecandy-tinymce-editor-style.min.css' ) &&
-		get_stylesheet_directory() !== get_template_directory()
+		file_exists( $stylesheet_directory . '/dist/css/squarecandy-tinymce-editor-style.min.css' ) &&
+		file_exists( $template_directory . '/dist/css/squarecandy-tinymce-editor-style.min.css' ) &&
+		$stylesheet_directory !== $template_directory
 	) {
 		add_editor_style( get_template_directory_uri() . '/dist/css/squarecandy-tinymce-editor-style.min.css' );
 	}
 
 	// add override stylesheets from theme or child theme directory locations
-	if ( file_exists( get_stylesheet_directory() . '/squarecandy-tinymce-editor-style.css' ) ) {
-		add_editor_style( get_stylesheet_directory_uri() . '/squarecandy-tinymce-editor-style.css' );
-	} elseif ( file_exists( get_stylesheet_directory() . '/dist/css/squarecandy-tinymce-editor-style.min.css' ) ) {
-		add_editor_style( get_stylesheet_directory_uri() . '/dist/css/squarecandy-tinymce-editor-style.min.css' );
+	if ( file_exists( $stylesheet_directory . '/squarecandy-tinymce-editor-style.css' ) ) {
+		add_editor_style( $stylesheet_directory_uri . '/squarecandy-tinymce-editor-style.css' );
+	} elseif ( file_exists( $stylesheet_directory . '/dist/css/squarecandy-tinymce-editor-style.min.css' ) ) {
+		add_editor_style( $stylesheet_directory_uri . '/dist/css/squarecandy-tinymce-editor-style.min.css' );
 	} else {
 		add_editor_style( plugins_url( 'squarecandy-tinymce-editor-style.css', __FILE__ ) );
 	}
 
 	// fontend-style overrides
 	if ( ! get_option( 'sqcdy_remove_frontend_style_css', false ) ) :
-		if ( file_exists( get_stylesheet_directory() . '/frontend-style.css' ) ) {
-			add_editor_style( get_stylesheet_directory_uri() . '/frontend-style.css' );
+		if ( file_exists( $stylesheet_directory . '/frontend-style.css' ) ) {
+			add_editor_style( $stylesheet_directory_uri . '/frontend-style.css' );
 		} else {
 			add_editor_style( plugins_url( 'frontend-style.css', __FILE__ ) );
 		}
@@ -226,10 +230,10 @@ function squarecandy_tinymce_frontendstyle() {
 
 	if ( file_exists( get_stylesheet_directory() . '/frontend-style.css' ) ) {
 		// check if an override exists
-		wp_enqueue_style( 'squarecandy-tinymce-style', get_stylesheet_directory_uri() . '/frontend-style.css', array(), '1.3.1' );
+		wp_enqueue_style( 'squarecandy-tinymce-style', get_stylesheet_directory_uri() . '/frontend-style.css', array(), SQUARECANDY_TINYMCE_VERSION );
 	} else {
 		// load the default copy
-		wp_enqueue_style( 'squarecandy-tinymce-style', plugins_url( 'frontend-style.css', __FILE__ ), array(), '1.3.1' );
+		wp_enqueue_style( 'squarecandy-tinymce-style', plugins_url( 'frontend-style.css', __FILE__ ), array(), SQUARECANDY_TINYMCE_VERSION );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'squarecandy_tinymce_frontendstyle' );
