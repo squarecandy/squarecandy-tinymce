@@ -296,3 +296,17 @@ function squarecandy_tinymce_mce_before_init( $init_array ) {
 }
 add_filter( 'tiny_mce_before_init', 'squarecandy_tinymce_mce_before_init' );
 
+
+function squarecandy_tiny_mce_init() {
+	?>
+	<script type="text/javascript">
+		jQuery(function () {
+			jQuery('input#wp-link-target').prop('checked',false);
+			jQuery('div[aria-label*="edit link"]').on('click', function(){
+				jQuery('input#wp-link-target').prop('checked',false);
+			});
+		});
+	</script>
+	<?php
+}
+add_action( 'before_wp_tiny_mce', 'squarecandy_tiny_mce_init' );
