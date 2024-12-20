@@ -4,7 +4,7 @@ Plugin Name: Square Candy TinyMCE Reboot
 Plugin URI: https://github.com/squarecandy/squarecandy-tinymce
 GitHub Plugin URI: https://github.com/squarecandy/squarecandy-tinymce
 Description: An opinionated reconfiguration of the default WordPress TinyMCE settings.
-Version: 1.3.2-dev.0
+Version: 1.4.0-dev.0
 Author: Peter Wise
 Author URI: http://squarecandydesign.com
 License: GPLv3
@@ -13,8 +13,8 @@ Text Domain: squarecandy-tinymce
 */
 
 define( 'SQUARECANDY_TINYMCE_DIR_PATH', plugin_dir_path( __FILE__ ) );
-define( 'SQUARECANDY_TINYMCE_VERSION', '1.3.1' );
-
+define( 'SQUARECANDY_TINYMCE_DIR_URL', plugin_dir_url( __FILE__ ) );
+define( 'SQUARECANDY_TINYMCE_VERSION', '1.4.0-dev.0' );
 /**
  * Add options to the Writing options page
  * @link https://trepmal.com/2011/03/07/add-field-to-general-settings-page/
@@ -28,8 +28,9 @@ function squarecandy_tinymce_enqueue_scripts() {
 	if ( get_option( 'sqcdy_allow_color_picker' ) ) :
 		// add colorpicker js to the admin
 		wp_enqueue_style( 'wp-color-picker' );
-		wp_enqueue_script( 'squarecandy-tinymce', plugins_url( 'colorpick.js', __FILE__ ), array( 'wp-color-picker' ), SQUARECANDY_TINYMCE_VERSION, true );
+		wp_enqueue_script( 'squarecandy-tinymce', SQUARECANDY_TINYMCE_DIR_URL . 'colorpick.js', array( 'wp-color-picker' ), SQUARECANDY_TINYMCE_VERSION, true );
 	endif;
+	wp_enqueue_script( 'squarecandy-tinymce', SQUARECANDY_TINYMCE_DIR_URL . 'squarecandy-tinymce.js', array(), SQUARECANDY_TINYMCE_VERSION, true );
 }
 add_action( 'admin_enqueue_scripts', 'squarecandy_tinymce_enqueue_scripts' );
 
@@ -233,7 +234,7 @@ function squarecandy_tinymce_frontendstyle() {
 		wp_enqueue_style( 'squarecandy-tinymce-style', get_stylesheet_directory_uri() . '/frontend-style.css', array(), SQUARECANDY_TINYMCE_VERSION );
 	} else {
 		// load the default copy
-		wp_enqueue_style( 'squarecandy-tinymce-style', plugins_url( 'frontend-style.css', __FILE__ ), array(), SQUARECANDY_TINYMCE_VERSION );
+		wp_enqueue_style( 'squarecandy-tinymce-style', SQUARECANDY_TINYMCE_DIR_URL . 'frontend-style.css', array(), SQUARECANDY_TINYMCE_VERSION );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'squarecandy_tinymce_frontendstyle' );
@@ -300,3 +301,17 @@ function squarecandy_tinymce_mce_before_init( $init_array ) {
 }
 add_filter( 'tiny_mce_before_init', 'squarecandy_tinymce_mce_before_init' );
 
+
+function squarecandy_tiny_mce_init() {
+	?>
+	<script type="text/javascript">
+		jQuery(function () {
+			jQuery('input#wp-link-target').prop('checked',false);
+			jQuery('div[aria-label*="edit link"]').on('click', function(){
+				jQuery('input#wp-link-target').prop('checked',false);
+			});
+		});
+	</script>
+	<?php
+}
+add_action( 'before_wp_tiny_mce', 'squarecandy_tiny_mce_init' );
