@@ -29,6 +29,7 @@ function squarecandy_tinymce_enqueue_scripts() {
 		wp_enqueue_style( 'wp-color-picker' );
 		wp_enqueue_script( 'squarecandy-tinymce', plugins_url( 'colorpick.js', __FILE__ ), array( 'wp-color-picker' ), '1.3.1', true );
 	endif;
+	wp_enqueue_script( 'squarecandy-tinymce', plugins_url( 'squarecandy-tinymce.js', __FILE__ ), array(), '1.3.1', true );
 }
 add_action( 'admin_enqueue_scripts', 'squarecandy_tinymce_enqueue_scripts' );
 
