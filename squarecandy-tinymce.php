@@ -307,7 +307,7 @@ function squarecandy_tiny_mce_init() {
 	<script type="text/javascript">
 		jQuery(function () {
 			jQuery('input#wp-link-target').prop('checked',false);
-			jQuery('div[aria-label*="edit link"]').on('click', function(){
+			jQuery( document ).on('click', 'div[aria-label*="edit link"]', function(){
 				jQuery('input#wp-link-target').prop('checked',false);
 			});
 		});
