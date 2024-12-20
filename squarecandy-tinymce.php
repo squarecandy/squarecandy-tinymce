@@ -4,7 +4,7 @@ Plugin Name: Square Candy TinyMCE Reboot
 Plugin URI: https://github.com/squarecandy/squarecandy-tinymce
 GitHub Plugin URI: https://github.com/squarecandy/squarecandy-tinymce
 Description: An opinionated reconfiguration of the default WordPress TinyMCE settings.
-Version: 1.4.0-dev.0
+Version: 1.4.0-dev.1
 Author: Peter Wise
 Author URI: http://squarecandydesign.com
 License: GPLv3
@@ -14,7 +14,7 @@ Text Domain: squarecandy-tinymce
 
 define( 'SQUARECANDY_TINYMCE_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SQUARECANDY_TINYMCE_DIR_URL', plugin_dir_url( __FILE__ ) );
-define( 'SQUARECANDY_TINYMCE_VERSION', '1.4.0-dev.0' );
+define( 'SQUARECANDY_TINYMCE_VERSION', '1.4.0-dev.1' );
 /**
  * Add options to the Writing options page
  * @link https://trepmal.com/2011/03/07/add-field-to-general-settings-page/
