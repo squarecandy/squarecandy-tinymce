@@ -185,28 +185,33 @@ function squarecandy_tinymce_add_editor_styles() {
 		}
 	}
 
+	$file_name_base = 'squarecandy-tinymce-editor-style';
+	if ( function_exists( 'sqcdy_is_views2' ) && sqcdy_is_views2() ) {
+		$file_name_base = 'squarecandy-tinymce-editor-style-views2';
+	}
+
 	// if both child and parent override files exist (meaning a child theme is active), load both
 	if (
-		file_exists( $stylesheet_directory . '/squarecandy-tinymce-editor-style.css' ) &&
-		file_exists( $template_directory . '/squarecandy-tinymce-editor-style.css' ) &&
+		file_exists( $stylesheet_directory . '/' . $file_name_base . '.css' ) &&
+		file_exists( $template_directory . '/' . $file_name_base . '.css' ) &&
 		$stylesheet_directory !== $template_directory
 	) {
-		add_editor_style( get_template_directory_uri() . '/squarecandy-tinymce-editor-style.css' );
+		add_editor_style( get_template_directory_uri() . '/' . $file_name_base . '.css' );
 	} elseif (
-		file_exists( $stylesheet_directory . '/dist/css/squarecandy-tinymce-editor-style.min.css' ) &&
-		file_exists( $template_directory . '/dist/css/squarecandy-tinymce-editor-style.min.css' ) &&
+		file_exists( $stylesheet_directory . '/dist/css/' . $file_name_base . '.min.css' ) &&
+		file_exists( $template_directory . '/dist/css/' . $file_name_base . '.min.css' ) &&
 		$stylesheet_directory !== $template_directory
 	) {
-		add_editor_style( get_template_directory_uri() . '/dist/css/squarecandy-tinymce-editor-style.min.css' );
+		add_editor_style( get_template_directory_uri() . '/dist/css/' . $file_name_base . '.min.css' );
 	}
 
 	// add override stylesheets from theme or child theme directory locations
-	if ( file_exists( $stylesheet_directory . '/squarecandy-tinymce-editor-style.css' ) ) {
-		add_editor_style( $stylesheet_directory_uri . '/squarecandy-tinymce-editor-style.css' );
-	} elseif ( file_exists( $stylesheet_directory . '/dist/css/squarecandy-tinymce-editor-style.min.css' ) ) {
-		add_editor_style( $stylesheet_directory_uri . '/dist/css/squarecandy-tinymce-editor-style.min.css' );
+	if ( file_exists( $stylesheet_directory . '/' . $file_name_base . '.css' ) ) {
+		add_editor_style( $stylesheet_directory_uri . '/' . $file_name_base . '.css' );
+	} elseif ( file_exists( $stylesheet_directory . '/dist/css/' . $file_name_base . '.min.css' ) ) {
+		add_editor_style( $stylesheet_directory_uri . '/dist/css/' . $file_name_base . '.min.css' );
 	} else {
-		add_editor_style( plugins_url( 'squarecandy-tinymce-editor-style.css', __FILE__ ) );
+		add_editor_style( plugins_url( '' . $file_name_base . '.css', __FILE__ ) );
 	}
 
 	// fontend-style overrides
