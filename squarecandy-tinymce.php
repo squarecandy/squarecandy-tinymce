@@ -36,6 +36,12 @@ add_action( 'admin_enqueue_scripts', 'squarecandy_tinymce_enqueue_scripts' );
 
 // TinyMCE Customization
 function make_mce_awesome( $in ) {
+
+	// bail if we're not in the admin (don't load these settings on the front end)
+	if ( ! is_admin() ) {
+		return $in;
+	}
+
 	$custom_colors      = array(
 		'"000000","Black"',
 		'"222222","Almost Black"',
@@ -286,12 +292,19 @@ function squarecandy_tinymce_mce_before_init( $init_array ) {
 	// Insert the array, JSON ENCODED, into 'style_formats'
 	$init_array['style_formats'] = wp_json_encode( $style_formats );
 
+	if ( is_admin() ) {
+		$allowlist = 'p,b,strong,i,em,h2,h3,h4,h5,h6,ul,li,ol,a,href,br,hr,blockquote';
+	} else {
+		// more limited allow list for the front end
+		$allowlist = 'p,b,strong,i,em,a,href,br';
+	}
+
 	// clean code on paste (works with Word, Google Docs, copy-paste from other web pages)
 	$init_array['paste_preprocess'] = "function(plugin, args){
-		// Strip all HTML tags except those we have whitelisted
-		var whitelist = 'p,b,strong,i,em,h2,h3,h4,h5,h6,ul,li,ol,a,href,br,hr,blockquote';
+		// Strip all HTML tags except those we have allow-listed
+		var allowlist = '" . $allowlist . "';
 		var stripped = jQuery('<div>' + args.content + '</div>');
-		var els = stripped.find('*').not(whitelist);
+		var els = stripped.find('*').not(allowlist);
 		for (var i = els.length - 1; i >= 0; i--) {
 			var e = els[i];
 			jQuery(e).replaceWith(e.innerHTML);
@@ -320,3 +333,23 @@ function squarecandy_tiny_mce_init() {
 	<?php
 }
 add_action( 'before_wp_tiny_mce', 'squarecandy_tiny_mce_init' );
+
+
+// Force the front end editors to be much simpler
+add_filter( 'wp_editor_settings', 'squarecandy_frontend_wp_editor_settings', 9999, 2 );
+function squarecandy_frontend_wp_editor_settings( $settings, $editor_id ) {
+	// bail if we're not on the front end
+	if ( is_admin() ) {
+		return $settings;
+	}
+
+	// simplify the toolbar and plugins
+	$settings['tinymce']['plugins']  = 'link,paste,tabfocus,wptextpattern';
+	$settings['tinymce']['toolbar1'] = 'bold,italic,link,unlink,removeformat';
+	$settings['tinymce']['toolbar2'] = '';
+
+	// turn off the access to the HTML view
+	$settings['quicktags'] = false;
+
+	return $settings;
+}
