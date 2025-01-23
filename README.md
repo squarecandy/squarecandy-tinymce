@@ -35,14 +35,22 @@ Continued use of this plugin should be used in conjunction with the [Classic Edi
 
 ## History
 
-### v1.3.1
+### v2.0.0 - 2025-01-23
+
+* Force Open in New Window to always start unchecked
+* Replace YouTube and Vimeo iframes with link on paste
+* Only allow very restricted TinyMCE on front end: bold, italics, links. (For WPForms or other front end uses)
+* Square Candy Views 2: use different css override file name
+* Add version constant & add variables for reused values
+
+### v1.3.1 - 2020-10-06
 
 * fix: don't strip br, hr, blockquote on paste
 * fix: css file overrides, allow in both child and parent theme.
 * fix: don't load frontend-style.css in editor if disabled in settings
 * fix: `$_SERVER` vars must be quoted in php 7.4+
 
-### v1.3.0
+### v1.3.0 - 2019-09-11
 
 * add phpcs rules and do plugin code cleanup
 * New feature: Clean HTML pasted into the visual editor
