@@ -20,7 +20,7 @@ define( 'SQUARECANDY_TINYMCE_VERSION', '2.0.0' );
  * @link https://trepmal.com/2011/03/07/add-field-to-general-settings-page/
  * thanks to trepmal
  */
-require SQUARECANDY_TINYMCE_DIR_PATH . 'class-squarecandy-tinymce-writing-settings.php';
+require SQUARECANDY_TINYMCE_DIR_PATH . 'inc/class-squarecandy-tinymce-writing-settings.php';
 
 $new_writing_settings = new SquareCandy_TinyMCE_Writing_Settings();
 
@@ -28,9 +28,9 @@ function squarecandy_tinymce_enqueue_scripts() {
 	if ( get_option( 'sqcdy_allow_color_picker' ) ) :
 		// add colorpicker js to the admin
 		wp_enqueue_style( 'wp-color-picker' );
-		wp_enqueue_script( 'squarecandy-tinymce', SQUARECANDY_TINYMCE_DIR_URL . 'colorpick.js', array( 'wp-color-picker' ), SQUARECANDY_TINYMCE_VERSION, true );
+		wp_enqueue_script( 'squarecandy-tinymce', SQUARECANDY_TINYMCE_DIR_URL . 'js/colorpick.js', array( 'wp-color-picker' ), SQUARECANDY_TINYMCE_VERSION, true );
 	endif;
-	wp_enqueue_script( 'squarecandy-tinymce', SQUARECANDY_TINYMCE_DIR_URL . 'squarecandy-tinymce.js', array(), SQUARECANDY_TINYMCE_VERSION, true );
+	wp_enqueue_script( 'squarecandy-tinymce', SQUARECANDY_TINYMCE_DIR_URL . 'js/squarecandy-tinymce.js', array(), SQUARECANDY_TINYMCE_VERSION, true );
 }
 add_action( 'admin_enqueue_scripts', 'squarecandy_tinymce_enqueue_scripts' );
 
@@ -179,7 +179,7 @@ function squarecandy_tinymce_add_editor_styles() {
 
 	$sqcdy_theme_colwidth = get_option( 'sqcdy_theme_colwidth' );
 	if ( ! empty( $sqcdy_theme_colwidth ) ) {
-		add_editor_style( plugins_url( 'dynamic.css.php', __FILE__ ) );
+		add_editor_style( SQUARECANDY_TINYMCE_DIR_URL . 'inc/dynamic.css.php' );
 	}
 
 	$sqcdy_theme_css = get_option( 'sqcdy_theme_css' );
@@ -217,7 +217,7 @@ function squarecandy_tinymce_add_editor_styles() {
 	} elseif ( file_exists( $stylesheet_directory . '/dist/css/' . $file_name_base . '.min.css' ) ) {
 		add_editor_style( $stylesheet_directory_uri . '/dist/css/' . $file_name_base . '.min.css' );
 	} else {
-		add_editor_style( plugins_url( '' . $file_name_base . '.css', __FILE__ ) );
+		add_editor_style( SQUARECANDY_TINYMCE_DIR_URL . 'css/' . $file_name_base . '.css' );
 	}
 
 	// fontend-style overrides
@@ -225,7 +225,7 @@ function squarecandy_tinymce_add_editor_styles() {
 		if ( file_exists( $stylesheet_directory . '/frontend-style.css' ) ) {
 			add_editor_style( $stylesheet_directory_uri . '/frontend-style.css' );
 		} else {
-			add_editor_style( plugins_url( 'frontend-style.css', __FILE__ ) );
+			add_editor_style( SQUARECANDY_TINYMCE_DIR_URL . 'css/frontend-style.css' );
 		}
 	endif;
 
