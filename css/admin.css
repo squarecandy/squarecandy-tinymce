@@ -1,0 +1,40 @@
+
+.mce-sqc-shortcode button i:before {
+	content: "\f150";
+}
+
+.sqc-shortcode-dialog {
+	border: 1px solid #a7aaad;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    background: #f6f7f7;
+}
+
+/* based on div.wp-link-input */
+.sqc-shortcode-dialog input[type=text] {
+    width: 300px;
+    padding: 3px;
+    box-sizing: border-box;
+    line-height: 1.28571429;
+    min-height: 26px;
+}
+
+.sqc-shortcode-dialog form > div {
+    margin: 5px 0 0;
+    display: flex;
+    align-items: flex-end;
+    column-gap: 5px;
+}
+
+/* text editor */
+.quicktags-toolbar .squarecandy-tinymce-alert {
+	position: absolute;
+    top: 31px;
+    left: 0;
+}
+
+/* visual editor */
+.mce-toolbar-grp .squarecandy-tinymce-alert {
+	margin: 0px;
+    white-space: normal;
+}

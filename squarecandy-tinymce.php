@@ -24,6 +24,8 @@ require SQUARECANDY_TINYMCE_DIR_PATH . 'inc/class-squarecandy-tinymce-writing-se
 
 $new_writing_settings = new SquareCandy_TinyMCE_Writing_Settings();
 
+require SQUARECANDY_TINYMCE_DIR_PATH . 'inc/class-sqc-embed.php';
+
 function squarecandy_tinymce_enqueue_scripts() {
 	if ( get_option( 'sqcdy_allow_color_picker' ) ) :
 		// add colorpicker js to the admin
@@ -31,6 +33,8 @@ function squarecandy_tinymce_enqueue_scripts() {
 		wp_enqueue_script( 'squarecandy-tinymce', SQUARECANDY_TINYMCE_DIR_URL . 'js/colorpick.js', array( 'wp-color-picker' ), SQUARECANDY_TINYMCE_VERSION, true );
 	endif;
 	wp_enqueue_script( 'squarecandy-tinymce', SQUARECANDY_TINYMCE_DIR_URL . 'js/squarecandy-tinymce.js', array(), SQUARECANDY_TINYMCE_VERSION, true );
+
+	wp_enqueue_style( 'squarecandy-tinymce-admin-css', SQUARECANDY_TINYMCE_DIR_URL . 'css/admin.css', array(), SQUARECANDY_TINYMCE_VERSION );
 }
 add_action( 'admin_enqueue_scripts', 'squarecandy_tinymce_enqueue_scripts' );
 
@@ -108,6 +112,7 @@ function make_mce_awesome( $in ) {
 	$toolbar1[] = 'undo';
 	$toolbar1[] = 'redo';
 	$toolbar1[] = 'removeformat';
+	$toolbar1[] = 'sqc_embed_button';
 
 	$toolbar1       = apply_filters( 'squarecandy_tinymce_filter_toolbar', $toolbar1 );
 	$toolbar1       = implode( ',', $toolbar1 );
@@ -299,8 +304,9 @@ function squarecandy_tinymce_mce_before_init( $init_array ) {
 		$allowlist = 'p,b,strong,i,em,a,href,br';
 	}
 
-	// clean code on paste (works with Word, Google Docs, copy-paste from other web pages)
-	$init_array['paste_preprocess'] = "function(plugin, args){
+	$added_paste_preprocess = apply_filters( 'squarecandy_tinymce_before_paste_preprocess', '' );
+
+	$strip_paste_preprocess = "
 		// Strip all HTML tags except those we have allow-listed
 		var allowlist = '" . $allowlist . "';
 		var stripped = jQuery('<div>' + args.content + '</div>');
@@ -313,7 +319,13 @@ function squarecandy_tinymce_mce_before_init( $init_array ) {
 		stripped.find('*').removeAttr('id').removeAttr('class').removeAttr('style');
 		// Return the clean HTML
 		args.content = stripped.html();
-	}";
+		";
+
+	// clean code on paste (works with Word, Google Docs, copy-paste from other web pages)
+	$init_array['paste_preprocess'] = 'function(plugin, args){' .
+		$added_paste_preprocess .
+		$strip_paste_preprocess .
+		'}';
 
 	return $init_array;
 }
