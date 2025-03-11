@@ -5,12 +5,13 @@ class SQC_Embed_Manager {
 	private $add_editor_button             = true;
 	private $visual_editor_paste_intercept = true;
 
-	private $embed_classes = array(
+	private $embed_items = array(
 		'SQC_Youtube_Embed',
+		'SQC_Vimeo_Embed',
 		'SQC_Facebook_Embed',
 		'SQC_Instagram_Embed',
-		'SQC_GoogleMaps_Embed',
 		'SQC_Bandcamp_Embed',
+		'SQC_GoogleMaps_Embed',
 	);
 
 	private $javascript_variables = array(
@@ -262,6 +263,15 @@ class SQC_Embed {
 	}
 }
 
+/**
+ * Adds missing wordpress.com bandcamp shortcode
+ * 
+ * Outputs an iframe like:
+ *    <iframe style="border: 0; width: %s; height: %s;" 
+ *       src="https://bandcamp.com/EmbeddedPlayer/album={album}/size={size}/bgcol={bgcol}/linkcol={linkcol}/tracklist={tracklist}/transparent=true/artwork={artwork}" 
+ *       title="{title}" seamless></iframe>';
+ */ 
+
 class SQC_Bandcamp_Embed extends SQC_Embed {
 
 	public $name        = 'bandcamp';
@@ -269,16 +279,21 @@ class SQC_Bandcamp_Embed extends SQC_Embed {
 	public $embed_regex = '';
 
 	public $add_shortcode   = true;
-	public $add_to_button   = false;
+	public $add_to_button   = true;
 	public $auto_embed      = false;
 	public $paste_intercept = false;
 
+	public $shortcode_button_settings = array(
+		'shortcode' => 'sqc-bandcamp',
+		'title'     => 'Bandcamp',
+		'notes'     => 'You can paste the "Wordpress" version of the Bandcamp Embed code here or directly into the content editor.',
+		'noCode'  => '1',
+	);
+
 	/**
 	 * Function to create an iframe
-	 * Override this in child classes
 	 */
 	public function create_iframe( $attr ) {
-		sqcdy_log( $attr, 'create_iframe bandcamp' );
 
 		$attr = shortcode_atts(
 			array(
@@ -310,10 +325,12 @@ class SQC_Bandcamp_Embed extends SQC_Embed {
 				$height = $height . 'px';
 		}
 
-			$iframe = '<iframe style="border: 0; width: %s; height: %s;" src="https://bandcamp.com/EmbeddedPlayer/album=%s/size=%s/bgcol=%s/linkcol=%s/tracklist=%s/transparent=true/artwork=%s" title="%s" seamless></iframe>';
+		//@TODO check if px is needed everywhere?
+
+		$iframe = '<iframe style="border: 0; width: %s; height: %s;" src="https://bandcamp.com/EmbeddedPlayer/album=%s/size=%s/bgcol=%s/linkcol=%s/tracklist=%s/transparent=true/artwork=%s" title="%s" seamless></iframe>';
 
 		return sprintf(
-			'<p><figure class="wp-block-embed-bandcamp wp-block-embed is-type-audio is-provider-bandcamp js">' . '<div class="wp-block-embed__wrapper">' . $iframe . '</div>' . '</figure></p>',
+			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
 			$width,
 			$height,
 			$album,
@@ -327,6 +344,11 @@ class SQC_Bandcamp_Embed extends SQC_Embed {
 	}
 }
 
+/**
+ * Add paste intercept for Youtube video iframes
+ * Pasted iframes are replaced with the video url, which is auto-embedded by WP
+ */ 
+
 class SQC_Youtube_Embed extends SQC_Embed {
 
 	public $name    = 'sqc-youtube';
@@ -334,7 +356,7 @@ class SQC_Youtube_Embed extends SQC_Embed {
 
 	//public $regex;
 	public $add_shortcode   = false;
-	public $add_to_button   = false;
+	public $add_to_button   = true;
 	public $auto_embed      = false;
 	public $paste_intercept = true;
 
@@ -345,7 +367,62 @@ class SQC_Youtube_Embed extends SQC_Embed {
 		'replacePre'   => 'https://www.youtube.com/watch?v=',
 		'replacePost'  => '',
 	);
+
+	public $shortcode_button_settings = array(
+		'shortcode' => 'sqc-youtube',
+		'title'     => 'Youtube',
+		'notes'     => 'You can paste the Youtube url here or directly into the content editor.',
+		'noCode'  => '1',
+	);
 }
+
+/**
+ * Add paste intercept for Vimeo video iframes
+ * Pasted iframes are replaced with the video url, which is auto-embedded by WP
+ */ 
+
+class SQC_Vimeo_Embed extends SQC_Embed {
+
+	public $name    = 'sqc-vimeo';
+	public $js_name = 'sqcVimeo';
+
+	//public $regex;
+	public $add_shortcode   = false;
+	public $add_to_button   = true;
+	public $auto_embed      = false;
+	public $paste_intercept = true;
+
+	public $paste_intercept_settings = array(
+		'checkText'    => 'vimeo',
+		'message'      => 'We have detected that you are trying to paste a Vimeo iframe embed into the HTML view. For better results, we are replacing this with the appropriate URL format. To avoid this message in the future, please paste the Vimeo URL into the Visual tab instead of the iframe embed code.',
+		'replaceRegex' => 'embed\/([^?]+)',
+		'replacePre'   => 'https://www.youtube.com/watch?v=',
+		'replacePost'  => '',
+	);
+
+	public $shortcode_button_settings = array(
+		'shortcode' => 'sqc-vimeo',
+		'title'     => 'Vimeo',
+		'notes'     => 'You can paste the Vimeo url here or directly into the content editor.',
+		'noCode'  => '1',
+	);
+}
+
+/**
+ * Manage embeds/shortcode for Instagram videos
+ * 
+ * Shortcode/Autoembed:
+ *    Takes urls like:
+ *       https://www.instagram.com/reel/{VIDEO_ID}/?utm_source=ig_web_copy_link
+ *       https://www.instagram.com/reel/{VIDEO_ID}/?igsh=ZGUzMzM3NWJiOQ==
+ * 
+ * Outputs an iframe like:
+ *    <iframe id="instagram-embed-1" class="instagram-media instagram-media-rendered" 
+ *       style="background: white; max-width: XXXpx; width: calc(100%% - 2px); border-radius: 3px; border: 1px solid #dbdbdb; box-shadow: none; 
+ *       display: block; margin: 0px 0px 12px; min-width: 326px; padding: 0px; position: static !important;" 
+ *      src="{VIDEO_ID}/embed/?cr=1&amp;v=14&amp;wp=XXX" height="YYY" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen" data-instgrm-payload-id="instagram-media-payload-0">
+ *    </iframe>
+ */ 
 
 class SQC_Instagram_Embed extends SQC_Embed {
 
@@ -354,16 +431,21 @@ class SQC_Instagram_Embed extends SQC_Embed {
 
 	//public $regex;
 	public $add_shortcode   = true;
-	public $add_to_button   = false;
+	public $add_to_button   = true;
 	public $auto_embed      = false;
 	public $paste_intercept = true;
 
 	public $paste_intercept_settings = array(
-		'checkText'    => 'vimeo',
-		'message'      => 'We have detected that you are trying to paste a Vimeo iframe embed into the HTML view. For better results, we are replacing this with the appropriate URL format. To avoid this message in the future, please paste the Vimeo URL into the Visual tab instead of the iframe embed code.',
+		'checkText'    => 'instagram',
+		'message'      => 'We have detected that you are trying to paste an Instagram iframe embed into the HTML view. For better results, we are replacing this with the appropriate URL format. To avoid this message in the future, please paste the Instagram URL into the Visual tab instead of the iframe embed code.',
 		'replaceRegex' => 'video\/([^?]+)',
 		'replacePre'   => 'https://vimeo.com/',
 		'replacePost'  => '',
+	);
+	public $shortcode_button_settings = array(
+		'shortcode' => 'sqc-instagram',
+		'title'     => 'Instagram Video',
+		'notes'     => 'You can embed Instagram videos by pasting the link here.', // @TODO trim params from instagram urls here
 	);
 
 	/**
@@ -371,14 +453,13 @@ class SQC_Instagram_Embed extends SQC_Embed {
 	 * Override this in child classes
 	 */
 	public function create_iframe( $attr ) {
-		sqcdy_log( $attr, 'instagram' );
-		sqcdy_log( array_keys( $attr ), 'count ' . count( $attr ) );
-		sqcdy_log( count( $attr ) === 1 );
-		sqcdy_log( array_keys( $attr )[0] === 0 );
+		//@TODO instagram links with / on ends aren't working here, need to fix that
+		// these are narrower than others - maybe 540 is too narrow
+
 		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
 			$attr = array( 'url' => $attr[0] );
 		endif;
-		sqcdy_log( $attr, 'instagram 2' );
+		//sqcdy_log( $attr, 'instagram 2' );
 
 		$attr = shortcode_atts(
 			array(
@@ -406,11 +487,11 @@ class SQC_Instagram_Embed extends SQC_Embed {
 		if ( preg_match( '#^[0-9]+$#', $height ) ) {
 				$height = $height . 'px';
 		}
-
+		//@TODO set id to something unique!!
 		$iframe = '<iframe id="instagram-embed-1" class="instagram-media instagram-media-rendered" style="background: white; max-width: %s; width: calc(100%% - 2px); border-radius: 3px; border: 1px solid #dbdbdb; box-shadow: none; display: block; margin: 0px 0px 12px; min-width: 326px; padding: 0px; position: static !important;" src="%s/embed/?cr=1&amp;v=14&amp;wp=%s" height="%s" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen" data-instgrm-payload-id="instagram-media-payload-0"></iframe>';
 
 		return sprintf(
-			'<p><figure class="wp-block-embed-instagram wp-block-embed is-type-audio is-provider-instagram js">' . '<div class="wp-block-embed__wrapper">' . $iframe . '</div>' . '</figure></p>',
+			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
 			$width,
 			$url,
 			$raw_width,
@@ -419,6 +500,109 @@ class SQC_Instagram_Embed extends SQC_Embed {
 	}
 }
 
+
+/**
+ * Manage embeds/shortcode for Facebook videos
+ * 
+ * Shortcode/Autoembed:
+ *    Takes urls like:
+ *       https://www.facebook.com/myPageName/videos/longvideoID/
+ *       https://www.facebook.com/watch/?v=longvideoID
+ *       https://fb.watch/shortvideoID/
+ *    But not like:
+ *       https://www.facebook.com/share/v/shortvideoID/
+ * 
+ * Outputs an iframe like:
+ *    <iframe src="https://www.facebook.com/plugins/video.php?href={VIDEO_URL}&show_text=0&width=XXX" 
+ *       width="XXX" height="YYY" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" 
+ *       allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true">
+ *    </iframe>
+ */ 
+
+class SQC_Facebook_Embed extends SQC_Embed {
+
+	public $name        = 'sqc-facebook-video';
+	public $js_name     = 'sqcFacebookVideo';
+	public $embed_regex = '#https://www\.facebook\.com/watch/\?v=([\d]+)/?#i';
+	//public $regex;
+	public $add_shortcode   = true;
+	public $add_to_button   = true;
+	public $auto_embed      = true;
+	public $paste_intercept = true;
+
+	public $paste_intercept_settings  = array(
+		'checkText'    => 'facebook.com/plugins/video.php',
+		'message'      => 'We have detected that you are trying to paste a Facebook video iframe embed into the HTML view. For better results, we are replacing this with the appropriate shortcode. To avoid this message in the future, please add the Facebook URL using the shortcode button on the Visual tab instead of the iframe embed code.',
+		'replaceRegex' => 'video\.php\?href=([^?]+)\?',
+		'replacePre'   => '[sqc-facebook-video ',
+		'replacePost'  => ']',
+	);
+	public $shortcode_button_settings = array(
+		'shortcode' => 'sqc-facebook-video',
+		'title'     => 'Facebook Video',
+		'notes'     => 'You can embed Facebook videos by pasting the link here, or just by pasting it into the content editor. NB links with /share/ in them won\'t work',
+		'notesMore' => 'The best way to get the share url is to click the three dots to the top right of the vide and choose "copy url".',
+	);
+
+	/**
+	 * Function to create an iframe
+	 */
+	public function create_iframe( $attr ) {
+		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
+			$attr = array( 'url' => $attr[0] );
+		endif;
+		//sqcdy_log( $attr, 'facebook 2' );
+
+		$attr = shortcode_atts(
+			array(
+				'width'  => 350,
+				'height' => 470,
+				'url'    => null,
+			),
+			$attr
+		);
+
+		extract( $attr );
+
+		if ( $url == null ) :
+			return false;
+		endif;
+
+		$url = urlencode( $url );
+
+		if ( preg_match( '#^[0-9]+$#', $width ) ) {
+				$width = $width . 'px';
+		}
+		if ( preg_match( '#^[0-9]+$#', $height ) ) {
+				$height = $height . 'px';
+		}
+
+		//@TODO Maybe don't need the px adding
+
+		$iframe = '<iframe src="https://www.facebook.com/plugins/video.php?href=%s&show_text=0&width=%s" width="%s" height="%s" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>';
+
+		return sprintf(
+			'<p><figure class="wp-block-embed-facebook wp-block-embed is-type-audio is-provider-facebook wp-embed-aspect-16-9 wp-has-aspect-ratio js fitvids">' . '<div class="wp-block-embed__wrapper">' . $iframe . '</div>' . '</figure></p>',
+			$url,
+			$width,
+			$width,
+			$height
+		);
+	}
+}
+
+
+/**
+ * Manage embeds/shortcode for Google Maps
+ * 
+ * We need to start with the full embed code provide by Google Maps. To store in content without an iframe, the shortcode takes the properties of the original iframe.
+ * 
+ * Outputs an iframe like:
+ *    '<iframe src="{SRC}" width="XXX" height="YYY" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
+ */
+
+//@TODO take more params out of the shortcode?
+
 class SQC_GoogleMaps_Embed extends SQC_Embed {
 
 	public $name    = 'sqc-gmaps';
@@ -426,17 +610,26 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 
 	//public $regex;
 	public $add_shortcode   = true;
-	public $add_to_button   = false;
+	public $add_to_button   = true;
 	public $auto_embed      = false;
 	public $paste_intercept = true;
+
+	//public $customJavascript = 
 
 	public $paste_intercept_settings = array(
 		'checkText'    => 'www.google.com/maps/embed',
 		'message'      => 'We have detected that you are trying to paste a Google Maps iframe embed into the HTML view. For better results, we are replacing this with the appropriate shortcode format.',
-		'replaceRegex' => 'video\/([^?]+)',
-		'replacePre'   => 'https://vimeo.com/',
+		'replaceRegex' => '', // not needed, custom process
+		'replacePre'   => '',
 		'replacePost'  => '',
-		'custom_js'    => "sqcGoogleMapsProcess = function( pastedData ) { newText = pastedData.replace( '<iframe', '[sqc-gmaps ' ); newText = newText.replace( '></iframe>', ' ]' ); return newText; };",
+		'custom_js'    => "sqcGoogleMapsProcess = function( pastedData ) { const iframeOpen = /&lt;iframe|<iframe/; const iframeClose = /><\/iframe>|&rt;\/&lt;iframe&rt;/; newText = pastedData.replace( iframeOpen, '[sqc-gmaps ' ); newText = newText.replace( iframeClose, ' ]' ); return newText; };", // needs some adjustment for visual editor
+	);
+
+	public $shortcode_button_settings = array(
+		'shortcode' => 'sqc-gmaps',
+		'title'     => 'Google Maps',
+		'notes'     => 'You can embed Google Maps by pasting the embed code here, or by pasting it directly into the content editor.',
+		'customJS'  => 'sqcGoogleMapsProcess',
 	);
 
 	/**
@@ -444,14 +637,14 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 	 * Override this in child classes
 	 */
 	public function create_iframe( $attr ) {
-		sqcdy_log( $attr, 'gmaps' );
-		sqcdy_log( array_keys( $attr ), 'count ' . count( $attr ) );
-		sqcdy_log( count( $attr ) === 1 );
-		sqcdy_log( array_keys( $attr )[0] === 0 );
+		//sqcdy_log( $attr, 'gmaps' );
+		//sqcdy_log( array_keys( $attr ), 'count ' . count( $attr ) );
+		//sqcdy_log( count( $attr ) === 1 );
+		//sqcdy_log( array_keys( $attr )[0] === 0 );
 		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
 			$attr = array( 'src' => $attr[0] );
 		endif;
-		sqcdy_log( $attr, 'gmaps 2' );
+		//sqcdy_log( $attr, 'gmaps 2' );
 
 		$attr = shortcode_atts(
 			array(
@@ -473,7 +666,7 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 		$iframe = '<iframe src="%s" width="%s" height="%s" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
 
 		return sprintf(
-			'<p><figure class="wp-block-embed-googlemaps wp-block-embed is-type-audio is-provider-googlemaps js">' . '<div class="wp-block-embed__wrapper">' . $iframe . '</div>' . '</figure></p>',
+			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
 			$src,
 			$width,
 			$height
@@ -481,12 +674,7 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 	}
 }
 
-class SQC_Facebook_Embed extends SQC_Embed {
 
-	public $name        = 'sqc-facebook-video';
-	public $js_name     = 'sqcFacebookVideo';
-	public $embed_regex = '#https://www\.facebook\.com/watch/\?v=([\d]+)/?#i';
-	//public $regex;
 	public $add_shortcode   = true;
 	public $add_to_button   = true;
 	public $auto_embed      = true;
