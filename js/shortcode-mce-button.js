@@ -12,20 +12,28 @@ jQuery(document).ready(function($) {
 			// get our list of shortcodes from js localization
 			const buttonSettings = typeof sqcEmbed !== 'undefined' ? sqcEmbed.mceButton : [];
 			let radioButtons = '';
+			let dialogNotes = '';
 			for ( const prop in buttonSettings ) {
 				const item = buttonSettings[prop];
 				console.log( prop, item );
 				if ( typeof item.shortcode !== 'undefined' && typeof item.title !== 'undefined' ) {
-					radioButtons +=  '<div><input type="radio" name="sqc-insert-type" value="' + item.shortcode + '"/><label for="' + item.shortcode + '">' + item.title + '</label></div>';
+					let buttonData = item.customJS ? ' data-custom="' + item.customJS + '" ' : '';
+					buttonData += item.noCode ? ' data-nocode="1" ' : '';
+					radioButtons +=  '<div class="sqc-btn sqc-btn-' + item.shortcode + '" data-slug="' + prop + '"><input type="radio" name="sqc-insert-type" value="' + item.shortcode + '" autocomplete="off"' + buttonData + '/><label for="' + item.shortcode + '">' + item.title + '</label></div>';
+					const buttonNotes = item.notes !== 'undefined' ? item.notes : '';
+					const buttonNotesMore = item.notesMore ? '<div class="show-more button-link">more</div><div class="more">' + item.notesMore + '</div>' : '';
+					dialogNotes += '<div class="sqc-btn-notes notes-' + item.shortcode + '">' + buttonNotes + buttonNotesMore + '</div>'
 				}
+
 			}
 			console.log( radioButtons );
 
 			// create the dialog element, and add it to the page
 			const dialogHtml = '<dialog class="sqc-shortcode-dialog" id="' + dialogID + '">' + 
 				'<form><div><input type="text" name="sqc-insert" placeholder="Enter Link or Embed code"></div>' + 
-				'<div><label>Choose embed type:</label></div><div class="btn-group">' + radioButtons + '</div>' +
-				'<div class="btn-group"><button value="cancel" formmethod="dialog">Cancel</button><button class="confirmBtn" value="default">Confirm</button></div>' + 
+				'<p><label>Choose embed type:</label></p><div class="btn-group">' + radioButtons + '</div>' +
+				'<div class="note-container">' + dialogNotes + '</div>' +
+				'<div class="btn-group btn-group-submit"><button class="button" value="cancel" formmethod="dialog">Cancel</button><button class="confirmBtn button button-primary" value="default">Confirm</button></div>' + 
 				'</form></dialog>';
 			$('#ed_toolbar').before( $( dialogHtml ) );
 
@@ -41,12 +49,33 @@ jQuery(document).ready(function($) {
 			// "Confirm" also ends up here bc we're adding the close action to the confirm onclick
 			sqcDialog.addEventListener("close", (e) => {
 				console.log( dialogID, sqcDialog.returnValue, sqcDialog );
-				const insertVal = $( sqcDialog ).find("[name=sqc-insert]").val();
-				const radioVal = $( sqcDialog ).find('input[name="sqc-insert-type"]:checked').val();
-				console.log( insertVal, radioVal );
+				const $dialogInput = $( sqcDialog ).find("[name=sqc-insert]");
+				const insertVal = $dialogInput.val();
+				const $selectedRadio = $( sqcDialog ).find('input[name="sqc-insert-type"]:checked');
+				const radioVal = $selectedRadio.val();
+				console.log( insertVal, radioVal, $selectedRadio );
 				if( sqcDialog.returnValue !== "cancel" && insertVal && radioVal ) {
-					tinymce.execCommand('mceInsertContent', false, '[' + radioVal + ' ' + insertVal + ' ]');
-				}	
+					const customFunction = $selectedRadio.data('custom') ? window[ $selectedRadio.data('custom') ] : false;
+					console.log( customFunction, typeof customFunction );
+					if ( $selectedRadio.data('nocode') ) {
+						console.log('no code');
+						tinymce.execCommand('mceInsertContent', false, insertVal );
+					} else if ( customFunction && typeof customFunction == 'function' ) {
+						console.log('do custom function');
+						const newText = customFunction( insertVal );
+						tinymce.execCommand('mceInsertContent', false, newText );
+					} else {
+						tinymce.execCommand('mceInsertContent', false, '[' + radioVal + ' ' + insertVal + ' ]');
+					}
+					tinymce.execCommand('InsertLineBreak');
+					tinymce.execCommand('InsertLineBreak');			
+				}
+				
+				// clear out the input values
+				$dialogInput.val('');
+				$( sqcDialog ).find('input[name="sqc-insert-type"]').prop( 'checked', false );
+				$( sqcDialog ).find( '.sqc-btn-notes' ).removeClass( 'show' );
+				$( sqcDialog ).find( '.more' ).hide();
 			});
 
 			// Prevent the "confirm" button from the default behavior of submitting the form, and close the dialog with the `close()` method, which triggers the "close" event.
@@ -60,6 +89,28 @@ jQuery(document).ready(function($) {
 				// opens the <dialog> modally
 				sqcDialog.showModal();
 			});
+
+			$( '#' + dialogID + ' input[type="radio"]').on( 'change', function(){
+				shortcodeName = this.value;
+				$allNotes  = $(this).parents('dialog').find( '.sqc-btn-notes' );
+				$targetDiv = $(this).parents('dialog').find( '.notes-' + shortcodeName );
+				console.log( 'change button', this.checked, shortcodeName, $targetDiv, this );
+				$allNotes.removeClass( 'show' );
+				$allNotes.find( '.more' ).slideUp();
+				if ( this.checked ) {
+					$targetDiv.addClass( 'show' );
+				}
+			});
+
+			$( '#' + dialogID + ' .show-more').on( 'click', function(){
+				$thisMore  = $(this).parents('.sqc-btn-notes' ).find('.more');
+				if ( $thisMore.is(':visible')) {
+					$thisMore.slideUp();
+				} else {
+					$thisMore.slideDown();
+				}
+			});
+
 
 			// Register buttons - trigger above command when clicked
 			editor.addButton('sqc_embed_button', {title : 'Insert shortcode', cmd : 'sqc_embed_insert_shortcode', icon: 'dashicon', classes: 'sqc-shortcode' });

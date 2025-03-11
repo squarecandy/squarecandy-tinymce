@@ -8,6 +8,7 @@
     border-radius: 2px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     background: #f6f7f7;
+    max-width: 400px;
 }
 
 /* based on div.wp-link-input */
@@ -17,13 +18,58 @@
     box-sizing: border-box;
     line-height: 1.28571429;
     min-height: 26px;
+
+    margin-top: 5px;
 }
 
-.sqc-shortcode-dialog form > div {
+.sqc-shortcode-dialog label {
+    color: #646970;
+}
+
+.sqc-shortcode-dialog form .btn-group {
     margin: 5px 0 0;
     display: flex;
     align-items: flex-end;
-    column-gap: 5px;
+    column-gap: 10px;
+    flex-wrap: wrap;
+    row-gap: 10px;
+}
+
+.sqc-shortcode-dialog .sqc-btn {
+    display: flex;
+    align-items: flex-end;
+}
+
+.sqc-shortcode-dialog form .btn-group-submit {
+    justify-content: space-between;
+}
+
+.sqc-shortcode-dialog .note-container {
+    display: grid;
+    margin: 10px 0;
+}
+
+.sqc-shortcode-dialog .note-container .more {
+    display: none;
+}
+
+.sqc-shortcode-dialog .note-container .more.show {
+    display: block;
+}
+
+.sqc-shortcode-dialog .sqc-btn-notes {
+    visibility: hidden;
+    grid-row-start: 1;
+    grid-column-start: 1;
+}
+
+.sqc-shortcode-dialog .sqc-btn-notes.show {
+    visibility: visible;
+}
+
+.sqc-shortcode-dialog .sqc-btn-notes .show-more {
+    display: inline;
+    margin-left: 5px;
 }
 
 /* text editor */
