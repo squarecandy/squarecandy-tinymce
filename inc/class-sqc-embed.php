@@ -1,5 +1,4 @@
 <?php
-error_log( 'SQC_Embed' );
 
 class SQC_Embed_Manager {
 
@@ -24,12 +23,11 @@ class SQC_Embed_Manager {
 	public function __construct() {
 
 		// allow filtering of which are loaded = so you can turn them off, or add your own class and enqueue it here
-		$this->embed_classes = apply_filters( 'sqc_embed_classes', $this->embed_classes );
+		$this->embed_items = apply_filters( 'sqc_embed_items', $this->embed_items );
 
-		//loop trhough and instantiate a list of classes
-		foreach ( $this->embed_classes as $embed_class_name ) {
-			sqcdy_log( 'register_embed_class ' . $embed_class_name );
-			$this->register_embed_class_name( $embed_class_name );
+		//loop through and instantiate a list of classes
+		foreach ( $this->embed_items as $embed_item ) {
+			$this->register_embed_class_item( $embed_item );			
 		}
 
 		// add the shortcode button to the editor(s)
@@ -48,13 +46,10 @@ class SQC_Embed_Manager {
 		}
 	}
 
-	// add out intercepts to the visual editor paste preprocess
+	// add our intercepts to the visual editor paste preprocess
 	public function tinymce_before_paste_preprocess( $code ) {
 
 		$visual_paste_intercept = "
-			console.log( 'paste_preprocess' );
-			console.log( 'pasteintercept', typeof pasteIntercept );
-			console.log( 'pre content', args.content );
 			if ( typeof replacePastedText == 'function' && typeof displayInterceptMessage == 'function' ) {
 				const output = replacePastedText( args.content );
 				if ( output != args.content ) {
@@ -81,14 +76,23 @@ class SQC_Embed_Manager {
 		}
 	}
 
-	private function register_embed_class_name( $class_name ) {
-		$embed_class = new $class_name();
-		sqcdy_log( $embed_class, 'embed_class' );
+	private function register_embed_class_item( $item ) {
+
+		if ( is_string( $item ) && class_exists( $item ) ) { // also check that it extends SQC class?
+			$embed_class = new $item();
+			//sqcdy_log( $embed_class, 'embed_class' );
+		} elseif ( is_array( $item ) ) {
+			$embed_class = new SQC_Embed( $item ); // possible way of adding new embed without creating a class, not implemented yet
+		}
 
 		$this->register_embed_class( $embed_class );
 	}
 
 	private function register_embed_class( $embed_class ) {
+
+		if ( ! is_subclass_of( $embed_class, 'SQC_Embed' ) ) {
+			return;
+		}
 
 		if ( $embed_class->paste_intercept && $embed_class->paste_intercept_settings ) {
 			if ( ! empty( $embed_class->paste_intercept_settings['custom_js'] ) ) {
@@ -98,7 +102,9 @@ class SQC_Embed_Manager {
 		}
 
 		if ( $embed_class->add_to_button && $embed_class->shortcode_button_settings ) {
-			$this->javascript_variables['mceButton'][ $embed_class->js_name ] = $embed_class->shortcode_button_settings;
+			$shortcode_button_settings = $embed_class->shortcode_button_settings;
+
+			$this->javascript_variables['mceButton'][ $embed_class->js_name ] = $shortcode_button_settings;
 		}
 	}
 
@@ -121,7 +127,7 @@ class SQC_Embed_Manager {
 		  add_filter( 'mce_buttons', array( $this, 'add_tinymce_button' ) );
 	}
 
-	//This callback registers our plug-in
+	//This callback registers our tinymce plug-in
 	public function register_tinymce_plugin( $plugin_array ) {
 		$plugin_array['sqc_embed_button'] = SQUARECANDY_TINYMCE_DIR_URL . '/js/shortcode-mce-button.js';
 		return $plugin_array;
@@ -130,7 +136,7 @@ class SQC_Embed_Manager {
 	//This callback adds our button to the toolbar
 	public function add_tinymce_button( $buttons ) {
 		//Add the button ID to the $button array
-		sqcdy_log( $buttons, '$buttons' );
+		//sqcdy_log( $buttons, '$buttons' );
 		$buttons[] = 'sqc_embed_button';
 		return $buttons;
 	}
@@ -138,34 +144,74 @@ class SQC_Embed_Manager {
 
 class SQC_Embed {
 
-	public $name        = '';
-	public $js_name     = '';
-	public $embed_regex = '';
+	public $name        = ''; // shortcode (if used)
+	public $js_name     = ''; // camelCase version of class name (used as identifier for localized variables/functions in js)
+	public $embed_regex = ''; // for autoembed, this is the regex to isolate the url used to populate the iframe
 
-	public $add_shortcode   = true;
-	public $add_to_button   = true;
-	public $auto_embed      = false;
-	public $paste_intercept = false;
+	public $add_shortcode   = true; // add a shortcode
+	public $add_to_button   = true; // add to the shortcode button in the visual editor
+	public $auto_embed      = false; // add auto embed
+	public $paste_intercept = false; // intercept pasted code block & replace
 
 	public $paste_intercept_settings  = array();
+
 	public $shortcode_button_settings = array();
 
+	public $iframe_wrapper = array( 'open' => '', 'close' => '' );
+
+	const DEFAULT_PASTE_INTERCEPT_SETTINGS  = array(
+		'checkText'    => '', // required - pattern to check for
+		'message'      => '', // required - message to be displayed when pattern is matched
+		'replaceRegex' => '', // optional - tregex to locate url/identifier (without delimiters)
+		'replacePre'   => '', // optional - text of outout that goes before the identifier
+		'replacePost'  => '', // optional - text of outout that goes after the identifier
+		'custom_js'    => '', // optional - javascript defining custom function to use instead of default regex/replace. function name must be like {$class->js_name}Process
+	);
+
+	const DEFAULT_SHORTCODE_BUTTON_SETTINGS = array(
+		'shortcode' => '', // required - used as identifier & shortcode
+		'title'     => '', // required - label fro the radio button for this option
+		'notes'     => '', // required - notes displayed when this option is selected
+		'notesMore' => '', // optional - more notes displayed in a closed by default accordion section
+		'noCode'    => '', // optional - if truthy, link pasted into the input is passed directly to content (e.g. youtube/vimeo)
+		'customJS'  => '', // optional - function name for custom function to process input
+	);
+
 	public function __construct( $attr = array() ) {
-		sqcdy_log( '__construct ' . $this->name );
-		/*foreach ( $attr as $key => $value ) { // do this properly
-			$this->$key = $value;
-		}*/
-		//add filter so atts can be changed per site
+
+		// allow attr to be filtered
+		$attr = apply_filters( $attr, 'sqc_embed_properties', get_class( $this ) );
+
+		// allow properties to be set via array (needs more work on setting methods to make class fully instantiable this way)
+		foreach ( $attr as $key => $value ) {
+			if ( property_exists( $this, $key ) ) {
+				$this->$key = $value;
+			}
+		}
+
+		// set (default) wrappers for iframes
+		if ( ! $this->iframe_wrapper['open'] || ! $this->iframe_wrapper['close'] ) {
+			$this->iframe_wrapper['open'] = '<p><figure class="wp-block-embed-' . $this->name . ' wp-block-embed is-type-audio is-provider-' . $this->name . ' js">' . '<div class="wp-block-embed__wrapper">',
+			$this->iframe_wrapper['close'] = '</div>' . '</figure></p>';
+		}
+
+		// parse js args
+
+		$this->paste_intercept_settings = wp_parse_args( $this->paste_intercept_settings, self::DEFAULT_PASTE_INTERCEPT_SETTINGS );
+
+		$this->shortcode_button_settings = wp_parse_args( $this->shortcode_button_settings, self::DEFAULT_SHORTCODE_BUTTON_SETTINGS );
+
 		if ( $this->add_shortcode ) {
 			$this->register_shortcode();
 		}
+
 		if ( $this->auto_embed ) {
 			$this->add_auto_embed();
 		}
 	}
 
 	/**
-	 * Function to create an iframe
+	 * Function to create an iframe/script tag etc
 	 * Override this in child classes
 	 */
 	public function create_iframe( $attr ) {
@@ -184,7 +230,6 @@ class SQC_Embed {
 	 * Add a custom shortcode
 	 */
 	public function register_shortcode() {
-		sqcdy_log( 'register_shortcode ' . $this->name );
 		add_shortcode(
 			$this->name,
 			array( $this, 'process_shortcode' )
@@ -194,10 +239,8 @@ class SQC_Embed {
 	/**
 	 * Add custom auto embed function
 	 * So when you enter a matching url in the visual editor, it will be turned into an iframe
-	 * (?or could we store it as our shortcode?)
 	 */
 	public function add_auto_embed() {
-		sqcdy_log( 'add_auto_embed' );
 		add_action(
 			'init',
 			function() {
@@ -214,9 +257,6 @@ class SQC_Embed {
 	 * Function to convert embedded url into an iframe
 	 */
 	function embed_handler( $matches, $attr, $url, $rawattr ) {
-		sqcdy_log( $matches, 'wp_embed_handler_facebook' . $url );
-		sqcdy_log( $attr, 'attr' );
-		sqcdy_log( $rawattr, 'rawattr' );
 		$attr['url'] = $url;
 		return $this->create_iframe( $attr );
 	}
