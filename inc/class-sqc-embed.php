@@ -12,6 +12,8 @@ class SQC_Embed_Manager {
 		'SQC_Instagram_Embed',
 		'SQC_Bandcamp_Embed',
 		'SQC_GoogleMaps_Embed',
+		'SQC_GoogleForms_Embed',
+		'SQC_MailchimpArchive_Embed',
 	);
 
 	private $javascript_variables = array(
@@ -675,21 +677,40 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 }
 
 
+/**
+ * Manage embeds/shortcode for Google Forms
+ * 
+ * We need to start with the full embed code provide by Google Forms. To store in content without an iframe, the shortcode takes the properties of the original iframe.
+ * 
+ * Outputs an iframe like:
+ *    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeVW-_CT2cAoLYTStvT7TEwNO84kjLjPSV72mUfPsy_AHCHzQ/viewform?embedded=true" 
+ *       width="640" height="494" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+ */ 
+
+class SQC_GoogleForms_Embed extends SQC_Embed {
+
+	public $name    = 'sqc-gforms';
+	public $js_name = 'SQC_GoogleForms_Embed';
+
 	public $add_shortcode   = true;
 	public $add_to_button   = true;
-	public $auto_embed      = true;
+	public $auto_embed      = false;
 	public $paste_intercept = true;
 
-	public $paste_intercept_settings  = array(
-		'checkText'    => 'facebook.com/plugins/video.php',
-		'message'      => 'We have detected that you are trying to paste a Facebook video iframe embed into the HTML view. For better results, we are replacing this with the appropriate shortcode. To avoid this message in the future, please add the Facebook URL using the shortcode button on the Visual tab instead of the iframe embed code.',
-		'replaceRegex' => 'video\.php\?href=([^?]+)\?',
-		'replacePre'   => '[sqc-facebook-video ',
-		'replacePost'  => ']',
+	public $paste_intercept_settings = array(
+		'checkText'    => 'docs.google.com/forms',
+		'message'      => 'We have detected that you are trying to paste a Google Forms iframe embed into the HTML view. For better results, we are replacing this with the appropriate shortcode format.',
+		'replaceRegex' => '',
+		'replacePre'   => '',
+		'replacePost'  => '',
+		'custom_js'    => "sqcGoogleFormsProcess = function( pastedData ) { const iframeOpen = /&lt;iframe|<iframe/; const iframeClose = />.*<\/iframe>|&rt;.*&lt;\/iframe&rt;/; newText = pastedData.replace( iframeOpen, '[sqc-gforms ' ); newText = newText.replace( iframeClose, ' ]' ); return newText; };", //@TODO grab individual params, or at least trim src & get rid of non-embed customizable options
 	);
+
 	public $shortcode_button_settings = array(
-		'shortcode' => 'sqc-facebook-video',
-		'title'     => 'Facebook Video',
+		'shortcode' => 'sqc-gforms',
+		'title'     => 'Google Forms',
+		'notes'     => 'You can embed Google Forms by pasting the embed code here, or by pasting it directly into the content editor.',
+		'customJS'  => 'sqcGoogleFormsProcess',
 	);
 
 	/**
@@ -697,41 +718,191 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 	 * Override this in child classes
 	 */
 	public function create_iframe( $attr ) {
+		//sqcdy_log( $attr, 'gmaps' );
+		//sqcdy_log( array_keys( $attr ), 'count ' . count( $attr ) );
+		//sqcdy_log( count( $attr ) === 1 );
+		//sqcdy_log( array_keys( $attr )[0] === 0 );
 		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
-			$attr = array( 'url' => $attr[0] );
+			$attr = array( 'src' => $attr[0] );
 		endif;
-		sqcdy_log( $attr, 'facebook 2' );
+		//sqcdy_log( $attr, 'gmaps 2' );
 
 		$attr = shortcode_atts(
 			array(
-				'width'  => 350,
-				'height' => 470,
-				'url'    => null,
+				'width'  => 640,
+				'height' => 494,
+				'src'    => null,
 			),
 			$attr
 		);
 
 		extract( $attr );
 
-		if ( $url == null ) :
+		if ( $src == null ) :
 			return false;
 		endif;
 
-		$url = urlencode( $url );
+		//$url = urlencode( $url ); // also need to trim it make sure ends with slash or not
 
-		if ( preg_match( '#^[0-9]+$#', $width ) ) {
-				$width = $width . 'px';
-		}
-		if ( preg_match( '#^[0-9]+$#', $height ) ) {
-				$height = $height . 'px';
-		}
+		$iframe = '<iframe src="%s" width="%s" height="%s" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>';
+		return sprintf(
+			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
+			$src,
+			$width,
+			$height
+		);
+	}
+}
 
-		$iframe = '<iframe src="https://www.facebook.com/plugins/video.php?href=%s&show_text=0&width=%s" width="%s" height="%s" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>';
+/**
+ * Manage embeds/shortcode for Mailchimp list archive
+ * 
+ * Outputs script tag like:
+ *    <script language="javascript" src="//firstchurchcambridge.us5.list-manage.com/generate-js/?u=e8d9144b526b20dffd6009d45&fid=20494&show=52" type="text/javascript"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span></script>
+ */ 
+
+class SQC_MailchimpArchive_Embed extends SQC_Embed {
+
+	public $name    = 'mailchimp-archive';
+	public $js_name = 'SQC_MailchimpArchive_Embed';
+
+	public $add_shortcode   = true;
+	public $add_to_button   = true;
+	public $auto_embed      = false;
+	public $paste_intercept = true;
+
+	public $paste_intercept_settings = array(
+		'checkText'    => 'us5.list-manage.com/generate-js',
+		'message'      => 'We have detected that you are trying to paste a Google Forms iframe embed into the HTML view. For better results, we are replacing this with the appropriate shortcode format.',
+		'replaceRegex' => '',
+		'replacePre'   => '',
+		'replacePost'  => '',
+		'custom_js'    => 'sqcMailchimpArchiveProcess = function( pastedData ) { 
+			console.log("sqcMailchimpArchiveProcess", pastedData);
+			const styleRe = new RegExp(`(?:&lt;|<)style.*(?:&lt;|<)\/style(?:&rt;|>)`);
+			const iframeOpen = new RegExp(`(?:&lt;|<)script language="javascript" src="`); 
+			const iframeClose = new RegExp(`" type=.*(?:<|&lt;)/script(?:>|&rt;)`); 
+			newText = pastedData.replace( styleRe, "" ); 
+			console.log("newText1", newText);
+			newText = newText.replace( iframeOpen, "[mailchimp-archive " ); 
+			console.log("newText2", newText);
+			newText = newText.replace( iframeClose, " ]" ); 
+			console.log("newText3", newText);
+			return newText; 
+		};', // FIX THIS
+	);
+
+	public $shortcode_button_settings = array(
+		'shortcode' => 'mailchimp-archive',
+		'title'     => 'Mailchimp Archive',
+		'notes'     => 'You can embed Mailchimp Archives by pasting the embed code here.',
+		'customJS'  => 'sqcMailchimpArchiveProcess',
+	);
+
+	/**
+	 * Function to create an iframe
+	 * Override this in child classes
+	 */
+	public function create_iframe( $attr ) {
+
+		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
+			$attr = array( 'src' => $attr[0] );
+		endif;
+		//sqcdy_log( $attr, 'gmaps 2' );
+
+		$attr = shortcode_atts(
+			array(
+				'src'    => null,
+			),
+			$attr
+		);
+
+		extract( $attr );
+
+		if ( $src == null ) :
+			return false;
+		endif;
+
+		$style = '<style type="text/css"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span><br /><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span><!-- .display_archive { font-family: Source Sans Pro,sans-serif; font-size: 20px; font-size: 1.25rem; line-height: 1.4; font-weight: 400; letter-spacing: 0; } .campaign {line-height: 125%%; margin: 5px;} //--><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_end">﻿</span><br /></style>';
+
+		$script = '<script language="javascript" src="%s" type="text/javascript"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span></script>';
 
 		return sprintf(
-			'<p><figure class="wp-block-embed-facebook wp-block-embed is-type-audio is-provider-facebook wp-embed-aspect-16-9 wp-has-aspect-ratio js fitvids">' . '<div class="wp-block-embed__wrapper">' . $iframe . '</div>' . '</figure></p>',
-			$url,
+			$this->iframe_wrapper['open'] . $style . $script . $this->iframe_wrapper['close'],
+			$src,
 			$width,
+			$height
+		);
+	}
+}
+
+/**
+ * Manage embeds/shortcode for Termageddon Privacy Policy
+ * 
+ * Outputs like:
+ *    <div id="policy" data-policy-key="U21SQ2FrRXhXbU13VTNOS0szYzlQUT09" data-extra="email-links=true&amp;h-align=left&amp;no-title=true&amp;table-style=accordion">
+ *       Please wait while the policy is loaded. If it does not load, please 
+ *       <a href="https://app.termageddon.com/api/policy/U21SQ2FrRXhXbU13VTNOS0szYzlQUT09?email-links=true&amp;h-align=left&amp;no-title=true&amp;table-style=accordion" 
+ *       target="_blank" rel="nofollow noopener">click here</a>.</div>
+ *       <script src="https://app.termageddon.com/js/termageddon.js"></script>
+ */ 
+
+class SQC_Termageddon_Embed extends SQC_Embed {
+
+	public $name    = 'sqc-termageddon';
+	public $js_name = 'SQC_Termageddon_Embed';
+
+	public $add_shortcode   = true;
+	public $add_to_button   = true;
+	public $auto_embed      = false;
+	public $paste_intercept = true;
+
+	public $paste_intercept_settings = array(//@TODO ugh, paste intercept assumes iframe so won't work without customization...
+		'checkText'    => 'us5.list-manage.com/generate-js',
+		'message'      => 'We have detected that you are trying to paste a Google Forms iframe embed into the HTML view. For better results, we are replacing this with the appropriate shortcode format.',
+		'replaceRegex' => '',
+		'replacePre'   => '',
+		'replacePost'  => '',
+	);
+
+	public $shortcode_button_settings = array(
+		'shortcode' => 'mailchimp-archive',
+		'title'     => 'Mailchimp Archive',
+		'notes'     => 'You can embed Mailchimp Archives by pasting the embed code here.',
+		'customJS'  => 'sqcMailchimpArchiveProcess',
+	);
+
+	/**
+	 * Function to create an iframe
+	 * Override this in child classes
+	 */
+	public function create_iframe( $attr ) {
+
+		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
+			$attr = array( 'src' => $attr[0] );
+		endif;
+		//sqcdy_log( $attr, 'gmaps 2' );
+
+		$attr = shortcode_atts(
+			array(
+				'src'    => null,
+			),
+			$attr
+		);
+
+		extract( $attr );
+
+		if ( $src == null ) :
+			return false;
+		endif;
+
+		$style = '<style type="text/css"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span><br /><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span><!-- .display_archive { font-family: Source Sans Pro,sans-serif; font-size: 20px; font-size: 1.25rem; line-height: 1.4; font-weight: 400; letter-spacing: 0; } .campaign {line-height: 125%%; margin: 5px;} //--><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_end">﻿</span><br /></style>';
+
+		$script = '<script language="javascript" src="%s" type="text/javascript"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span></script>';
+
+		return sprintf(
+			$this->iframe_wrapper['open'] . $style . $script . $this->iframe_wrapper['close'],
+			$src,
 			$width,
 			$height
 		);
