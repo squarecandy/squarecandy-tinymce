@@ -183,7 +183,7 @@ class SQC_Embed {
 	public function __construct( $attr = array() ) {
 
 		// allow attr to be filtered
-		$attr = apply_filters( $attr, 'sqc_embed_properties', get_class( $this ) );
+		$attr = apply_filters( 'sqc_embed_properties', $attr, get_class( $this ) );
 
 		// allow properties to be set via array (needs more work on setting methods to make class fully instantiable this way)
 		foreach ( $attr as $key => $value ) {
@@ -194,7 +194,7 @@ class SQC_Embed {
 
 		// set (default) wrappers for iframes
 		if ( ! $this->iframe_wrapper['open'] || ! $this->iframe_wrapper['close'] ) {
-			$this->iframe_wrapper['open'] = '<p><figure class="wp-block-embed-' . $this->name . ' wp-block-embed is-type-audio is-provider-' . $this->name . ' js">' . '<div class="wp-block-embed__wrapper">',
+			$this->iframe_wrapper['open'] = '<p><figure class="wp-block-embed-' . $this->name . ' wp-block-embed is-type-audio is-provider-' . $this->name . ' js">' . '<div class="wp-block-embed__wrapper">';
 			$this->iframe_wrapper['close'] = '</div>' . '</figure></p>';
 		}
 
@@ -320,14 +320,13 @@ class SQC_Bandcamp_Embed extends SQC_Embed {
 			return false;
 		}
 
+		//add px to width/height (but not if width is e.g. 100%)
 		if ( preg_match( '#^[0-9]+$#', $width ) ) {
 				$width = $width . 'px';
 		}
 		if ( preg_match( '#^[0-9]+$#', $height ) ) {
 				$height = $height . 'px';
 		}
-
-		//@TODO check if px is needed everywhere?
 
 		$iframe = '<iframe style="border: 0; width: %s; height: %s;" src="https://bandcamp.com/EmbeddedPlayer/album=%s/size=%s/bgcol=%s/linkcol=%s/tracklist=%s/transparent=true/artwork=%s" title="%s" seamless></iframe>';
 
@@ -581,12 +580,11 @@ class SQC_Facebook_Embed extends SQC_Embed {
 
 		//@TODO Maybe don't need the px adding
 
-		$iframe = '<iframe src="https://www.facebook.com/plugins/video.php?href=%s&show_text=0&width=%s" width="%s" height="%s" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>';
+		$iframe = '<iframe src="https://www.facebook.com/plugins/video.php?href=%1$s&show_text=0&width=%2$s" width="%2$s" height="%3$s" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>';
 
 		return sprintf(
 			'<p><figure class="wp-block-embed-facebook wp-block-embed is-type-audio is-provider-facebook wp-embed-aspect-16-9 wp-has-aspect-ratio js fitvids">' . '<div class="wp-block-embed__wrapper">' . $iframe . '</div>' . '</figure></p>',
 			$url,
-			$width,
 			$width,
 			$height
 		);
@@ -830,8 +828,6 @@ class SQC_MailchimpArchive_Embed extends SQC_Embed {
 		return sprintf(
 			$this->iframe_wrapper['open'] . $style . $script . $this->iframe_wrapper['close'],
 			$src,
-			$width,
-			$height
 		);
 	}
 }
