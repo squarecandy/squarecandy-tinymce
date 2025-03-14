@@ -13,13 +13,14 @@ jQuery(document).ready(function($) {
 			const buttonSettings = typeof sqcEmbed !== 'undefined' ? sqcEmbed.mceButton : [];
 			let radioButtons = '';
 			let dialogNotes = '';
+			const inputRequired = ' required ';
 			for ( const prop in buttonSettings ) {
 				const item = buttonSettings[prop];
 				console.log( prop, item );
 				if ( typeof item.shortcode !== 'undefined' && typeof item.title !== 'undefined' ) {
 					let buttonData = item.customJS ? ' data-custom="' + item.customJS + '" ' : '';
 					buttonData += item.noCode ? ' data-nocode="1" ' : '';
-					radioButtons +=  '<div class="sqc-btn sqc-btn-' + item.shortcode + '" data-slug="' + prop + '"><input type="radio" name="sqc-insert-type" value="' + item.shortcode + '" autocomplete="off"' + buttonData + '/><label for="' + item.shortcode + '">' + item.title + '</label></div>';
+					radioButtons +=  '<div class="sqc-btn sqc-btn-' + item.shortcode + '" data-slug="' + prop + '"><input type="radio" name="sqc-insert-type" value="' + item.shortcode + '" autocomplete="off" required ' + buttonData + '/><label for="' + item.shortcode + '">' + item.title + '</label></div>';
 					const buttonNotes = item.notes !== 'undefined' ? item.notes : '';
 					const buttonNotesMore = item.notesMore ? '<div class="show-more button-link">more</div><div class="more">' + item.notesMore + '</div>' : '';
 					dialogNotes += '<div class="sqc-btn-notes notes-' + item.shortcode + '">' + buttonNotes + buttonNotesMore + '</div>'
@@ -30,10 +31,12 @@ jQuery(document).ready(function($) {
 
 			// create the dialog element, and add it to the page
 			const dialogHtml = '<dialog class="sqc-shortcode-dialog" id="' + dialogID + '">' + 
-				'<form><div><input type="text" name="sqc-insert" placeholder="Enter Link or Embed code"></div>' + 
+				'<form method=dialog><div><input type="text" name="sqc-insert" placeholder="Enter Link or Embed code"' + inputRequired + '></div>' + 
 				'<p><label>Choose embed type:</label></p><div class="btn-group">' + radioButtons + '</div>' +
 				'<div class="note-container">' + dialogNotes + '</div>' +
-				'<div class="btn-group btn-group-submit"><button class="button" value="cancel" formmethod="dialog">Cancel</button><button class="confirmBtn button button-primary" value="default">Confirm</button></div>' + 
+				'<div class="btn-group btn-group-submit">' +
+				'<button class="button" value="cancel" formmethod="dialog" formnovalidate>Cancel</button>' + 
+				'<button class="confirmBtn button button-primary" value="default">Confirm</button></div>' + 
 				'</form></dialog>';
 			$('#ed_toolbar').before( $( dialogHtml ) );
 
@@ -81,7 +84,11 @@ jQuery(document).ready(function($) {
 			// Prevent the "confirm" button from the default behavior of submitting the form, and close the dialog with the `close()` method, which triggers the "close" event.
 			confirmBtn.addEventListener("click", (event) => {
 				event.preventDefault(); // We don't want to submit this fake form
-				sqcDialog.close('confirm'); // so we can tell it apart from cancel
+				const $dialogForm = $( sqcDialog ).find( 'form' );
+				const isValid = $dialogForm[0].reportValidity();
+				if ( isValid ) {
+					sqcDialog.close('confirm'); // so we can tell it apart from cancel
+				}				
 			});
 
 			// Register command for when button is clicked
