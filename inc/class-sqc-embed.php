@@ -894,16 +894,16 @@ class SQC_Termageddon_Embed extends SQC_Embed {
 	public $paste_intercept_settings = array(//@TODO ugh, paste intercept assumes iframe so won't work without customization...
 		'checkText'    => 'us5.list-manage.com/generate-js',
 		'message'      => 'We have detected that you are trying to paste a Google Forms iframe embed into the HTML view. For better results, we are replacing this with the appropriate shortcode format.',
-		'replaceRegex' => '',
-		'replacePre'   => '',
-		'replacePost'  => '',
+		'replaceRegex' => 'data-policy-key="([a-zA-Z0-9]*)',
+		'replacePre'   => '[sqc-termageddon',
+		'replacePost'  => ' ]',
 	);
 
 	public $shortcode_button_settings = array(
-		'shortcode' => 'mailchimp-archive',
-		'title'     => 'Mailchimp Archive',
-		'notes'     => 'You can embed Mailchimp Archives by pasting the embed code here.',
-		'customJS'  => 'sqcMailchimpArchiveProcess',
+		'shortcode' => 'sqc-termageddon',
+		'title'     => 'Termageddon',
+		'notes'     => 'You can embed your Termageddon Privacy Policy by pasting the embed code here.',
+		//'customJS'  => 'sqcTermageddonProcess',
 	);
 
 	/**
@@ -930,15 +930,12 @@ class SQC_Termageddon_Embed extends SQC_Embed {
 			return false;
 		endif;
 
-		$style = '<style type="text/css"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span><br /><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span><!-- .display_archive { font-family: Source Sans Pro,sans-serif; font-size: 20px; font-size: 1.25rem; line-height: 1.4; font-weight: 400; letter-spacing: 0; } .campaign {line-height: 125%%; margin: 5px;} //--><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_end">﻿</span><br /></style>';
-
-		$script = '<script language="javascript" src="%s" type="text/javascript"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span></script>';
+		$script = '<div id="policy" data-policy-key="%1$s" data-extra="email-links=true&amp;h-align=left&amp;no-title=true&amp;table-style=accordion">Please wait while the policy is loaded. If it does not load, please <a href="https://app.termageddon.com/api/policy/%1$s?email-links=true&amp;h-align=left&amp;no-title=true&amp;table-style=accordion" target="_blank" rel="nofollow noopener">click here</a>.</div>
+            <script src="https://app.termageddon.com/js/termageddon.js"></script>';
 
 		return sprintf(
-			$this->iframe_wrapper['open'] . $style . $script . $this->iframe_wrapper['close'],
+			$this->iframe_wrapper['open'] . $script . $this->iframe_wrapper['close'],
 			$src,
-			$width,
-			$height
 		);
 	}
 }
