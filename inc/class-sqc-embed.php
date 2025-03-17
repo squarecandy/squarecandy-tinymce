@@ -99,7 +99,7 @@ class SQC_Embed_Manager {
 
 		if ( $embed_class->paste_intercept && $embed_class->paste_intercept_settings ) {
 			if ( ! empty( $embed_class->paste_intercept_settings['custom_js'] ) ) {
-				$this->custom_js .= $embed_class->paste_intercept_settings['custom_js'];
+				$this->custom_js .= $embed_class->paste_intercept_settings['custom_js'] . "\n";
 			}
 			$this->javascript_variables['pasteIntercept'][ $embed_class->js_name ] = $embed_class->paste_intercept_settings;
 		}
@@ -259,9 +259,29 @@ class SQC_Embed {
 	/**
 	 * Function to convert embedded url into an iframe
 	 */
-	function embed_handler( $matches, $attr, $url, $rawattr ) {
+	public function embed_handler( $matches, $attr, $url, $rawattr ) {
 		$attr['url'] = $url;
 		return $this->create_iframe( $attr );
+	}
+
+	/**
+	 * Function to validate and prepare urls
+	 * @param string $url input url
+	 * @param string|bool $check_domain placeholder for now - domain to check against
+	 * @param bool $force_noslash whether to trim slash off the end of the url
+	 */ 
+	public function validate_url( $url, $check_domain = false, $force_noslash = true ) {
+
+		if ( filter_var( $url, FILTER_VALIDATE_URL ) === FALSE ) {
+		    return false;
+		}
+
+		if ( $force_noslash ) {
+		    $url = rtrim( $url, '/\\' );
+		}
+
+		return $url;
+		
 	}
 }
 
@@ -473,7 +493,14 @@ class SQC_Instagram_Embed extends SQC_Embed {
 
 		extract( $attr );
 
-		if ( $url == null ) :
+		$url = $this->validate_url( $url );
+
+		// grab just the part we need of the url
+		$regex = '#(https://www\.instagram\.com/reel/[a-zA-Z0-9]+)#';
+		preg_match( $regex, $url, $matches );
+		$url = isset( $matches[1] ) ? $matches[1] : false;
+
+		if ( ! $url ) :
 			return false;
 		endif;
 
@@ -534,15 +561,24 @@ class SQC_Facebook_Embed extends SQC_Embed {
 	public $paste_intercept_settings  = array(
 		'checkText'    => 'facebook.com/plugins/video.php',
 		'message'      => 'We have detected that you are trying to paste a Facebook video iframe embed into the HTML view. For better results, we are replacing this with the appropriate shortcode. To avoid this message in the future, please add the Facebook URL using the shortcode button on the Visual tab instead of the iframe embed code.',
-		'replaceRegex' => 'video\.php\?href=([^?]+)\?',
+		'replaceRegex' => 'video\.php\?href=([^&?"]*)', //@TODO make sure trailing slash is trimmed here
 		'replacePre'   => '[sqc-facebook-video ',
 		'replacePost'  => ']',
+		'custom_js'    => "sqcFacebookVideoProcess = function( pastedData ) { 
+				const decoded = decodeURIComponent( pastedData );
+				const hasParams = decoded.indexOf( '?' );
+				console.log('sqcFacebookVideo', decoded, hasParams );
+				if ( hasParams > -1 ) {
+					return decoded.substring( 0, hasParams - 1 );
+				}
+			}",
 	);
+
 	public $shortcode_button_settings = array(
 		'shortcode' => 'sqc-facebook-video',
 		'title'     => 'Facebook Video',
 		'notes'     => 'You can embed Facebook videos by pasting the link here, or just by pasting it into the content editor. NB links with /share/ in them won\'t work',
-		'notesMore' => 'The best way to get the share url is to click the three dots to the top right of the vide and choose "copy url".',
+		'notesMore' => 'If you only have the /share/ url, paste that into a browser, wait for the page to load, and then copy the new url that shows in your browser bar.',
 	);
 
 	/**
@@ -565,7 +601,9 @@ class SQC_Facebook_Embed extends SQC_Embed {
 
 		extract( $attr );
 
-		if ( $url == null ) :
+		$url = $this->validate_url( $url );
+
+		if ( ! $url ) :
 			return false;
 		endif;
 
@@ -771,7 +809,7 @@ class SQC_MailchimpArchive_Embed extends SQC_Embed {
 
 	public $paste_intercept_settings = array(
 		'checkText'    => 'us5.list-manage.com/generate-js',
-		'message'      => 'We have detected that you are trying to paste a Google Forms iframe embed into the HTML view. For better results, we are replacing this with the appropriate shortcode format.',
+		'message'      => 'We have detected that you are trying to paste a Mailchimp Archive embed into the HTML view. For better results, we are replacing this with the appropriate shortcode format.',
 		'replaceRegex' => '',
 		'replacePre'   => '',
 		'replacePost'  => '',

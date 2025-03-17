@@ -8,7 +8,7 @@ function replacePastedText( pastedData ) {
 
 	// read info on what to look for from localized data:
 	interceptChecks = typeof sqcEmbed !== 'undefined' ? sqcEmbed.pasteIntercept : [];
-	const hasIframe = pastedData.indexOf( '<iframe' ) > -1 || pastedData.indexOf( '&lt;iframe' ) > -1; //'&lt;iframe' when in visual editor context
+	const hasIframe = pastedData.indexOf( '<iframe' ) > -1 || pastedData.indexOf( '&lt;iframe' ) > -1; //'&lt;iframe' when in visual editor context / pasted
 
 	console.log( 'pasteIntercept', pastedData );
 	console.log( 'interceptChecks', interceptChecks );
@@ -29,10 +29,8 @@ function replacePastedText( pastedData ) {
 			console.log( 'customFunction ' + prop + 'Process', customFunction, typeof customFunction, typeof customFunction === 'function' );
 			let output = '';
 
-			if ( typeof customFunction === 'function' ) {
-				output = customFunction( pastedData );
-			} else {
-				// otherwise use regex to get the neede part of the pasted text
+			if ( check.replaceRegex ) {
+				// use regex to get the needed part of the pasted text
 				// and set up the string for the embed link
 
 				const re = new RegExp( check.replaceRegex );
@@ -42,21 +40,17 @@ function replacePastedText( pastedData ) {
 
 				// get the youtube video id from the iframe
 				if ( matches ) {
-					let videoId = matches[1];
+					output = matches[1];
+				}
+			} else {
+				output = pastedData;
+			}
 
-					// hacky, should also be defined as toggle or custom process
-					if ( prop === 'sqcFacebookVideo' ) {
-						videoId = decodeURIComponent( videoId );
-						hasParams = videoId.indexOf( '?' );
-						console.log('sqcFacebookVideo', videoId, hasParams );
-						if ( hasParams > -1 ) {
-							videoId = videoId.substring( 0, hasParams );
-						}
-					}
-					// create the youtube URL
-					output = "\n" + check.replacePre + videoId + check.replacePost + "\n\n";
-				}							
-			}	
+			if ( typeof customFunction === 'function' ) {
+				output = customFunction( output );
+			}
+
+			output = "\n" + check.replacePre + output + check.replacePost + "\n\n"; // line breaks not working?	
 
 			if ( output ) {
 				return { text: output, message: check.message };
