@@ -396,8 +396,8 @@ class SQC_Vimeo_Embed extends SQC_Embed {
 	public $paste_intercept_settings = array(
 		'checkText'    => 'vimeo',
 		'message'      => 'We have detected that you are trying to paste a Vimeo iframe embed into the HTML view. For better results, we are replacing this with the appropriate URL format. To avoid this message in the future, please paste the Vimeo URL into the Visual tab instead of the iframe embed code.',
-		'replaceRegex' => 'embed\/([^?]+)',
-		'replacePre'   => 'https://www.youtube.com/watch?v=',
+		'replaceRegex' => 'video\/([^?]+)',
+		'replacePre'   => 'https://vimeo.com/',
 		'replacePost'  => '',
 	);
 
@@ -439,8 +439,8 @@ class SQC_Instagram_Embed extends SQC_Embed {
 	public $paste_intercept_settings = array(
 		'checkText'    => 'instagram',
 		'message'      => 'We have detected that you are trying to paste an Instagram iframe embed into the HTML view. For better results, we are replacing this with the appropriate URL format. To avoid this message in the future, please paste the Instagram URL into the Visual tab instead of the iframe embed code.',
-		'replaceRegex' => 'video\/([^?]+)',
-		'replacePre'   => 'https://vimeo.com/',
+		'replaceRegex' => '(https://www\.instagram\.com/reel/[a-zA-Z0-9]+)',
+		'replacePre'   => '',
 		'replacePost'  => '',
 	);
 	public $shortcode_button_settings = array(
