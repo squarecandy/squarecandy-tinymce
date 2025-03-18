@@ -14,6 +14,7 @@ class SQC_Embed_Manager {
 		'SQC_GoogleMaps_Embed',
 		'SQC_GoogleForms_Embed',
 		'SQC_MailchimpArchive_Embed',
+		'SQC_Termageddon_Embed',
 	);
 
 	private $javascript_variables = array(
@@ -193,8 +194,9 @@ class SQC_Embed {
 			}
 		}
 
-		// set (default) wrappers for iframes
+		// set (default) wrappers for iframes ( should this be set in embed class instead? )
 		if ( ! $this->iframe_wrapper['open'] || ! $this->iframe_wrapper['close'] ) {
+			//@TODO confirm this - figure doesn't work for Termageddon, sets lh 0 for contents
 			$this->iframe_wrapper['open'] = '<p><figure class="wp-block-embed-' . $this->name . ' wp-block-embed is-type-audio is-provider-' . $this->name . ' js">' . '<div class="wp-block-embed__wrapper">';
 			$this->iframe_wrapper['close'] = '</div>' . '</figure></p>';
 		}
@@ -889,18 +891,19 @@ class SQC_MailchimpArchive_Embed extends SQC_Embed {
 class SQC_Termageddon_Embed extends SQC_Embed {
 
 	public $name    = 'sqc-termageddon';
-	public $js_name = 'SQC_Termageddon_Embed';
+	public $js_name = 'sqcTermageddon';
 
 	public $add_shortcode   = true;
 	public $add_to_button   = true;
 	public $auto_embed      = false;
 	public $paste_intercept = true;
 
-	public $paste_intercept_settings = array(//@TODO ugh, paste intercept assumes iframe so won't work without customization...
-		'checkText'    => 'us5.list-manage.com/generate-js',
-		'message'      => 'We have detected that you are trying to paste a Google Forms iframe embed into the HTML view. For better results, we are replacing this with the appropriate shortcode format.',
-		'replaceRegex' => 'data-policy-key="([a-zA-Z0-9]*)',
-		'replacePre'   => '[sqc-termageddon',
+	public $paste_intercept_settings = array(
+		'checkTag'     => 'script',
+		'checkText'    => 'app.termageddon.com/api',
+		'message'      => 'We have detected that you are trying to paste a Termageddon embed into the HTML view. For better results, we are replacing this with the appropriate shortcode format.',
+		'replaceRegex' => 'data-policy-key=(?:"|&quot;)([a-zA-Z0-9]*)',
+		'replacePre'   => '[sqc-termageddon ',
 		'replacePost'  => ' ]',
 	);
 
@@ -939,7 +942,7 @@ class SQC_Termageddon_Embed extends SQC_Embed {
             <script src="https://app.termageddon.com/js/termageddon.js"></script>';
 
 		return sprintf(
-			$this->iframe_wrapper['open'] . $script . $this->iframe_wrapper['close'],
+			'<p><div class="wp-block-embed__wrapper">' . $script . '</p></div>',
 			$src,
 		);
 	}
