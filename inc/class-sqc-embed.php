@@ -163,6 +163,7 @@ class SQC_Embed {
 	public $iframe_wrapper = array( 'open' => '', 'close' => '' );
 
 	const DEFAULT_PASTE_INTERCEPT_SETTINGS  = array(
+		'checkTag'     => 'iframe', // optional - tag to check for surrounding the text (set falsy to bypass)
 		'checkText'    => '', // required - pattern to check for
 		'message'      => '', // required - message to be displayed when pattern is matched
 		'replaceRegex' => '', // optional - tregex to locate url/identifier (without delimiters)
@@ -457,6 +458,7 @@ class SQC_Instagram_Embed extends SQC_Embed {
 	public $paste_intercept = true;
 
 	public $paste_intercept_settings = array(
+		'checkTag'     => 'script',
 		'checkText'    => 'instagram',
 		'message'      => 'We have detected that you are trying to paste an Instagram iframe embed into the HTML view. For better results, we are replacing this with the appropriate URL format. To avoid this message in the future, please paste the Instagram URL into the Visual tab instead of the iframe embed code.',
 		'replaceRegex' => '(https://www\.instagram\.com/reel/[a-zA-Z0-9]+)',
@@ -561,15 +563,17 @@ class SQC_Facebook_Embed extends SQC_Embed {
 	public $paste_intercept_settings  = array(
 		'checkText'    => 'facebook.com/plugins/video.php',
 		'message'      => 'We have detected that you are trying to paste a Facebook video iframe embed into the HTML view. For better results, we are replacing this with the appropriate shortcode. To avoid this message in the future, please add the Facebook URL using the shortcode button on the Visual tab instead of the iframe embed code.',
-		'replaceRegex' => 'video\.php\?href=([^&?"]*)', //@TODO make sure trailing slash is trimmed here
+		'replaceRegex' => 'video\.php\?.+href=([^&?"]*)', //@TODO make sure trailing slash is trimmed here
 		'replacePre'   => '[sqc-facebook-video ',
 		'replacePost'  => ']',
 		'custom_js'    => "sqcFacebookVideoProcess = function( pastedData ) { 
 				const decoded = decodeURIComponent( pastedData );
 				const hasParams = decoded.indexOf( '?' );
-				console.log('sqcFacebookVideo', decoded, hasParams );
+				console.log('sqcFacebookVideo', 'decoded', decoded, 'hasParams', hasParams );
 				if ( hasParams > -1 ) {
 					return decoded.substring( 0, hasParams - 1 );
+				} else {
+					return decoded;
 				}
 			}",
 	);
@@ -660,7 +664,14 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 		'replaceRegex' => '', // not needed, custom process
 		'replacePre'   => '',
 		'replacePost'  => '',
-		'custom_js'    => "sqcGoogleMapsProcess = function( pastedData ) { const iframeOpen = /&lt;iframe|<iframe/; const iframeClose = /><\/iframe>|&rt;\/&lt;iframe&rt;/; newText = pastedData.replace( iframeOpen, '[sqc-gmaps ' ); newText = newText.replace( iframeClose, ' ]' ); return newText; };", // needs some adjustment for visual editor
+		'custom_js'    => "sqcGoogleMapsProcess = function( pastedData ) { 
+			const iframeOpen = /(?:&lt;|<)iframe/; 
+			const iframeClose = /(?:&gt;&lt;|><)\/iframe(?:&gt;|>)/; 
+			newText = pastedData.replace( iframeOpen, '[sqc-gmaps ' ); 
+			console.log( 'newText', newText );
+			newText = newText.replace( iframeClose, ' ]' ); 
+			return newText; 
+		};", // needs some adjustment for visual editor
 	);
 
 	public $shortcode_button_settings = array(
@@ -726,7 +737,7 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 class SQC_GoogleForms_Embed extends SQC_Embed {
 
 	public $name    = 'sqc-gforms';
-	public $js_name = 'SQC_GoogleForms_Embed';
+	public $js_name = 'sqcGoogleForms';
 
 	public $add_shortcode   = true;
 	public $add_to_button   = true;
@@ -739,7 +750,13 @@ class SQC_GoogleForms_Embed extends SQC_Embed {
 		'replaceRegex' => '',
 		'replacePre'   => '',
 		'replacePost'  => '',
-		'custom_js'    => "sqcGoogleFormsProcess = function( pastedData ) { const iframeOpen = /&lt;iframe|<iframe/; const iframeClose = />.*<\/iframe>|&rt;.*&lt;\/iframe&rt;/; newText = pastedData.replace( iframeOpen, '[sqc-gforms ' ); newText = newText.replace( iframeClose, ' ]' ); return newText; };", //@TODO grab individual params, or at least trim src & get rid of non-embed customizable options
+		'custom_js'    => "sqcGoogleFormsProcess = function( pastedData ) { 
+			const iframeOpen = /(?:&lt;|<)iframe/; 
+			const iframeClose = /(?:&gt;|>).*(?:&lt;|<)\/iframe(?:&gt;|>)/; 
+			newText = pastedData.replace( iframeOpen, '[sqc-gforms ' ); 
+			newText = newText.replace( iframeClose, ' ]' ); 
+			return newText; 
+		};", //@TODO grab individual params, or at least trim src & get rid of non-embed customizable options
 	);
 
 	public $shortcode_button_settings = array(
@@ -800,7 +817,7 @@ class SQC_GoogleForms_Embed extends SQC_Embed {
 class SQC_MailchimpArchive_Embed extends SQC_Embed {
 
 	public $name    = 'mailchimp-archive';
-	public $js_name = 'SQC_MailchimpArchive_Embed';
+	public $js_name = 'sqcMailchimpArchive';
 
 	public $add_shortcode   = true;
 	public $add_to_button   = true;
@@ -808,24 +825,12 @@ class SQC_MailchimpArchive_Embed extends SQC_Embed {
 	public $paste_intercept = true;
 
 	public $paste_intercept_settings = array(
-		'checkText'    => 'us5.list-manage.com/generate-js',
+		'checkTag'     => 'script',
+		'checkText'    => 'list-manage.com/generate-js',
 		'message'      => 'We have detected that you are trying to paste a Mailchimp Archive embed into the HTML view. For better results, we are replacing this with the appropriate shortcode format.',
-		'replaceRegex' => '',
-		'replacePre'   => '',
-		'replacePost'  => '',
-		'custom_js'    => 'sqcMailchimpArchiveProcess = function( pastedData ) { 
-			console.log("sqcMailchimpArchiveProcess", pastedData);
-			const styleRe = new RegExp(`(?:&lt;|<)style.*(?:&lt;|<)\/style(?:&rt;|>)`);
-			const iframeOpen = new RegExp(`(?:&lt;|<)script language="javascript" src="`); 
-			const iframeClose = new RegExp(`" type=.*(?:<|&lt;)/script(?:>|&rt;)`); 
-			newText = pastedData.replace( styleRe, "" ); 
-			console.log("newText1", newText);
-			newText = newText.replace( iframeOpen, "[mailchimp-archive " ); 
-			console.log("newText2", newText);
-			newText = newText.replace( iframeClose, " ]" ); 
-			console.log("newText3", newText);
-			return newText; 
-		};', // FIX THIS
+		'replaceRegex' => 'src=(?:"|&quot;)(.*?)(?:"|&quot;)',
+		'replacePre'   => '[mailchimp-archive ',
+		'replacePost'  => ' ]',
 	);
 
 	public $shortcode_button_settings = array(

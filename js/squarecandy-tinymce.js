@@ -8,20 +8,22 @@ function replacePastedText( pastedData ) {
 
 	// read info on what to look for from localized data:
 	interceptChecks = typeof sqcEmbed !== 'undefined' ? sqcEmbed.pasteIntercept : [];
-	const hasIframe = pastedData.indexOf( '<iframe' ) > -1 || pastedData.indexOf( '&lt;iframe' ) > -1; //'&lt;iframe' when in visual editor context / pasted
 
 	console.log( 'pasteIntercept', pastedData );
 	console.log( 'interceptChecks', interceptChecks );
 
 	for ( const prop in interceptChecks ) {
 
-		const check = interceptChecks[prop];		
-		const matchesCheck = pastedData.indexOf( check.checkText ) > -1;
+		const check = interceptChecks[prop];
+		const findTag = check.checkTag;
+		const hasTag = findTag ? pastedData.includes( '<' + findTag ) || pastedData.includes( '&lt;' + findTag ) : true; //'&lt;iframe' when in visual editor context / pasted
+	
+		const matchesCheck = pastedData.includes( check.checkText );
 
 		console.log( 'check', check );
-		console.log( check.checkText, hasIframe, matchesCheck );
+		console.log( check.checkText, hasTag, matchesCheck );
 
-		if ( hasIframe && matchesCheck ) {
+		if ( hasTag && matchesCheck ) {
 			console.log( 'found!' );
 
 			// check if there/s a coustom function to handle this type:
