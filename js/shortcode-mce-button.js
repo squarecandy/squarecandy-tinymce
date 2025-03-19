@@ -19,11 +19,12 @@ jQuery(document).ready(function($) {
 				console.log( prop, item );
 				if ( typeof item.shortcode !== 'undefined' && typeof item.title !== 'undefined' ) {
 					// set up data on the item
-					let buttonData = item.customJS ? ' data-custom="' + item.customJS + '" ' : '';
-					buttonData += item.noCode ? ' data-nocode="1" ' : '';
-					buttonData += item.noInput ? ' data-noinput="1" ' : '';
+					let buttonData = ' data-slug="' + prop + '"';
+					buttonData += item.customJS ? ' data-custom="' + item.customJS + '"' : '';
+					buttonData += item.noCode ? ' data-nocode="1"' : '';
+					buttonData += item.noInput ? ' data-noinput="1"' : '';
 					// add the item to the set of radio buttons
-					radioButtons +=  '<div class="sqc-btn sqc-btn-' + item.shortcode + '" data-slug="' + prop + '"><input type="radio" name="sqc-insert-type" value="' + item.shortcode + '" autocomplete="off" required ' + buttonData + '/><label for="' + item.shortcode + '">' + item.title + '</label></div>';
+					radioButtons +=  '<div class="sqc-btn sqc-btn-' + item.shortcode + '"><input type="radio" name="sqc-insert-type" value="' + item.shortcode + '" autocomplete="off" required ' + buttonData + '/><label for="' + item.shortcode + '">' + item.title + '</label></div>';
 					// set up notes for the item
 					const buttonNotes = item.notes !== 'undefined' ? item.notes : '';
 					const buttonNotesMore = item.notesMore ? '<div class="show-more button-link">more</div><div class="more">' + item.notesMore + '</div>' : '';
@@ -72,15 +73,22 @@ jQuery(document).ready(function($) {
 						console.log('no code');
 						tinymce.execCommand('mceInsertContent', false, insertVal );
 					} else if ( customFunction && typeof customFunction == 'function' ) {
-						// do some custom function
-						console.log('do custom function');
-						const newText = customFunction( insertVal );
-						tinymce.execCommand('mceInsertContent', false, newText );
+						if ( 'replacePastedText' == $selectedRadio.data('custom') ) {
+							// use replacePastedText function
+							console.log('do replacePastedText function');
+							const newText = customFunction( insertVal, $selectedRadio.data('slug') );
+							tinymce.execCommand('mceInsertContent', false, newText );
+						} else {
+							// do some custom function
+							console.log('do custom function');
+							const newText = customFunction( insertVal );
+							tinymce.execCommand('mceInsertContent', false, newText );
+						}						
 					} else {
 						// otherwise wrap the value in the shortcode
 						tinymce.execCommand('mceInsertContent', false, '[' + radioVal + ' ' + insertVal + ' ]');
 					}
-					// @TODO these don't (always?) work
+					// @TODO these don't always work?
 					tinymce.execCommand('InsertLineBreak');
 					tinymce.execCommand('InsertLineBreak');			
 				}

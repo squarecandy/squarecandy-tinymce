@@ -4,10 +4,11 @@ function typeInTextarea(newText, el = document.activeElement) {
 }
 
 // detect iframes in content and replace with embed links/shortcodes where appropriate
-function replacePastedText( pastedData ) {
+function replacePastedText( pastedData, check = false ) {
 
 	// read info on what to look for from localized data:
-	interceptChecks = typeof sqcEmbed !== 'undefined' ? sqcEmbed.pasteIntercept : [];
+	const globalChecks = typeof sqcEmbed !== 'undefined' ? sqcEmbed.pasteIntercept : [];
+	const interceptChecks = check ? [ globalChecks.check ] : globalChecks;
 
 	console.log( 'pasteIntercept', pastedData );
 	console.log( 'interceptChecks', interceptChecks );

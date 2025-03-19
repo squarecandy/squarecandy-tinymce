@@ -167,11 +167,11 @@ class SQC_Embed {
 
 	const DEFAULT_PASTE_INTERCEPT_SETTINGS  = array(
 		'checkTag'     => 'iframe', // optional - tag to check for surrounding the text (set falsy to bypass)
-		'checkText'    => '', // required - pattern to check for
+		'checkText'    => '', // required - pattern to check for (plain string, not regex)
 		'message'      => '', // required - message to be displayed when pattern is matched
-		'replaceRegex' => '', // optional - tregex to locate url/identifier (without delimiters)
-		'replacePre'   => '', // optional - text of outout that goes before the identifier
-		'replacePost'  => '', // optional - text of outout that goes after the identifier
+		'replaceRegex' => '', // optional - regex to locate url/identifier (without delimiters) (leave empty if custom_js)
+		'replacePre'   => '', // optional - text of outout that goes before the identifier, e.g. '[ myshortcode'
+		'replacePost'  => '', // optional - text of outout that goes after the identifier, e.g. ']'
 		'custom_js'    => '', // optional - javascript defining custom function to use instead of default regex/replace. function name must be like {$class->js_name}Process
 	);
 
@@ -182,7 +182,7 @@ class SQC_Embed {
 		'notesMore' => '', // optional - more notes displayed in a closed by default accordion section
 		'noCode'    => '', // optional - if truthy, link pasted into the input is passed directly to content (e.g. youtube/vimeo)
 		'noInput'   => '', // optional - if truthy, allow shortcode button input to be empty
-		'customJS'  => '', // optional - function name for custom function to process input
+		'customJS'  => '', // optional - function name for custom function to process input. put 'replacePastedText' to use paste intercept regex, or name of function in custom_js in paste intercept settings
 	);
 
 	public function __construct( $attr = array() ) {
@@ -224,7 +224,39 @@ class SQC_Embed {
 	 * Override this in child classes
 	 */
 	public function create_iframe( $attr ) {
+		//example code:
+		/*
+		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
+			$attr = array( 'url' => $attr[0] );
+		endif;
 
+		$attr = shortcode_atts(
+			array(
+				'url'    => null,
+			),
+			$attr
+		);
+
+		extract( $attr );
+
+		$url = $this->validate_url( $url );
+
+		// grab just the part we need of the url
+		$regex = '#pattern#';
+		preg_match( $regex, $url, $matches );
+		$url = isset( $matches[1] ) ? $matches[1] : false;
+
+		if ( ! $url ) :
+			return false;
+		endif;
+
+		$iframe = '<iframe src="%s"></iframe>';
+
+		return sprintf(
+			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
+			$url,
+		);
+		*/
 	}
 
 	/**
@@ -315,7 +347,7 @@ class SQC_Bandcamp_Embed extends SQC_Embed {
 		'shortcode' => 'sqc-bandcamp',
 		'title'     => 'Bandcamp',
 		'notes'     => 'You can paste the "Wordpress" version of the Bandcamp Embed code here or directly into the content editor.',
-		'noCode'  => '1',
+		'noCode'    => '1',
 	);
 
 	/**
@@ -568,7 +600,7 @@ class SQC_Facebook_Embed extends SQC_Embed {
 	public $paste_intercept_settings  = array(
 		'checkText'    => 'facebook.com/plugins/video.php',
 		'message'      => 'We have detected that you are trying to paste a Facebook video iframe embed into the HTML view. For better results, we are replacing this with the appropriate shortcode. To avoid this message in the future, please add the Facebook URL using the shortcode button on the Visual tab instead of the iframe embed code.',
-		'replaceRegex' => 'video\.php\?.+href=([^&?"]*)', //@TODO make sure trailing slash is trimmed here
+		'replaceRegex' => 'video\.php\?.*href=([^&?"]*)', //@TODO make sure trailing slash is trimmed here
 		'replacePre'   => '[sqc-facebook-video ',
 		'replacePost'  => ']',
 		'custom_js'    => "sqcFacebookVideoProcess = function( pastedData ) { 
@@ -914,7 +946,7 @@ class SQC_Termageddon_Embed extends SQC_Embed {
 		'shortcode' => 'sqc-termageddon',
 		'title'     => 'Termageddon',
 		'notes'     => 'You can embed your Termageddon Privacy Policy by pasting the embed code here.',
-		//'customJS'  => 'sqcTermageddonProcess',
+		'customJS'  => 'replacePastedText',
 	);
 
 	/**
@@ -1031,6 +1063,7 @@ class SQC_Streamspot_Embed extends SQC_Embed {
 		'shortcode' => 'rockspring-streamspot',
 		'title'     => 'Streamspot',
 		'notes'     => 'You can embed Streamspot by pasting the embed code here.',
+		'customJS'  => 'replacePastedText',
 	);
 
 	/**
