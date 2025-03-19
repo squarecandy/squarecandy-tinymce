@@ -81,7 +81,7 @@
 }
 
 /* visual editor */
-.mce-toolbar-grp .squarecandy-tinymce-alert {
+.mce-toolbar-grp .squarecandy-tinymce-alert.error {
 	margin: 0px;
     white-space: normal;
 }
