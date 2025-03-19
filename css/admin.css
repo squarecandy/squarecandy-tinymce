@@ -13,7 +13,8 @@
 
 /* based on div.wp-link-input */
 .sqc-shortcode-dialog input[type=text] {
-    width: 300px;
+    min-width: 300px;
+    width: 100%;
     padding: 3px;
     box-sizing: border-box;
     line-height: 1.28571429;

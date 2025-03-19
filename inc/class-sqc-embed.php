@@ -15,6 +15,8 @@ class SQC_Embed_Manager {
 		'SQC_GoogleForms_Embed',
 		'SQC_MailchimpArchive_Embed',
 		'SQC_Termageddon_Embed',
+		'SQC_Livecontrol_Embed',
+		'SQC_Streamspot_Embed'
 	);
 
 	private $javascript_variables = array(
@@ -179,6 +181,7 @@ class SQC_Embed {
 		'notes'     => '', // required - notes displayed when this option is selected
 		'notesMore' => '', // optional - more notes displayed in a closed by default accordion section
 		'noCode'    => '', // optional - if truthy, link pasted into the input is passed directly to content (e.g. youtube/vimeo)
+		'noInput'   => '', // optional - if truthy, allow shortcode button input to be empty
 		'customJS'  => '', // optional - function name for custom function to process input
 	);
 
@@ -943,6 +946,121 @@ class SQC_Termageddon_Embed extends SQC_Embed {
 
 		return sprintf(
 			'<p><div class="wp-block-embed__wrapper">' . $script . '</p></div>',
+			$src,
+		);
+	}
+}
+
+/**
+ * Manage embeds/shortcode for TILB livecontrol.tv
+ * 
+ * Outputs like:
+ *    <script type="text/javascript" src="https://tilb.livecontrol.tv/scripts/v1/embed.js">
+ *    </script>
+ *    <script>
+ *      LiveControl.Webplayer.embed({
+ *        source: "https://tilb.livecontrol.tv/embed?page=profile"
+ *      });
+ *    </script>
+ */ 
+
+class SQC_Livecontrol_Embed extends SQC_Embed {
+
+	public $name    = 'tilb-livecontrol';
+	public $js_name = 'sqcLivecontrol';
+
+	public $add_shortcode   = true;
+	public $add_to_button   = true;
+	public $auto_embed      = false;
+	public $paste_intercept = true;
+
+	public $paste_intercept_settings = array(
+		'checkTag'     => 'script',
+		'checkText'    => 'tilb.livecontrol.tv',
+		'message'      => 'We have detected that you are trying to paste a livecontrol.tv embed into the HTML view. For better results, we are replacing this with the appropriate shortcode format.',
+		'replaceRegex' => 'xxx', // we want this to fail
+		'replacePre'   => '[tilb-livecontrol]',
+		'replacePost'  => '',
+	);
+
+	public $shortcode_button_settings = array(
+		'shortcode' => 'tilb-livecontrol',
+		'title'     => 'livecontrol.tv',
+		'notes'     => 'You can embed livecontrol.tv by clicking Confirm.',
+		'noInput'   => '1',
+	);
+
+	/**
+	 * Function to create an iframe
+	 * Override this in child classes
+	 */
+	public function create_iframe( $attr ) {
+
+		$script = '<script type="text/javascript" src="https://tilb.livecontrol.tv/scripts/v1/embed.js"></script><script>LiveControl.Webplayer.embed({source: "https://tilb.livecontrol.tv/embed?page=profile"});</script>';
+
+		return sprintf( $this->iframe_wrapper['open'] . $script . $this->iframe_wrapper['close'] );
+	}
+}
+
+/**
+ * Manage embeds/shortcode for Streamspot
+ * 
+ * Outputs script tag like:
+ *    <iframe src="https://player2.streamspot.com/?playerId=783b36c8" width="900" height="506" frameborder="0" allowfullscreen="allowfullscreen"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start"></span></iframe>
+ */ 
+
+class SQC_Streamspot_Embed extends SQC_Embed {
+
+	public $name    = 'rockspring-streamspot';
+	public $js_name = 'sqcStreamspot';
+
+	public $add_shortcode   = true;
+	public $add_to_button   = true;
+	public $auto_embed      = false;
+	public $paste_intercept = true;
+
+	public $paste_intercept_settings = array(
+		'checkText'    => 'player2.streamspot.com',
+		'message'      => 'We have detected that you are trying to paste a Streamspot embed into the HTML view. For better results, we are replacing this with the appropriate shortcode format.',
+		'replaceRegex' => 'src=(?:"|&quot;)(.*?)(?:"|&quot;)',
+		'replacePre'   => '[rockspring-streamspot ',
+		'replacePost'  => ' ]',
+	);
+
+	public $shortcode_button_settings = array(
+		'shortcode' => 'rockspring-streamspot',
+		'title'     => 'Streamspot',
+		'notes'     => 'You can embed Streamspot by pasting the embed code here.',
+	);
+
+	/**
+	 * Function to create an iframe
+	 * Override this in child classes
+	 */
+	public function create_iframe( $attr ) {
+
+		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
+			$attr = array( 'src' => $attr[0] );
+		endif;
+		//sqcdy_log( $attr, 'gmaps 2' );
+
+		$attr = shortcode_atts(
+			array(
+				'src'    => null,
+			),
+			$attr
+		);
+
+		extract( $attr );
+
+		if ( $src == null ) :
+			return false;
+		endif;
+
+		$iframe = '<iframe src="%s" width="900" height="506" frameborder="0" allowfullscreen="allowfullscreen"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start"></span></iframe>';
+
+		return sprintf(
+			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
 			$src,
 		);
 	}
