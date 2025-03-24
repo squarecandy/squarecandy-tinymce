@@ -4,13 +4,14 @@ function typeInTextarea(newText, el = document.activeElement) {
 }
 
 // detect iframes in content and replace with embed links/shortcodes where appropriate
-function replacePastedText( pastedData, check = false ) {
+function replacePastedText( pastedData, checkIndex = false ) {
 
 	// read info on what to look for from localized data:
 	const globalChecks = typeof sqcEmbed !== 'undefined' ? sqcEmbed.pasteIntercept : [];
-	const interceptChecks = check ? [ globalChecks.check ] : globalChecks;
+	const interceptChecks = checkIndex ? { [checkIndex]: globalChecks[checkIndex] } : globalChecks;
 
 	console.log( 'pasteIntercept', pastedData );
+	console.log( 'globalChecks', globalChecks, 'checkIndex', checkIndex );
 	console.log( 'interceptChecks', interceptChecks );
 
 	for ( const prop in interceptChecks ) {
@@ -48,7 +49,7 @@ function replacePastedText( pastedData, check = false ) {
 			} else {
 				output = pastedData;
 			}
-
+			console.log( 'output', output );
 			if ( typeof customFunction === 'function' ) {
 				output = customFunction( output );
 			}

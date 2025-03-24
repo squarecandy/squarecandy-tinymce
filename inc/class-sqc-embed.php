@@ -1,4 +1,16 @@
 <?php
+/**
+ * Manager class for creating new shortcodes/embeds
+ * 
+ * 
+ * Shortcodes:
+ * Auto embed:
+ * Shortcode button on visual editor toolbar:
+ *    Adds button to tinymc visual toolbar via 
+ * Paste intercept
+ *    in text editor:
+ *    in visual editor:
+ */ 
 
 class SQC_Embed_Manager {
 
@@ -120,7 +132,9 @@ class SQC_Embed_Manager {
 	}
 
 	public function toolbar_button_init() {
-
+		sqcdy_log( current_user_can( 'edit_posts' ), 'edit_posts' );
+		sqcdy_log( current_user_can( 'edit_pages' ), 'edit_pages' );
+		sqcdy_log( get_user_option( 'rich_editing' ), 'rich_editing' );
 		  //Abort early if the user will never see TinyMCE
 		if ( ! current_user_can( 'edit_posts' ) && ! current_user_can( 'edit_pages' ) && get_user_option( 'rich_editing' ) == 'true' ) {
 			 return;
@@ -147,6 +161,10 @@ class SQC_Embed_Manager {
 		return $buttons;
 	}
 }
+
+/**
+ * Parent class for creating new shortcodes/embeds
+ */ 
 
 class SQC_Embed {
 
@@ -1037,7 +1055,7 @@ class SQC_Livecontrol_Embed extends SQC_Embed {
 /**
  * Manage embeds/shortcode for Streamspot
  * 
- * Outputs script tag like:
+ * Outputs iframe like:
  *    <iframe src="https://player2.streamspot.com/?playerId=783b36c8" width="900" height="506" frameborder="0" allowfullscreen="allowfullscreen"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start"></span></iframe>
  */ 
 

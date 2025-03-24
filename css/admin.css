@@ -78,6 +78,8 @@
 	position: absolute;
     top: 31px;
     left: 0;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 /* visual editor */

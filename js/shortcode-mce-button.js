@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-
+	console.log( 'shortcode-mce-button.js' );
 	tinymce.create('tinymce.plugins.sqc_embed_plugin', {
 
 		init : function(editor, url) {
@@ -57,17 +57,19 @@ jQuery(document).ready(function($) {
 			// "Cancel" button closes the dialog without submitting because of [formmethod="dialog"], triggering a close event.
 			// "Confirm" also ends up here bc we're adding the close action to the confirm onclick
 			sqcDialog.addEventListener("close", (e) => {
+
 				console.log( dialogID, sqcDialog.returnValue, sqcDialog );
 				const $dialogInput = $( sqcDialog ).find("[name=sqc-insert]");
 				const insertVal = $dialogInput.val();
 				const $selectedRadio = $( sqcDialog ).find('input[name="sqc-insert-type"]:checked');
 				const radioVal = $selectedRadio.val();
 				const validValue = insertVal || $selectedRadio.data('noinput')
+
 				console.log( insertVal, radioVal, $selectedRadio );
 				// if the confirm button was clicked & we have the values we need
 				if( sqcDialog.returnValue !== "cancel" && validValue && radioVal ) {
 					const customFunction = $selectedRadio.data('custom') ? window[ $selectedRadio.data('custom') ] : false;
-					console.log( customFunction, typeof customFunction );
+					console.log( 'customFunction', $selectedRadio.data('custom'), customFunction, typeof customFunction );
 					if ( $selectedRadio.data('nocode') ) {
 						// nocode items pass through the pasted text
 						console.log('no code');
@@ -75,9 +77,10 @@ jQuery(document).ready(function($) {
 					} else if ( customFunction && typeof customFunction == 'function' ) {
 						if ( 'replacePastedText' == $selectedRadio.data('custom') ) {
 							// use replacePastedText function
-							console.log('do replacePastedText function');
-							const newText = customFunction( insertVal, $selectedRadio.data('slug') );
-							tinymce.execCommand('mceInsertContent', false, newText );
+							console.log('do replacePastedText function with slug',  $selectedRadio.data('slug') );
+							const newOutput = customFunction( insertVal, $selectedRadio.data('slug') );
+							console.log('newText', newOutput, newOutput.text );
+							tinymce.execCommand('mceInsertContent', false, newOutput.text );
 						} else {
 							// do some custom function
 							console.log('do custom function');
