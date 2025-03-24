@@ -8,6 +8,7 @@ function replacePastedText( pastedData, checkIndex = false ) {
 
 	// read info on what to look for from localized data:
 	const globalChecks = typeof sqcEmbed !== 'undefined' ? sqcEmbed.pasteIntercept : [];
+	// if we're passing in a particular item to search for via checkIndex, replace the full array with an arry with just that item's info
 	const interceptChecks = checkIndex ? { [checkIndex]: globalChecks[checkIndex] } : globalChecks;
 
 	console.log( 'pasteIntercept', pastedData );

@@ -20,7 +20,7 @@ jQuery(document).ready(function($) {
 				if ( typeof item.shortcode !== 'undefined' && typeof item.title !== 'undefined' ) {
 					// set up data on the item
 					let buttonData = ' data-slug="' + prop + '"';
-					buttonData += item.customJS ? ' data-custom="' + item.customJS + '"' : '';
+					buttonData += item.functionName ? ' data-custom="' + item.functionName + '"' : '';
 					buttonData += item.noCode ? ' data-nocode="1"' : '';
 					buttonData += item.noInput ? ' data-noinput="1"' : '';
 					// add the item to the set of radio buttons
@@ -89,7 +89,8 @@ jQuery(document).ready(function($) {
 						}						
 					} else {
 						// otherwise wrap the value in the shortcode
-						tinymce.execCommand('mceInsertContent', false, '[' + radioVal + ' ' + insertVal + ' ]');
+						const addSpace = $selectedRadio.data('noinput') ? '' : ' '; //noinput won't need a space after the shortcode
+						tinymce.execCommand('mceInsertContent', false, '[' + radioVal + addSpace + insertVal + ']');
 					}
 					// @TODO these don't always work?
 					tinymce.execCommand('InsertLineBreak');
