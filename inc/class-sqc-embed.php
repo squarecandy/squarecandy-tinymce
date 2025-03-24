@@ -164,7 +164,7 @@ class SQC_Embed_Manager {
 
 	//This callback registers our tinymce plug-in
 	public function register_tinymce_plugin( $plugin_array ) {
-		$plugin_array['sqc_embed_button'] = SQUARECANDY_TINYMCE_DIR_URL . '/js/shortcode-mce-button.js';
+		$plugin_array['sqc_embed_button'] = SQUARECANDY_TINYMCE_DIR_URL . 'js/shortcode-mce-button.js';
 		return $plugin_array;
 	}
 
