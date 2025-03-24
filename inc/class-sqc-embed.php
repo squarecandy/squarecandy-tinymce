@@ -2,7 +2,7 @@
 /**
  * Manager class for creating new shortcodes/embeds
  *    new shortcodes etc are created by defining a child class of SQC_Embed with desired properties/methods
- * 
+ *
  * Shortcodes:
  *    added via WP add_shortcode
  *    Code to create an iframe from an array of attributes defined in {ChildClass}->create_iframe()
@@ -17,8 +17,8 @@
  *       added via squarecandy_tinymce_before_paste_preprocess filter (tiny_mce_before_init), uses js functions defined in squarecandy-tinymce.js
  * javascript:
  *    custom variables and extra functions are injected via
- * 
- */ 
+ *
+ */
 
 class SQC_Embed_Manager {
 
@@ -36,7 +36,7 @@ class SQC_Embed_Manager {
 		'SQC_MailchimpArchive_Embed',
 		'SQC_Termageddon_Embed',
 		'SQC_Livecontrol_Embed',
-		'SQC_Streamspot_Embed'
+		'SQC_Streamspot_Embed',
 	);
 
 	private $javascript_variables = array(
@@ -53,7 +53,7 @@ class SQC_Embed_Manager {
 
 		//loop through and instantiate a list of classes
 		foreach ( $this->embed_items as $embed_item ) {
-			$this->register_embed_class_item( $embed_item );			
+			$this->register_embed_class_item( $embed_item );
 		}
 
 		// add the shortcode button to the editor(s)
@@ -152,14 +152,16 @@ class SQC_Embed_Manager {
 		sqcdy_log( get_user_option( 'rich_editing' ), 'rich_editing' );
 		  //Abort early if the user will never see TinyMCE
 		if ( ! current_user_can( 'edit_posts' ) && ! current_user_can( 'edit_pages' ) && get_user_option( 'rich_editing' ) == 'true' ) {
-			 return;
+			sqcdy_log( 'Abort adding shortcode button' );
+			return;
 		}
+		sqcdy_log( 'Adding shortcode button' );
 
-		  //Add a callback to regiser our tinymce plugin
-		  add_filter( 'mce_external_plugins', array( $this, 'register_tinymce_plugin' ) );
+		//Add a callback to regiser our tinymce plugin
+		add_filter( 'mce_external_plugins', array( $this, 'register_tinymce_plugin' ) );
 
-		  // Add a callback to add our button to the TinyMCE toolbar
-		  add_filter( 'mce_buttons', array( $this, 'add_tinymce_button' ) );
+		// Add a callback to add our button to the TinyMCE toolbar
+		add_filter( 'mce_buttons', array( $this, 'add_tinymce_button' ) );
 	}
 
 	//This callback registers our tinymce plug-in
@@ -179,7 +181,7 @@ class SQC_Embed_Manager {
 
 /**
  * Parent class for creating new shortcodes/embeds
- */ 
+ */
 
 class SQC_Embed {
 
@@ -192,32 +194,35 @@ class SQC_Embed {
 	public $auto_embed      = false; // add auto embed
 	public $paste_intercept = false; // intercept pasted code block & replace
 
-	public $paste_intercept_settings  = array();
+	public $paste_intercept_settings = array();
 
 	public $shortcode_button_settings = array();
 
-	public $iframe_wrapper = array( 'open' => '', 'close' => '' );
+	public $iframe_wrapper = array(
+		'open'  => '',
+		'close' => '',
+	);
 
-	const DEFAULT_PASTE_INTERCEPT_SETTINGS  = array(
+	const DEFAULT_PASTE_INTERCEPT_SETTINGS = array(
 		'checkTag'     => 'iframe', // optional - tag to check for surrounding the text (set falsy to bypass)
 		'checkText'    => '', // required - pattern to check for (plain string, not regex)
 		'message'      => '', // required - message to be displayed when pattern is matched
 		'replaceRegex' => '', // optional - regex to locate url/identifier (without delimiters) (leave empty if custom_js)
 		'replacePre'   => '', // optional - text of outout that goes before the identifier, e.g. '[ myshortcode'
 		'replacePost'  => '', // optional - text of outout that goes after the identifier, e.g. ']'
-		'custom_js'    => '', // optional - javascript defining custom function to use instead of default regex/replace. 
+		'custom_js'    => '', // optional - javascript defining custom function to use instead of default regex/replace.
 		//function name must be like {$class->js_name}Process for js to automaticaly locate it
 	);
 
 	const DEFAULT_SHORTCODE_BUTTON_SETTINGS = array(
-		'shortcode' => '', // required - used as identifier & shortcode
-		'title'     => '', // required - label for the radio button for this option
-		'notes'     => '', // required - notes displayed when this option is selected
-		'notesMore' => '', // optional - more notes displayed in a closed by default accordion section
-		'noCode'    => '', // optional - if truthy, link pasted into the input is passed directly to content (e.g. youtube/vimeo)
-		'noInput'   => '', // optional - if truthy, allow shortcode button input to be empty
-		'functionName'  => '', // optional - function name for custom function to process input. put 'replacePastedText' to use paste intercept regex, or name of function in custom_js in paste intercept settings, or name of function defined in shortcode_button_settings['custom_js']
-		'custom_js'    => '', // optional - javascript defining custom function. 
+		'shortcode'    => '', // required - used as identifier & shortcode
+		'title'        => '', // required - label for the radio button for this option
+		'notes'        => '', // required - notes displayed when this option is selected
+		'notesMore'    => '', // optional - more notes displayed in a closed by default accordion section
+		'noCode'       => '', // optional - if truthy, link pasted into the input is passed directly to content (e.g. youtube/vimeo)
+		'noInput'      => '', // optional - if truthy, allow shortcode button input to be empty
+		'functionName' => '', // optional - function name for custom function to process input. put 'replacePastedText' to use paste intercept regex, or name of function in custom_js in paste intercept settings, or name of function defined in shortcode_button_settings['custom_js']
+		'custom_js'    => '', // optional - javascript defining custom function.
 		// avoid function name like {$class->js_name}Process as this will affect paste intercep.
 	);
 
@@ -236,7 +241,7 @@ class SQC_Embed {
 		// set (default) wrappers for iframes ( should this be set in embed class instead? )
 		if ( ! $this->iframe_wrapper['open'] || ! $this->iframe_wrapper['close'] ) {
 			//@TODO confirm this - figure doesn't work for Termageddon, sets lh 0 for contents
-			$this->iframe_wrapper['open'] = '<p><figure class="wp-block-embed-' . $this->name . ' wp-block-embed is-type-audio is-provider-' . $this->name . ' js">' . '<div class="wp-block-embed__wrapper">';
+			$this->iframe_wrapper['open']  = '<p><figure class="wp-block-embed-' . $this->name . ' wp-block-embed is-type-audio is-provider-' . $this->name . ' js">' . '<div class="wp-block-embed__wrapper">';
 			$this->iframe_wrapper['close'] = '</div>' . '</figure></p>';
 		}
 
@@ -343,30 +348,30 @@ class SQC_Embed {
 	 * @param string $url input url
 	 * @param string|bool $check_domain placeholder for now - domain to check against
 	 * @param bool $force_noslash whether to trim slash off the end of the url
-	 */ 
+	 */
 	public function validate_url( $url, $check_domain = false, $force_noslash = true ) {
 
-		if ( filter_var( $url, FILTER_VALIDATE_URL ) === FALSE ) {
-		    return false;
+		if ( filter_var( $url, FILTER_VALIDATE_URL ) === false ) {
+			return false;
 		}
 
 		if ( $force_noslash ) {
-		    $url = rtrim( $url, '/\\' );
+			$url = rtrim( $url, '/\\' );
 		}
 
 		return $url;
-		
+
 	}
 }
 
 /**
  * Adds missing wordpress.com bandcamp shortcode
- * 
+ *
  * Outputs an iframe like:
- *    <iframe style="border: 0; width: %s; height: %s;" 
- *       src="https://bandcamp.com/EmbeddedPlayer/album={album}/size={size}/bgcol={bgcol}/linkcol={linkcol}/tracklist={tracklist}/transparent=true/artwork={artwork}" 
+ *    <iframe style="border: 0; width: %s; height: %s;"
+ *       src="https://bandcamp.com/EmbeddedPlayer/album={album}/size={size}/bgcol={bgcol}/linkcol={linkcol}/tracklist={tracklist}/transparent=true/artwork={artwork}"
  *       title="{title}" seamless></iframe>';
- */ 
+ */
 
 class SQC_Bandcamp_Embed extends SQC_Embed {
 
@@ -442,7 +447,7 @@ class SQC_Bandcamp_Embed extends SQC_Embed {
 /**
  * Add paste intercept for Youtube video iframes
  * Pasted iframes are replaced with the video url, which is auto-embedded by WP
- */ 
+ */
 
 class SQC_Youtube_Embed extends SQC_Embed {
 
@@ -467,14 +472,14 @@ class SQC_Youtube_Embed extends SQC_Embed {
 		'shortcode' => 'sqc-youtube',
 		'title'     => 'Youtube',
 		'notes'     => 'You can paste the Youtube url here or directly into the content editor.',
-		'noCode'  => '1',
+		'noCode'    => '1',
 	);
 }
 
 /**
  * Add paste intercept for Vimeo video iframes
  * Pasted iframes are replaced with the video url, which is auto-embedded by WP
- */ 
+ */
 
 class SQC_Vimeo_Embed extends SQC_Embed {
 
@@ -499,25 +504,25 @@ class SQC_Vimeo_Embed extends SQC_Embed {
 		'shortcode' => 'sqc-vimeo',
 		'title'     => 'Vimeo',
 		'notes'     => 'You can paste the Vimeo url here or directly into the content editor.',
-		'noCode'  => '1',
+		'noCode'    => '1',
 	);
 }
 
 /**
  * Manage embeds/shortcode for Instagram videos
- * 
+ *
  * Shortcode/Autoembed:
  *    Takes urls like:
  *       https://www.instagram.com/reel/{VIDEO_ID}/?utm_source=ig_web_copy_link
  *       https://www.instagram.com/reel/{VIDEO_ID}/?igsh=ZGUzMzM3NWJiOQ==
- * 
+ *
  * Outputs an iframe like:
- *    <iframe id="instagram-embed-1" class="instagram-media instagram-media-rendered" 
- *       style="background: white; max-width: XXXpx; width: calc(100%% - 2px); border-radius: 3px; border: 1px solid #dbdbdb; box-shadow: none; 
- *       display: block; margin: 0px 0px 12px; min-width: 326px; padding: 0px; position: static !important;" 
+ *    <iframe id="instagram-embed-1" class="instagram-media instagram-media-rendered"
+ *       style="background: white; max-width: XXXpx; width: calc(100%% - 2px); border-radius: 3px; border: 1px solid #dbdbdb; box-shadow: none;
+ *       display: block; margin: 0px 0px 12px; min-width: 326px; padding: 0px; position: static !important;"
  *      src="{VIDEO_ID}/embed/?cr=1&amp;v=14&amp;wp=XXX" height="YYY" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen" data-instgrm-payload-id="instagram-media-payload-0">
  *    </iframe>
- */ 
+ */
 
 class SQC_Instagram_Embed extends SQC_Embed {
 
@@ -530,7 +535,7 @@ class SQC_Instagram_Embed extends SQC_Embed {
 	public $auto_embed      = false;
 	public $paste_intercept = true;
 
-	public $paste_intercept_settings = array(
+	public $paste_intercept_settings  = array(
 		'checkTag'     => 'script',
 		'checkText'    => 'instagram',
 		'message'      => 'We have detected that you are trying to paste an Instagram iframe embed into the HTML view. For better results, we are replacing this with the appropriate URL format. To avoid this message in the future, please paste the Instagram URL into the Visual tab instead of the iframe embed code.',
@@ -614,7 +619,7 @@ class SQC_Instagram_Embed extends SQC_Embed {
 
 /**
  * Manage embeds/shortcode for Facebook videos
- * 
+ *
  * Shortcode/Autoembed:
  *    Takes urls like:
  *       https://www.facebook.com/myPageName/videos/longvideoID/
@@ -622,18 +627,18 @@ class SQC_Instagram_Embed extends SQC_Embed {
  *       https://fb.watch/shortvideoID/
  *    But not like:
  *       https://www.facebook.com/share/v/shortvideoID/
- * 
+ *
  * Outputs an iframe like:
- *    <iframe src="https://www.facebook.com/plugins/video.php?href={VIDEO_URL}&show_text=0&width=XXX" 
- *       width="XXX" height="YYY" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" 
+ *    <iframe src="https://www.facebook.com/plugins/video.php?href={VIDEO_URL}&show_text=0&width=XXX"
+ *       width="XXX" height="YYY" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true"
  *       allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true">
  *    </iframe>
- */ 
+ */
 
 class SQC_Facebook_Embed extends SQC_Embed {
 
-	public $name        = 'sqc-facebook-video';
-	public $js_name     = 'sqcFacebookVideo';
+	public $name    = 'sqc-facebook-video';
+	public $js_name = 'sqcFacebookVideo';
 	//public $embed_regex = '#https://www\.facebook\.com/watch/\?v=([\d]+)/?#i';
 	public $embed_regex = '#https://www\.facebook\.com/(?:watch.*|.*/videos.*)$#i';
 	//public $regex;
@@ -642,7 +647,7 @@ class SQC_Facebook_Embed extends SQC_Embed {
 	public $auto_embed      = true;
 	public $paste_intercept = true;
 
-	public $paste_intercept_settings  = array(
+	public $paste_intercept_settings = array(
 		'checkText'    => 'facebook.com/plugins/video.php',
 		'message'      => 'We have detected that you are trying to paste a Facebook video iframe embed into the HTML view. For better results, we are replacing this with the appropriate shortcode. To avoid this message in the future, please add the Facebook URL using the shortcode button on the Visual tab instead of the iframe embed code.',
 		'replaceRegex' => 'video\.php\?.*href=([^&?"]*)', //@TODO make sure trailing slash is trimmed here
@@ -718,9 +723,9 @@ class SQC_Facebook_Embed extends SQC_Embed {
 
 /**
  * Manage embeds/shortcode for Google Maps
- * 
+ *
  * We need to start with the full embed code provide by Google Maps. To store in content without an iframe, the shortcode takes the properties of the original iframe.
- * 
+ *
  * Outputs an iframe like:
  *    '<iframe src="{SRC}" width="XXX" height="YYY" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
  */
@@ -738,7 +743,7 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 	public $auto_embed      = false;
 	public $paste_intercept = true;
 
-	//public $customJavascript = 
+	//public $customJavascript =
 
 	public $paste_intercept_settings = array(
 		'checkText'    => 'www.google.com/maps/embed',
@@ -757,10 +762,10 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 	);
 
 	public $shortcode_button_settings = array(
-		'shortcode' => 'sqc-gmaps',
-		'title'     => 'Google Maps',
-		'notes'     => 'You can embed Google Maps by pasting the embed code here, or by pasting it directly into the content editor.',
-		'functionName'  => 'sqcGoogleMapsProcess',
+		'shortcode'    => 'sqc-gmaps',
+		'title'        => 'Google Maps',
+		'notes'        => 'You can embed Google Maps by pasting the embed code here, or by pasting it directly into the content editor.',
+		'functionName' => 'sqcGoogleMapsProcess',
 	);
 
 	/**
@@ -808,13 +813,13 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 
 /**
  * Manage embeds/shortcode for Google Forms
- * 
+ *
  * We need to start with the full embed code provide by Google Forms. To store in content without an iframe, the shortcode takes the properties of the original iframe.
- * 
+ *
  * Outputs an iframe like:
- *    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeVW-_CT2cAoLYTStvT7TEwNO84kjLjPSV72mUfPsy_AHCHzQ/viewform?embedded=true" 
+ *    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeVW-_CT2cAoLYTStvT7TEwNO84kjLjPSV72mUfPsy_AHCHzQ/viewform?embedded=true"
  *       width="640" height="494" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
- */ 
+ */
 
 class SQC_GoogleForms_Embed extends SQC_Embed {
 
@@ -842,10 +847,10 @@ class SQC_GoogleForms_Embed extends SQC_Embed {
 	);
 
 	public $shortcode_button_settings = array(
-		'shortcode' => 'sqc-gforms',
-		'title'     => 'Google Forms',
-		'notes'     => 'You can embed Google Forms by pasting the embed code here, or by pasting it directly into the content editor.',
-		'functionName'  => 'sqcGoogleFormsProcess',
+		'shortcode'    => 'sqc-gforms',
+		'title'        => 'Google Forms',
+		'notes'        => 'You can embed Google Forms by pasting the embed code here, or by pasting it directly into the content editor.',
+		'functionName' => 'sqcGoogleFormsProcess',
 	);
 
 	/**
@@ -891,15 +896,15 @@ class SQC_GoogleForms_Embed extends SQC_Embed {
 
 /**
  * Manage embeds/shortcode for Mailchimp list archive
- * 
+ *
  * Outputs style/script tags like:
  *    <style type="text/css"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span><br />
  *    <span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span>
- *    <!-- .display_archive { font-family: Source Sans Pro,sans-serif; font-size: 20px; font-size: 1.25rem; line-height: 1.4; font-weight: 400; letter-spacing: 0; } 
+ *    <!-- .display_archive { font-family: Source Sans Pro,sans-serif; font-size: 20px; font-size: 1.25rem; line-height: 1.4; font-weight: 400; letter-spacing: 0; }
  *    .campaign {line-height: 125%%; margin: 5px;} //--><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark"
  *    class="mce_SELRES_end">﻿</span><br /></style>'
  *    <script language="javascript" src="//firstchurchcambridge.us5.list-manage.com/generate-js/?u=e8d9144b526b20dffd6009d45&fid=20494&show=52" type="text/javascript"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span></script>
- */ 
+ */
 
 class SQC_MailchimpArchive_Embed extends SQC_Embed {
 
@@ -941,7 +946,7 @@ class SQC_MailchimpArchive_Embed extends SQC_Embed {
 
 		$attr = shortcode_atts(
 			array(
-				'src'    => null,
+				'src' => null,
 			),
 			$attr
 		);
@@ -965,14 +970,14 @@ class SQC_MailchimpArchive_Embed extends SQC_Embed {
 
 /**
  * Manage embeds/shortcode for Termageddon Privacy Policy
- * 
+ *
  * Outputs like:
  *    <div id="policy" data-policy-key="U21SQ2FrRXhXbU13VTNOS0szYzlQUT09" data-extra="email-links=true&amp;h-align=left&amp;no-title=true&amp;table-style=accordion">
- *       Please wait while the policy is loaded. If it does not load, please 
- *       <a href="https://app.termageddon.com/api/policy/U21SQ2FrRXhXbU13VTNOS0szYzlQUT09?email-links=true&amp;h-align=left&amp;no-title=true&amp;table-style=accordion" 
+ *       Please wait while the policy is loaded. If it does not load, please
+ *       <a href="https://app.termageddon.com/api/policy/U21SQ2FrRXhXbU13VTNOS0szYzlQUT09?email-links=true&amp;h-align=left&amp;no-title=true&amp;table-style=accordion"
  *       target="_blank" rel="nofollow noopener">click here</a>.</div>
  *       <script src="https://app.termageddon.com/js/termageddon.js"></script>
- */ 
+ */
 
 class SQC_Termageddon_Embed extends SQC_Embed {
 
@@ -994,10 +999,10 @@ class SQC_Termageddon_Embed extends SQC_Embed {
 	);
 
 	public $shortcode_button_settings = array(
-		'shortcode' => 'sqc-termageddon',
-		'title'     => 'Termageddon',
-		'notes'     => 'You can embed your Termageddon Privacy Policy by pasting the embed code here.',
-		'functionName'  => 'replacePastedText',
+		'shortcode'    => 'sqc-termageddon',
+		'title'        => 'Termageddon',
+		'notes'        => 'You can embed your Termageddon Privacy Policy by pasting the embed code here.',
+		'functionName' => 'replacePastedText',
 	);
 
 	/**
@@ -1013,7 +1018,7 @@ class SQC_Termageddon_Embed extends SQC_Embed {
 
 		$attr = shortcode_atts(
 			array(
-				'src'    => null,
+				'src' => null,
 			),
 			$attr
 		);
@@ -1036,7 +1041,7 @@ class SQC_Termageddon_Embed extends SQC_Embed {
 
 /**
  * Manage embeds/shortcode for TILB livecontrol.tv
- * 
+ *
  * Outputs like:
  *    <script type="text/javascript" src="https://tilb.livecontrol.tv/scripts/v1/embed.js">
  *    </script>
@@ -1045,7 +1050,7 @@ class SQC_Termageddon_Embed extends SQC_Embed {
  *        source: "https://tilb.livecontrol.tv/embed?page=profile"
  *      });
  *    </script>
- */ 
+ */
 
 class SQC_Livecontrol_Embed extends SQC_Embed {
 
@@ -1087,10 +1092,10 @@ class SQC_Livecontrol_Embed extends SQC_Embed {
 
 /**
  * Manage embeds/shortcode for Streamspot
- * 
+ *
  * Outputs iframe like:
  *    <iframe src="https://player2.streamspot.com/?playerId=783b36c8" width="900" height="506" frameborder="0" allowfullscreen="allowfullscreen"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start"></span></iframe>
- */ 
+ */
 
 class SQC_Streamspot_Embed extends SQC_Embed {
 
@@ -1111,10 +1116,10 @@ class SQC_Streamspot_Embed extends SQC_Embed {
 	);
 
 	public $shortcode_button_settings = array(
-		'shortcode' => 'rockspring-streamspot',
-		'title'     => 'Streamspot',
-		'notes'     => 'You can embed Streamspot by pasting the embed code here.',
-		'functionName'  => 'replacePastedText',
+		'shortcode'    => 'rockspring-streamspot',
+		'title'        => 'Streamspot',
+		'notes'        => 'You can embed Streamspot by pasting the embed code here.',
+		'functionName' => 'replacePastedText',
 	);
 
 	/**
@@ -1130,7 +1135,7 @@ class SQC_Streamspot_Embed extends SQC_Embed {
 
 		$attr = shortcode_atts(
 			array(
-				'src'    => null,
+				'src' => null,
 			),
 			$attr
 		);
