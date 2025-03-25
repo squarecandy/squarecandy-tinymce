@@ -142,12 +142,12 @@ class SQC_Embed_Manager {
 
 	private function register_editor_button() {
 		// init process for registering our button
-		 add_action( 'admin_init', array( $this, 'toolbar_button_init' ) );
+		add_action( 'admin_init', array( $this, 'toolbar_button_init' ) );
 	}
 
 	public function toolbar_button_init() {
 		//Abort early if the user will never see TinyMCE
-		if ( ! current_user_can( 'edit_posts' ) && ! current_user_can( 'edit_pages' ) && get_user_option( 'rich_editing' ) == 'true' ) {
+		if ( ! current_user_can( 'edit_posts' ) && ! current_user_can( 'edit_pages' ) && get_user_option( 'rich_editing' ) === 'true' ) {
 			sqcdy_log( 'Abort adding shortcode button' );
 			return;
 		}
@@ -179,7 +179,7 @@ class SQC_Embed_Manager {
 
 class SQC_Embed {
 
-	public $name        = ''; // shortcode (if used)
+	public $name        = ''; // shortcode if used
 	public $js_name     = ''; // camelCase version of class name (used as identifier for localized variables/functions in js)
 	public $embed_regex = ''; // for autoembed, this is the regex to isolate the url used to populate the iframe
 
@@ -235,8 +235,8 @@ class SQC_Embed {
 		// set (default) wrappers for iframes ( should this be set in embed class instead? )
 		if ( ! $this->iframe_wrapper['open'] || ! $this->iframe_wrapper['close'] ) {
 			//@TODO confirm this - figure doesn't work for Termageddon, sets lh 0 for contents
-			$this->iframe_wrapper['open']  = '<p><figure class="wp-block-embed-' . $this->name . ' wp-block-embed is-type-audio is-provider-' . $this->name . ' js">' . '<div class="wp-block-embed__wrapper">';
-			$this->iframe_wrapper['close'] = '</div>' . '</figure></p>';
+			$this->iframe_wrapper['open']  = '<p><figure class="wp-block-embed-' . $this->name . ' wp-block-embed is-type-audio is-provider-' . $this->name . ' js"><div class="wp-block-embed__wrapper">';
+			$this->iframe_wrapper['close'] = '</div></figure></p>';
 		}
 
 		// parse js args
@@ -259,6 +259,7 @@ class SQC_Embed {
 	 * Override this in child classes
 	 */
 	public function create_iframe( $attr ) {
+		// phpcs:disable Squiz.PHP.CommentedOutCode.Found
 		//example code:
 		/*
 		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
@@ -292,6 +293,7 @@ class SQC_Embed {
 			$url,
 		);
 		*/
+		// phpcs:enable
 	}
 
 	/**
@@ -356,6 +358,7 @@ class SQC_Embed {
 		return $url;
 
 	}
+
 }
 
 /**
@@ -409,7 +412,7 @@ class SQC_Bandcamp_Embed extends SQC_Embed {
 
 		extract( $attr );
 
-		if ( $album == null ) {
+		if ( null === $album ) {
 			return false;
 		}
 
@@ -448,7 +451,6 @@ class SQC_Youtube_Embed extends SQC_Embed {
 	public $name    = 'sqc-youtube';
 	public $js_name = 'sqcYoutube';
 
-	//public $regex;
 	public $add_shortcode   = false;
 	public $add_to_button   = true;
 	public $auto_embed      = false;
@@ -480,7 +482,6 @@ class SQC_Vimeo_Embed extends SQC_Embed {
 	public $name    = 'sqc-vimeo';
 	public $js_name = 'sqcVimeo';
 
-	//public $regex;
 	public $add_shortcode   = false;
 	public $add_to_button   = true;
 	public $auto_embed      = false;
@@ -523,7 +524,6 @@ class SQC_Instagram_Embed extends SQC_Embed {
 	public $name    = 'sqc-instagram';
 	public $js_name = 'sqcInstagram';
 
-	//public $regex;
 	public $add_shortcode   = true;
 	public $add_to_button   = true;
 	public $auto_embed      = false;
@@ -559,7 +559,7 @@ class SQC_Instagram_Embed extends SQC_Embed {
 		//@TODO instagram links with / on ends aren't working here, need to fix that
 		// these are narrower than others - maybe 540 is too narrow
 
-		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
+		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
 			$attr = array( 'url' => $attr[0] );
 		endif;
 
@@ -584,8 +584,6 @@ class SQC_Instagram_Embed extends SQC_Embed {
 		if ( ! $url ) :
 			return false;
 		endif;
-
-		//$url = urlencode( $url ); // also need to trim it make sure ends with slash or not
 
 		$raw_width  = $width;
 		$raw_height = $height;
@@ -630,11 +628,9 @@ class SQC_Instagram_Embed extends SQC_Embed {
 
 class SQC_Facebook_Embed extends SQC_Embed {
 
-	public $name    = 'sqc-facebook-video';
-	public $js_name = 'sqcFacebookVideo';
-	//public $embed_regex = '#https://www\.facebook\.com/watch/\?v=([\d]+)/?#i';
-	public $embed_regex = '#https://www\.facebook\.com/(?:watch.*|.*/videos.*)$#i';
-	//public $regex;
+	public $name            = 'sqc-facebook-video';
+	public $js_name         = 'sqcFacebookVideo';
+	public $embed_regex     = '#https://www\.facebook\.com/(?:watch.*|.*/videos.*)$#i';
 	public $add_shortcode   = true;
 	public $add_to_button   = true;
 	public $auto_embed      = true;
@@ -669,7 +665,8 @@ class SQC_Facebook_Embed extends SQC_Embed {
 	 * Function to create an iframe
 	 */
 	public function create_iframe( $attr ) {
-		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
+
+		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
 			$attr = array( 'url' => $attr[0] );
 		endif;
 
@@ -704,7 +701,7 @@ class SQC_Facebook_Embed extends SQC_Embed {
 		$iframe = '<iframe src="https://www.facebook.com/plugins/video.php?href=%1$s&show_text=0&width=%2$s" width="%2$s" height="%3$s" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>';
 
 		return sprintf(
-			'<p><figure class="wp-block-embed-facebook wp-block-embed is-type-audio is-provider-facebook wp-embed-aspect-16-9 wp-has-aspect-ratio js fitvids">' . '<div class="wp-block-embed__wrapper">' . $iframe . '</div>' . '</figure></p>',
+			'<p><figure class="wp-block-embed-facebook wp-block-embed is-type-audio is-provider-facebook wp-embed-aspect-16-9 wp-has-aspect-ratio js fitvids"><div class="wp-block-embed__wrapper">' . $iframe . '</div></figure></p>',
 			$url,
 			$width,
 			$height
@@ -726,16 +723,12 @@ class SQC_Facebook_Embed extends SQC_Embed {
 
 class SQC_GoogleMaps_Embed extends SQC_Embed {
 
-	public $name    = 'sqc-gmaps';
-	public $js_name = 'sqcGoogleMaps';
-
-	//public $regex;
+	public $name            = 'sqc-gmaps';
+	public $js_name         = 'sqcGoogleMaps';
 	public $add_shortcode   = true;
 	public $add_to_button   = true;
 	public $auto_embed      = false;
 	public $paste_intercept = true;
-
-	//public $customJavascript =
 
 	public $paste_intercept_settings = array(
 		'checkText'    => 'www.google.com/maps/embed',
@@ -750,7 +743,7 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 			console.log( 'newText', newText );
 			newText = newText.replace( iframeClose, ']' ); 
 			return newText; 
-		};", // needs some adjustment for visual editor
+		};",
 	);
 
 	public $shortcode_button_settings = array(
@@ -766,7 +759,7 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 	 */
 	public function create_iframe( $attr ) {
 
-		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
+		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
 			$attr = array( 'src' => $attr[0] );
 		endif;
 
@@ -781,11 +774,9 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 
 		extract( $attr );
 
-		if ( $src == null ) :
+		if ( null === $src ) :
 			return false;
 		endif;
-
-		//$url = urlencode( $url ); // also need to trim it make sure ends with slash or not
 
 		$iframe = '<iframe src="%s" width="%s" height="%s" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
 
@@ -847,7 +838,7 @@ class SQC_GoogleForms_Embed extends SQC_Embed {
 	 */
 	public function create_iframe( $attr ) {
 
-		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
+		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
 			$attr = array( 'src' => $attr[0] );
 		endif;
 
@@ -862,11 +853,9 @@ class SQC_GoogleForms_Embed extends SQC_Embed {
 
 		extract( $attr );
 
-		if ( $src == null ) :
+		if ( null === $src ) :
 			return false;
 		endif;
-
-		//$url = urlencode( $url ); // also need to trim it make sure ends with slash or not
 
 		$iframe = '<iframe src="%s" width="%s" height="%s" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>';
 		return sprintf(
@@ -877,6 +866,7 @@ class SQC_GoogleForms_Embed extends SQC_Embed {
 		);
 	}
 }
+
 
 /**
  * Manage embeds/shortcode for Mailchimp list archive
@@ -923,7 +913,7 @@ class SQC_MailchimpArchive_Embed extends SQC_Embed {
 	 */
 	public function create_iframe( $attr ) {
 
-		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
+		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
 			$attr = array( 'src' => $attr[0] );
 		endif;
 
@@ -936,7 +926,7 @@ class SQC_MailchimpArchive_Embed extends SQC_Embed {
 
 		extract( $attr );
 
-		if ( $src == null ) :
+		if ( null === $src ) :
 			return false;
 		endif;
 
@@ -994,7 +984,7 @@ class SQC_Termageddon_Embed extends SQC_Embed {
 	 */
 	public function create_iframe( $attr ) {
 
-		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
+		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
 			$attr = array( 'src' => $attr[0] );
 		endif;
 
@@ -1007,7 +997,7 @@ class SQC_Termageddon_Embed extends SQC_Embed {
 
 		extract( $attr );
 
-		if ( $src == null ) :
+		if ( null === $src ) :
 			return false;
 		endif;
 
@@ -1110,7 +1100,7 @@ class SQC_Streamspot_Embed extends SQC_Embed {
 	 */
 	public function create_iframe( $attr ) {
 
-		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
+		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
 			$attr = array( 'src' => $attr[0] );
 		endif;
 
@@ -1123,7 +1113,7 @@ class SQC_Streamspot_Embed extends SQC_Embed {
 
 		extract( $attr );
 
-		if ( $src == null ) :
+		if ( null === $src ) :
 			return false;
 		endif;
 
