@@ -1,4 +1,4 @@
-jQuery(document).ready(function($) {
+(function($) {
 	console.log( 'shortcode-mce-button.js' );
 	tinymce.create('tinymce.plugins.sqc_embed_plugin', {
 
@@ -164,6 +164,4 @@ jQuery(document).ready(function($) {
 	// first parameter is the button ID1
 	// second parameter must match the first parameter of the tinymce.create() function above
 	tinymce.PluginManager.add('sqc_embed_button', tinymce.plugins.sqc_embed_plugin);
-});
-
-
+})(jQuery);
