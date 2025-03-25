@@ -370,6 +370,7 @@ class SQC_Embed {
 		endif;
 
 		$attr = shortcode_atts( $defaults, $attr );
+		return $attr;
 	}
 
 	//add px to width/height (but not if width is e.g. 100%)
