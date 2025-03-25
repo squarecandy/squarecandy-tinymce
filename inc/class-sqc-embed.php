@@ -106,7 +106,6 @@ class SQC_Embed_Manager {
 
 		if ( is_string( $item ) && class_exists( $item ) ) { // also check that it extends SQC class?
 			$embed_class = new $item();
-			//sqcdy_log( $embed_class, 'embed_class' );
 		} elseif ( is_array( $item ) ) {
 			$embed_class = new SQC_Embed( $item ); // possible way of adding new embed without creating a class, not implemented yet
 		}
@@ -147,15 +146,11 @@ class SQC_Embed_Manager {
 	}
 
 	public function toolbar_button_init() {
-		sqcdy_log( current_user_can( 'edit_posts' ), 'edit_posts' );
-		sqcdy_log( current_user_can( 'edit_pages' ), 'edit_pages' );
-		sqcdy_log( get_user_option( 'rich_editing' ), 'rich_editing' );
-		  //Abort early if the user will never see TinyMCE
+		//Abort early if the user will never see TinyMCE
 		if ( ! current_user_can( 'edit_posts' ) && ! current_user_can( 'edit_pages' ) && get_user_option( 'rich_editing' ) == 'true' ) {
 			sqcdy_log( 'Abort adding shortcode button' );
 			return;
 		}
-		sqcdy_log( 'Adding shortcode button' );
 
 		//Add a callback to regiser our tinymce plugin
 		add_filter( 'mce_external_plugins', array( $this, 'register_tinymce_plugin' ) );
@@ -173,7 +168,6 @@ class SQC_Embed_Manager {
 	//This callback adds our button to the toolbar
 	public function add_tinymce_button( $buttons ) {
 		//Add the button ID to the $button array
-		//sqcdy_log( $buttons, '$buttons' );
 		$buttons[] = 'sqc_embed_button';
 		return $buttons;
 	}
@@ -568,7 +562,6 @@ class SQC_Instagram_Embed extends SQC_Embed {
 		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
 			$attr = array( 'url' => $attr[0] );
 		endif;
-		//sqcdy_log( $attr, 'instagram 2' );
 
 		$attr = shortcode_atts(
 			array(
@@ -679,7 +672,6 @@ class SQC_Facebook_Embed extends SQC_Embed {
 		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
 			$attr = array( 'url' => $attr[0] );
 		endif;
-		//sqcdy_log( $attr, 'facebook 2' );
 
 		$attr = shortcode_atts(
 			array(
@@ -773,14 +765,10 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 	 * Override this in child classes
 	 */
 	public function create_iframe( $attr ) {
-		//sqcdy_log( $attr, 'gmaps' );
-		//sqcdy_log( array_keys( $attr ), 'count ' . count( $attr ) );
-		//sqcdy_log( count( $attr ) === 1 );
-		//sqcdy_log( array_keys( $attr )[0] === 0 );
+
 		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
 			$attr = array( 'src' => $attr[0] );
 		endif;
-		//sqcdy_log( $attr, 'gmaps 2' );
 
 		$attr = shortcode_atts(
 			array(
@@ -858,14 +846,10 @@ class SQC_GoogleForms_Embed extends SQC_Embed {
 	 * Override this in child classes
 	 */
 	public function create_iframe( $attr ) {
-		//sqcdy_log( $attr, 'gmaps' );
-		//sqcdy_log( array_keys( $attr ), 'count ' . count( $attr ) );
-		//sqcdy_log( count( $attr ) === 1 );
-		//sqcdy_log( array_keys( $attr )[0] === 0 );
+
 		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
 			$attr = array( 'src' => $attr[0] );
 		endif;
-		//sqcdy_log( $attr, 'gmaps 2' );
 
 		$attr = shortcode_atts(
 			array(
@@ -942,7 +926,6 @@ class SQC_MailchimpArchive_Embed extends SQC_Embed {
 		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
 			$attr = array( 'src' => $attr[0] );
 		endif;
-		//sqcdy_log( $attr, 'gmaps 2' );
 
 		$attr = shortcode_atts(
 			array(
@@ -1014,7 +997,6 @@ class SQC_Termageddon_Embed extends SQC_Embed {
 		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
 			$attr = array( 'src' => $attr[0] );
 		endif;
-		//sqcdy_log( $attr, 'gmaps 2' );
 
 		$attr = shortcode_atts(
 			array(
@@ -1131,7 +1113,6 @@ class SQC_Streamspot_Embed extends SQC_Embed {
 		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
 			$attr = array( 'src' => $attr[0] );
 		endif;
-		//sqcdy_log( $attr, 'gmaps 2' );
 
 		$attr = shortcode_atts(
 			array(
