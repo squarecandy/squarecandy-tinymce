@@ -22,7 +22,11 @@
 					buttonData += item.noCode ? ' data-nocode="1"' : '';
 					buttonData += item.noInput ? ' data-noinput="1"' : '';
 					// add the item to the set of radio buttons
-					radioButtons +=  '<div class="sqc-btn sqc-btn-' + item.shortcode + '"><input type="radio" name="sqc-insert-type" value="' + item.shortcode + '" autocomplete="off" required ' + buttonData + '/><label for="' + item.shortcode + '">' + item.title + '</label></div>';
+					radioButtons +=  '<div class="sqc-btn sqc-btn-' + item.shortcode + '">' + 
+					'<label>' + 
+					'<input type="radio" name="sqc-insert-type" value="' + item.shortcode + '" autocomplete="off" required ' + buttonData + '/>' + 
+					item.title + '</label>' +
+					'</div>';
 					// set up notes for the item
 					const buttonNotes = item.notes !== 'undefined' ? item.notes : '';
 					const buttonNotesMore = item.notesMore ? '<div class="show-more button-link">more</div><div class="more">' + item.notesMore + '</div>' : '';
