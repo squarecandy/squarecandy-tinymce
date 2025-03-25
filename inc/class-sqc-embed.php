@@ -262,27 +262,24 @@ class SQC_Embed {
 		// phpcs:disable Squiz.PHP.CommentedOutCode.Found
 		//example code:
 		/*
-		if ( count( $attr ) === 1 && array_keys( $attr )[0] === 0 ) :
-			$attr = array( 'url' => $attr[0] );
-		endif;
-
-		$attr = shortcode_atts(
+		$attr = $this->process_shortcode_attr(
+			$attr,
 			array(
 				'url'    => null,
+				'width'  => 540,
+				'height' => 881,
 			),
-			$attr
+			'url' // accepts single att
 		);
 
-		extract( $attr );
-
-		$url = $this->validate_url( $url );
+		$attr['url'] = $this->validate_url( $attr['url'] );
 
 		// grab just the part we need of the url
 		$regex = '#pattern#';
-		preg_match( $regex, $url, $matches );
-		$url = isset( $matches[1] ) ? $matches[1] : false;
+		preg_match( $regex, $attr['url'], $matches );
+		$attr['url'] = isset( $matches[1] ) ? $matches[1] : false;
 
-		if ( ! $url ) :
+		if ( ! $attr['url'] ) :
 			return false;
 		endif;
 
@@ -290,7 +287,7 @@ class SQC_Embed {
 
 		return sprintf(
 			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
-			$url,
+			$attr['url'],
 		);
 		*/
 		// phpcs:enable
@@ -359,7 +356,32 @@ class SQC_Embed {
 
 	}
 
+	/**
+	 * @param $attr array
+	 * @param $accept_single_attr bool|string
+	 * @param $defaults
+	 */
+	public function process_shortcode_attr( $attr, $defaults = array(), $accept_single_attr = false ) {
+
+		if ( $accept_single_attr ) :
+			if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
+				$attr = array( $accept_single_attr => $attr[0] );
+			endif;
+		endif;
+
+		$attr = shortcode_atts( $defaults, $attr );
+	}
+
+	//add px to width/height (but not if width is e.g. 100%)
+	public function maybe_add_px( $value ) {
+		if ( preg_match( '#^[0-9]+$#', $value ) ) {
+			$value = $value . 'px';
+		}
+		return $value;
+	}
+
 }
+
 
 /**
  * Adds missing wordpress.com bandcamp shortcode
@@ -393,11 +415,12 @@ class SQC_Bandcamp_Embed extends SQC_Embed {
 	 */
 	public function create_iframe( $attr ) {
 
-		$attr = shortcode_atts(
+		$attr = $this->process_shortcode_attr(
+			$attr,
 			array(
+				'album'     => null,
 				'width'     => 350,
 				'height'    => 470,
-				'album'     => null,
 				'title'     => null,
 				'size'      => 'large',
 				'bgcol'     => 'ffffff',
@@ -406,40 +429,33 @@ class SQC_Bandcamp_Embed extends SQC_Embed {
 				'tracklist' => 'false',
 				'title'     => null,
 				'artwork'   => null,
-			),
-			$attr
+			)
 		);
 
-		extract( $attr );
-
-		if ( null === $album ) {
+		if ( ! $attr['album'] ) {
 			return false;
 		}
 
-		//add px to width/height (but not if width is e.g. 100%)
-		if ( preg_match( '#^[0-9]+$#', $width ) ) {
-				$width = $width . 'px';
-		}
-		if ( preg_match( '#^[0-9]+$#', $height ) ) {
-				$height = $height . 'px';
-		}
+		$attr['width']  = $this->maybe_add_px( $attr['width'] );
+		$attr['height'] = $this->maybe_add_px( $attr['height'] );
 
 		$iframe = '<iframe style="border: 0; width: %s; height: %s;" src="https://bandcamp.com/EmbeddedPlayer/album=%s/size=%s/bgcol=%s/linkcol=%s/tracklist=%s/transparent=true/artwork=%s" title="%s" seamless></iframe>';
 
 		return sprintf(
 			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
-			$width,
-			$height,
-			$album,
-			$size,
-			$bgcol,
-			$linkcol,
-			$tracklist,
-			$artwork,
-			$title
+			$attr['width'],
+			$attr['height'],
+			$attr['album'],
+			$attr['size'],
+			$attr['bgcol'],
+			$attr['linkcol'],
+			$attr['tracklist'],
+			$attr['artwork'],
+			$attr['title'],
 		);
 	}
 }
+
 
 /**
  * Add paste intercept for Youtube video iframes
@@ -448,9 +464,8 @@ class SQC_Bandcamp_Embed extends SQC_Embed {
 
 class SQC_Youtube_Embed extends SQC_Embed {
 
-	public $name    = 'sqc-youtube';
-	public $js_name = 'sqcYoutube';
-
+	public $name            = 'sqc-youtube';
+	public $js_name         = 'sqcYoutube';
 	public $add_shortcode   = false;
 	public $add_to_button   = true;
 	public $auto_embed      = false;
@@ -472,6 +487,7 @@ class SQC_Youtube_Embed extends SQC_Embed {
 	);
 }
 
+
 /**
  * Add paste intercept for Vimeo video iframes
  * Pasted iframes are replaced with the video url, which is auto-embedded by WP
@@ -479,9 +495,8 @@ class SQC_Youtube_Embed extends SQC_Embed {
 
 class SQC_Vimeo_Embed extends SQC_Embed {
 
-	public $name    = 'sqc-vimeo';
-	public $js_name = 'sqcVimeo';
-
+	public $name            = 'sqc-vimeo';
+	public $js_name         = 'sqcVimeo';
 	public $add_shortcode   = false;
 	public $add_to_button   = true;
 	public $auto_embed      = false;
@@ -503,6 +518,7 @@ class SQC_Vimeo_Embed extends SQC_Embed {
 	);
 }
 
+
 /**
  * Manage embeds/shortcode for Instagram videos
  *
@@ -521,9 +537,8 @@ class SQC_Vimeo_Embed extends SQC_Embed {
 
 class SQC_Instagram_Embed extends SQC_Embed {
 
-	public $name    = 'sqc-instagram';
-	public $js_name = 'sqcInstagram';
-
+	public $name            = 'sqc-instagram';
+	public $js_name         = 'sqcInstagram';
 	public $add_shortcode   = true;
 	public $add_to_button   = true;
 	public $auto_embed      = false;
@@ -548,7 +563,6 @@ class SQC_Instagram_Embed extends SQC_Embed {
 			const result = input.replace( regex, `$1` );
 			return "[sqc-instagram " + result + "]";
 		}',
-
 	);
 
 	/**
@@ -559,48 +573,40 @@ class SQC_Instagram_Embed extends SQC_Embed {
 		//@TODO instagram links with / on ends aren't working here, need to fix that
 		// these are narrower than others - maybe 540 is too narrow
 
-		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
-			$attr = array( 'url' => $attr[0] );
-		endif;
-
-		$attr = shortcode_atts(
+		$attr = $this->process_shortcode_attr(
+			$attr,
 			array(
+				'url'    => null,
 				'width'  => 540,
 				'height' => 881,
-				'url'    => null,
 			),
-			$attr
+			'url' // accepts single att
 		);
 
-		extract( $attr );
-
-		$url = $this->validate_url( $url );
+		$attr['url'] = $this->validate_url( $attr['url'] );
 
 		// grab just the part we need of the url
 		$regex = '#(https://www\.instagram\.com/reel/[a-zA-Z0-9]+)#';
-		preg_match( $regex, $url, $matches );
-		$url = isset( $matches[1] ) ? $matches[1] : false;
+		preg_match( $regex, $attr['url'], $matches );
+		$attr['url'] = isset( $matches[1] ) ? $matches[1] : false;
 
-		if ( ! $url ) :
+		if ( ! $attr['url'] ) :
 			return false;
 		endif;
 
-		$raw_width  = $width;
-		$raw_height = $height;
+		$raw_width  = $attr['width'];
+		$raw_height = $attr['height'];
 
-		if ( preg_match( '#^[0-9]+$#', $width ) ) {
-				$width = $width . 'px';
-		}
-		if ( preg_match( '#^[0-9]+$#', $height ) ) {
-				$height = $height . 'px';
-		}
+		$attr['width']  = $this->maybe_add_px( $attr['width'] );
+		$attr['height'] = $this->maybe_add_px( $attr['height'] );
+
 		//@TODO set id to something unique!!
 		$iframe = '<iframe id="instagram-embed-1" class="instagram-media instagram-media-rendered" style="background: white; max-width: %s; width: calc(100%% - 2px); border-radius: 3px; border: 1px solid #dbdbdb; box-shadow: none; display: block; margin: 0px 0px 12px; min-width: 326px; padding: 0px; position: static !important;" src="%s/embed/?cr=1&amp;v=14&amp;wp=%s" height="%s" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen" data-instgrm-payload-id="instagram-media-payload-0"></iframe>';
 
 		return sprintf(
 			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
-			$width,
-			$url,
+			$attr['width'],
+			$attr['url'],
 			$raw_width,
 			$raw_height
 		);
@@ -666,35 +672,26 @@ class SQC_Facebook_Embed extends SQC_Embed {
 	 */
 	public function create_iframe( $attr ) {
 
-		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
-			$attr = array( 'url' => $attr[0] );
-		endif;
-
-		$attr = shortcode_atts(
+		$attr = $this->process_shortcode_attr(
+			$attr,
 			array(
+				'url'    => null,
 				'width'  => 350,
 				'height' => 470,
-				'url'    => null,
 			),
-			$attr
+			'url' // accepts single att
 		);
 
-		extract( $attr );
+		$attr['url'] = $this->validate_url( $attr['url'] );
 
-		$url = $this->validate_url( $url );
-
-		if ( ! $url ) :
+		if ( ! $attr['url'] ) :
 			return false;
 		endif;
 
-		$url = urlencode( $url );
+		$attr['url'] = rawurlencode( $attr['url'] );
 
-		if ( preg_match( '#^[0-9]+$#', $width ) ) {
-				$width = $width . 'px';
-		}
-		if ( preg_match( '#^[0-9]+$#', $height ) ) {
-				$height = $height . 'px';
-		}
+		$attr['width']  = $this->maybe_add_px( $attr['width'] );
+		$attr['height'] = $this->maybe_add_px( $attr['height'] );
 
 		//@TODO Maybe don't need the px adding
 
@@ -702,9 +699,9 @@ class SQC_Facebook_Embed extends SQC_Embed {
 
 		return sprintf(
 			'<p><figure class="wp-block-embed-facebook wp-block-embed is-type-audio is-provider-facebook wp-embed-aspect-16-9 wp-has-aspect-ratio js fitvids"><div class="wp-block-embed__wrapper">' . $iframe . '</div></figure></p>',
-			$url,
-			$width,
-			$height
+			$attr['url'],
+			$attr['width'],
+			$attr['height']
 		);
 	}
 }
@@ -759,22 +756,17 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 	 */
 	public function create_iframe( $attr ) {
 
-		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
-			$attr = array( 'src' => $attr[0] );
-		endif;
-
-		$attr = shortcode_atts(
+		$attr = $this->process_shortcode_attr(
+			$attr,
 			array(
+				'src'    => null,
 				'width'  => 540,
 				'height' => 881,
-				'src'    => null,
 			),
-			$attr
+			'src' // accepts single att
 		);
 
-		extract( $attr );
-
-		if ( null === $src ) :
+		if ( ! $src ) :
 			return false;
 		endif;
 
@@ -782,9 +774,9 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 
 		return sprintf(
 			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
-			$src,
-			$width,
-			$height
+			$attr['src'],
+			$attr['width'],
+			$attr['height']
 		);
 	}
 }
@@ -838,31 +830,26 @@ class SQC_GoogleForms_Embed extends SQC_Embed {
 	 */
 	public function create_iframe( $attr ) {
 
-		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
-			$attr = array( 'src' => $attr[0] );
-		endif;
-
-		$attr = shortcode_atts(
+		$attr = $this->process_shortcode_attr(
+			$attr,
 			array(
+				'src'    => null,
 				'width'  => 640,
 				'height' => 494,
-				'src'    => null,
 			),
-			$attr
+			'src' // accepts single att
 		);
 
-		extract( $attr );
-
-		if ( null === $src ) :
+		if ( ! $attr['src'] ) :
 			return false;
 		endif;
 
 		$iframe = '<iframe src="%s" width="%s" height="%s" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>';
 		return sprintf(
 			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
-			$src,
-			$width,
-			$height
+			$attr['src'],
+			$attr['width'],
+			$attr['height']
 		);
 	}
 }
@@ -913,30 +900,25 @@ class SQC_MailchimpArchive_Embed extends SQC_Embed {
 	 */
 	public function create_iframe( $attr ) {
 
-		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
-			$attr = array( 'src' => $attr[0] );
-		endif;
-
-		$attr = shortcode_atts(
+		$attr = $this->process_shortcode_attr(
+			$attr,
 			array(
 				'src' => null,
 			),
-			$attr
+			'src' // accepts single att
 		);
 
-		extract( $attr );
-
-		if ( null === $src ) :
+		if ( ! $attr['src'] ) :
 			return false;
 		endif;
 
 		$style = '<style type="text/css"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span><br /><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span><!-- .display_archive { font-family: Source Sans Pro,sans-serif; font-size: 20px; font-size: 1.25rem; line-height: 1.4; font-weight: 400; letter-spacing: 0; } .campaign {line-height: 125%%; margin: 5px;} //--><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_end">﻿</span><br /></style>';
 
-		$script = '<script language="javascript" src="%s" type="text/javascript"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span></script>';
+		$script = '<script language="javascript" src="%s" type="text/javascript"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span></script>'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 
 		return sprintf(
 			$this->iframe_wrapper['open'] . $style . $script . $this->iframe_wrapper['close'],
-			$src,
+			$attr['src'],
 		);
 	}
 }
@@ -984,29 +966,24 @@ class SQC_Termageddon_Embed extends SQC_Embed {
 	 */
 	public function create_iframe( $attr ) {
 
-		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
-			$attr = array( 'src' => $attr[0] );
-		endif;
-
-		$attr = shortcode_atts(
+		$attr = $this->process_shortcode_attr(
+			$attr,
 			array(
 				'src' => null,
 			),
-			$attr
+			'src' // accepts single att
 		);
 
-		extract( $attr );
-
-		if ( null === $src ) :
+		if ( ! $attr['src'] ) :
 			return false;
 		endif;
 
 		$script = '<div id="policy" data-policy-key="%1$s" data-extra="email-links=true&amp;h-align=left&amp;no-title=true&amp;table-style=accordion">Please wait while the policy is loaded. If it does not load, please <a href="https://app.termageddon.com/api/policy/%1$s?email-links=true&amp;h-align=left&amp;no-title=true&amp;table-style=accordion" target="_blank" rel="nofollow noopener">click here</a>.</div>
-            <script src="https://app.termageddon.com/js/termageddon.js"></script>';
+            <script src="https://app.termageddon.com/js/termageddon.js"></script>'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 
 		return sprintf(
 			'<p><div class="wp-block-embed__wrapper">' . $script . '</p></div>',
-			$src,
+			$attr['src'],
 		);
 	}
 }
@@ -1056,7 +1033,7 @@ class SQC_Livecontrol_Embed extends SQC_Embed {
 	 */
 	public function create_iframe( $attr ) {
 
-		$script = '<script type="text/javascript" src="https://tilb.livecontrol.tv/scripts/v1/embed.js"></script><script>LiveControl.Webplayer.embed({source: "https://tilb.livecontrol.tv/embed?page=profile"});</script>';
+		$script = '<script type="text/javascript" src="https://tilb.livecontrol.tv/scripts/v1/embed.js"></script><script>LiveControl.Webplayer.embed({source: "https://tilb.livecontrol.tv/embed?page=profile"});</script>'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 
 		return sprintf( $this->iframe_wrapper['open'] . $script . $this->iframe_wrapper['close'] );
 	}
@@ -1100,20 +1077,15 @@ class SQC_Streamspot_Embed extends SQC_Embed {
 	 */
 	public function create_iframe( $attr ) {
 
-		if ( 1 === count( $attr ) && 0 === array_keys( $attr )[0] ) :
-			$attr = array( 'src' => $attr[0] );
-		endif;
-
-		$attr = shortcode_atts(
+		$attr = $this->process_shortcode_attr(
+			$attr,
 			array(
 				'src' => null,
 			),
-			$attr
+			'src' // accepts single att
 		);
 
-		extract( $attr );
-
-		if ( null === $src ) :
+		if ( ! $attr['src'] ) :
 			return false;
 		endif;
 
@@ -1121,7 +1093,7 @@ class SQC_Streamspot_Embed extends SQC_Embed {
 
 		return sprintf(
 			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
-			$src,
+			$attr['src'],
 		);
 	}
 }
