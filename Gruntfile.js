@@ -76,9 +76,7 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-run' );
 
 	grunt.registerTask( 'init', [ 'copy' ] );
-	grunt.registerTask( 'default', [ 'run:stylelintfix', 'run:eslintfix', 'sass', 'postcss', 'terser', 'string-replace', 'watch' ] );
-	grunt.registerTask( 'compile', [ 'sass', 'postcss', 'copy:preflight', 'terser', 'string-replace' ] );
 	grunt.registerTask( 'lint', [ 'stylelint', 'eslint', 'phpcs' ] );
 	grunt.registerTask( 'bump', [ 'run:bump' ] );
-	grunt.registerTask( 'preflight', [ 'compile', 'lint', 'bump', 'run:ding' ] );
+	grunt.registerTask( 'preflight', [ 'lint', 'bump', 'run:ding' ] );
 };
