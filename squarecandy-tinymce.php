@@ -144,6 +144,11 @@ function squarecandy_tinymce_toolbars( $toolbars ) {
 	$toolbar_basic        = apply_filters( 'squarecandy_tinymce_filter_toolbar_basic', $toolbar_basic );
 	$toolbars['Basic'][1] = $toolbar_basic;
 
+	$toolbars['VeryBasic']    = array();
+	$toolbar_verybasic        = array( 'bold', 'italic', 'link', 'unlink', 'removeformat' );
+	$toolbar_verybasic        = apply_filters( 'squarecandy_tinymce_filter_toolbar_verybasic', $toolbar_verybasic );
+	$toolbars['VeryBasic'][1] = $toolbar_verybasic;
+
 	return $toolbars;
 }
 add_filter( 'acf/fields/wysiwyg/toolbars', 'squarecandy_tinymce_toolbars' );
