@@ -1,0 +1,63 @@
+{
+	"name": "squarecandy-tinymce",
+	"version": "1.10.0-dev.2",
+	"description": "An opinionated reconfiguration of the default WordPress TinyMCE settings",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/squarecandy/squarecandy-tinymce.git"
+	},
+	"author": "Square Candy Design / Peter Wise",
+	"license": "UNLICENSED",
+	"bugs": {
+		"url": "https://github.com/squarecandy/squarecandy-tinymce"
+	},
+	"browserslist": [
+		"last 2 version",
+		"> 1%",
+		"maintained node versions",
+		"not dead"
+	],
+	"scripts": {
+		"release": "standard-version",
+		"preinstall": "composer install"
+	},
+	"standard-version": {
+		"skip": {
+			"tag": false
+		}
+	},
+	"homepage": "https://github.com/squarecandy/squarecandy-acf-events",
+	"devDependencies": {
+		"@lodder/grunt-postcss": "^3.1.1",
+		"@types/eslint": "6.8.0",
+		"@wordpress/eslint-plugin": "^5.1.0",
+		"@wordpress/scripts": "^23.1.0",
+		"@wordpress/stylelint-config": "^20.0.2",
+		"autoprefixer": "^9.8.6",
+		"cssnano": "^5.1.8",
+		"grunt": "^1.5.2",
+		"grunt-contrib-clean": "^2.0.0",
+		"grunt-contrib-copy": "^1.0.0",
+		"grunt-contrib-watch": "^1.1.0",
+		"grunt-eslint": "^22.0.0",
+		"grunt-phpcs": "^0.4.0",
+		"grunt-run": "^0.8.1",
+		"grunt-sass": "^3.1.0",
+		"grunt-string-replace": "^1.3.3",
+		"grunt-stylelint": "^0.18.0",
+		"grunt-terser": "^1.0.0",
+		"pixrem": "^5.0.0",
+		"postcss": "^8.4.6",
+		"prettier": "npm:wp-prettier@1.19.1",
+		"sass": "^1.49.7",
+		"squarecandy-common": "github:squarecandy/squarecandy-common#main",
+		"standard-version": "^9.3.0",
+		"stylelint": "^14.8.2",
+		"stylelint-config-recommended-scss": "^6.0.0",
+		"stylelint-config-sass-guidelines": "^9.0.1",
+		"stylelint-config-scss": "^1.0.0-security",
+		"stylelint-order": "^5.0.0",
+		"stylelint-scss": "^4.2.0",
+		"terser": "^4.8.1"
+	}
+}
