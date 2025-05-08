@@ -11,6 +11,6 @@
 		{
 			"filename": "squarecandy-tinymce.php",
 			"updater": "version-updater.js"
-		},
+		}
 	]
 }
