@@ -6,7 +6,7 @@
 
 			// set a unique id
 			const dialogID = editor.id + '-sqc-shortcode-dialog';
-
+			
 			// get our list of shortcodes from js localization
 			const buttonSettings = typeof sqcEmbed !== 'undefined' ? sqcEmbed.mceButton : [];
 			let radioButtons = '';
@@ -46,7 +46,10 @@
 				'<button class="confirmBtn button button-primary" value="default">Confirm</button></div>' + 
 				'</form></dialog>';
 
-			$('#ed_toolbar').before( $( dialogHtml ) );
+			const editorContainerClass = 'wp-' + editor.id + '-wrap';
+			const $editorContainer = $( '#' + editorContainerClass );
+			//console.log( 'editorContainerClass', editorContainerClass, $editorContainer );
+			$editorContainer.before( $( dialogHtml ) );
 
 			// add event listeners to catch the dialog close
 			const sqcDialog = $("#" + dialogID)[0];			
@@ -143,7 +146,7 @@
 				}
 			});
 
-
+			//TODO button not always getting added when multiple editors - does it need a unique id etc?
 			// Register buttons - trigger above command when clicked
 			editor.addButton('sqc_embed_button', {title : 'Insert shortcode', cmd : 'sqc_embed_insert_shortcode', icon: 'dashicon', classes: 'sqc-shortcode' });
 

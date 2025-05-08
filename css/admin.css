@@ -87,3 +87,9 @@
 	margin: 0px;
     white-space: normal;
 }
+
+/* prevent errors from getting weird */
+div.mce-notification-error {
+    max-width: 70% !important;
+    margin-left: 1%;
+}
