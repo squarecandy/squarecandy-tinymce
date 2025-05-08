@@ -44,7 +44,7 @@ module.exports = function( grunt ) {
 		run: {
 			stylelintfix: {
 				cmd: 'npx',
-				args: [ 'stylelint', 'css/*.scss', '--fix' ],
+				args: [ 'stylelint', 'css/*.css', '--fix' ],
 			},
 			eslintfix: {
 				cmd: 'eslint',
