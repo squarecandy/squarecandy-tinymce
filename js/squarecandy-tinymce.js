@@ -1,4 +1,5 @@
-/* eslint-disable no-console, no-undef, no-unused-vars, eqeqeq */
+/* eslint-disable no-console, eqeqeq */
+/* global sqcEmbed */
 function typeInTextarea( newText, el = document.activeElement ) {
 	const [ start, end ] = [ el.selectionStart, el.selectionEnd ];
 	el.setRangeText( newText, start, end, 'select' );
@@ -73,7 +74,7 @@ function replacePastedText( pastedData, checkIndex = false ) {
 }
 
 function displayInterceptMessage( element, message ) {
-	messageDiv = '<div class="squarecandy-tinymce-alert message error">' + message + '</div>';
+	const messageDiv = '<div class="squarecandy-tinymce-alert message error">' + message + '</div>';
 	jQuery( element ).append( messageDiv );
 
 	// clear the alert after 20 seconds

@@ -1,4 +1,5 @@
-/* eslint-disable no-console, no-undef, no-unused-vars, eqeqeq */
+/* eslint-disable no-console, no-unused-vars, eqeqeq */
+/* global tinymce, sqcEmbed */
 ( function( $ ) {
 	tinymce.create( 'tinymce.plugins.sqc_embed_plugin', {
 		init( editor, url ) {
@@ -136,14 +137,14 @@
 			} );
 
 			$( '#' + dialogID + ' input[type="radio"]' ).on( 'change', function() {
-				shortcodeName = this.value;
-				$allNotes = $( this )
+				const shortcodeName = this.value;
+				const $allNotes = $( this )
 					.parents( 'dialog' )
 					.find( '.sqc-btn-notes' );
-				$targetDiv = $( this )
+				const $targetDiv = $( this )
 					.parents( 'dialog' )
 					.find( '.notes-' + shortcodeName );
-				$dialogInput = $( this )
+				const $dialogInput = $( this )
 					.parents( 'dialog' )
 					.find( 'input[name="sqc-insert"]' );
 
@@ -163,7 +164,7 @@
 			} );
 
 			$( '#' + dialogID + ' .show-more' ).on( 'click', function() {
-				$thisMore = $( this )
+				const $thisMore = $( this )
 					.parents( '.sqc-btn-notes' )
 					.find( '.more' );
 				if ( $thisMore.is( ':visible' ) ) {
