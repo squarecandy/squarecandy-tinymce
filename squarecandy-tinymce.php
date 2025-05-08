@@ -24,7 +24,9 @@ require SQUARECANDY_TINYMCE_DIR_PATH . 'inc/class-squarecandy-tinymce-writing-se
 
 $new_writing_settings = new SquareCandy_TinyMCE_Writing_Settings();
 
-require SQUARECANDY_TINYMCE_DIR_PATH . 'inc/class-sqc-embed.php';
+// set up embed manager
+require SQUARECANDY_TINYMCE_DIR_PATH . 'inc/class-sqc-embed-manager.php';
+$sqc_embeds = new SQC_Embed_Manager();
 
 function squarecandy_tinymce_enqueue_scripts() {
 	if ( get_option( 'sqcdy_allow_color_picker' ) ) :
