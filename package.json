@@ -1,6 +1,6 @@
 {
 	"name": "squarecandy-tinymce",
-	"version": "1.10.0-dev.2",
+	"version": "2.1.0-dev.5",
 	"description": "An opinionated reconfiguration of the default WordPress TinyMCE settings",
 	"repository": {
 		"type": "git",
