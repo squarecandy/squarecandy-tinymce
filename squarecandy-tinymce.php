@@ -14,7 +14,8 @@ Text Domain: squarecandy-tinymce
 
 define( 'SQUARECANDY_TINYMCE_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SQUARECANDY_TINYMCE_DIR_URL', plugin_dir_url( __FILE__ ) );
-define( 'SQUARECANDY_TINYMCE_VERSION', '2.1.0-dev.5' );
+define( 'SQUARECANDY_TINYMCE_VERSION', 'version-2.1.0-dev.5' );
+
 /**
  * Add options to the Writing options page
  * @link https://trepmal.com/2011/03/07/add-field-to-general-settings-page/

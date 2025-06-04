@@ -1,0 +1,18 @@
+{
+	"name": "squarecandy-tinymce",
+	"version": "1.5.6",
+	"description": "An opinionated reconfigureation of the default wordpress TinyMCE settings.",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/squarecandy/squarecandy-tinymce.git"
+	},
+	"author": "Square Candy Design / Peter Wise",
+	"license": "UNLICENSED",
+	"homepage": "https://github.com/squarecandy/squarecandy-tinymce",
+	"scripts": {
+		"release": "standard-version"
+	},
+	"devDependencies": {
+		"standard-version": "^9.3.0"
+	}
+}
