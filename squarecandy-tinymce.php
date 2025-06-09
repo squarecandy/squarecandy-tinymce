@@ -4,7 +4,7 @@ Plugin Name: Square Candy TinyMCE Reboot
 Plugin URI: https://github.com/squarecandy/squarecandy-tinymce
 GitHub Plugin URI: https://github.com/squarecandy/squarecandy-tinymce
 Description: An opinionated reconfiguration of the default WordPress TinyMCE settings.
-Version: 2.1.0-dev.6
+Version: 2.1.0-dev.7
 Author: Peter Wise
 Author URI: http://squarecandydesign.com
 License: GPLv3
@@ -14,8 +14,7 @@ Text Domain: squarecandy-tinymce
 
 define( 'SQUARECANDY_TINYMCE_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SQUARECANDY_TINYMCE_DIR_URL', plugin_dir_url( __FILE__ ) );
-define( 'SQUARECANDY_TINYMCE_VERSION', 'version-2.1.0-dev.6' );
-
+define( 'SQUARECANDY_TINYMCE_VERSION', 'version-2.1.0-dev.5' );
 /**
  * Add options to the Writing options page
  * @link https://trepmal.com/2011/03/07/add-field-to-general-settings-page/
@@ -25,7 +24,9 @@ require SQUARECANDY_TINYMCE_DIR_PATH . 'inc/class-squarecandy-tinymce-writing-se
 
 $new_writing_settings = new SquareCandy_TinyMCE_Writing_Settings();
 
-require SQUARECANDY_TINYMCE_DIR_PATH . 'inc/class-sqc-embed.php';
+// set up embed manager
+require SQUARECANDY_TINYMCE_DIR_PATH . 'inc/class-sqc-embed-manager.php';
+$sqc_embeds = new SQC_Embed_Manager();
 
 function squarecandy_tinymce_enqueue_scripts() {
 	if ( get_option( 'sqcdy_allow_color_picker' ) ) :

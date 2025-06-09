@@ -1,89 +1,95 @@
 
-.mce-sqc-shortcode button i:before {
+.mce-sqc-shortcode button i::before {
 	content: "\f150";
 }
 
 .sqc-shortcode-dialog {
+	max-width: 400px;
+	background: #f6f7f7;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 	border: 1px solid #a7aaad;
-    border-radius: 2px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-    background: #f6f7f7;
-    max-width: 400px;
+	border-radius: 2px;
 }
 
 /* based on div.wp-link-input */
-.sqc-shortcode-dialog input[type=text] {
-    min-width: 300px;
-    width: 100%;
-    padding: 3px;
-    box-sizing: border-box;
-    line-height: 1.28571429;
-    min-height: 26px;
+.sqc-shortcode-dialog input[type="text"] {
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 300px;
+	min-height: 26px;
 
-    margin-top: 5px;
+	margin-top: 5px;
+	padding: 3px;
+	line-height: 1.28571429;
 }
 
 .sqc-shortcode-dialog label {
-    color: #646970;
+	color: #646970;
 }
 
 .sqc-shortcode-dialog form .btn-group {
-    margin: 5px 0 0;
-    display: flex;
-    align-items: flex-end;
-    column-gap: 10px;
-    flex-wrap: wrap;
-    row-gap: 10px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	margin: 5px 0 0;
+	column-gap: 10px;
+	row-gap: 10px;
 }
 
 .sqc-shortcode-dialog .sqc-btn {
-    display: flex;
-    align-items: flex-end;
+	display: flex;
+	align-items: flex-end;
 }
 
 .sqc-shortcode-dialog form .btn-group-submit {
-    justify-content: space-between;
+	justify-content: space-between;
 }
 
 .sqc-shortcode-dialog .note-container {
-    display: grid;
-    margin: 10px 0;
+	display: grid;
+	margin: 10px 0;
 }
 
 .sqc-shortcode-dialog .note-container .more {
-    display: none;
+	display: none;
 }
 
 .sqc-shortcode-dialog .note-container .more.show {
-    display: block;
+	display: block;
 }
 
 .sqc-shortcode-dialog .sqc-btn-notes {
-    visibility: hidden;
-    grid-row-start: 1;
-    grid-column-start: 1;
+	grid-row-start: 1;
+	grid-column-start: 1;
+	visibility: hidden;
 }
 
 .sqc-shortcode-dialog .sqc-btn-notes.show {
-    visibility: visible;
+	visibility: visible;
 }
 
 .sqc-shortcode-dialog .sqc-btn-notes .show-more {
-    display: inline;
-    margin-left: 5px;
+	display: inline;
+	margin-left: 5px;
 }
 
 /* text editor */
 .quicktags-toolbar .squarecandy-tinymce-alert {
 	position: absolute;
-    top: 31px;
-    left: 0;
-    box-sizing: border-box;
-    width: 100%;
+	top: 31px;
+	left: 0;
+	box-sizing: border-box;
+	width: 100%;
 }
 
 /* visual editor */
 .mce-toolbar-grp .squarecandy-tinymce-alert.error {
-	margin: 0px;
-    white-space: normal;
+	margin: 0;
+	white-space: normal;
+}
+
+/* prevent errors from getting weird */
+div.mce-notification-error {
+	max-width: 70% !important;
+	margin-left: 1%;
 }
