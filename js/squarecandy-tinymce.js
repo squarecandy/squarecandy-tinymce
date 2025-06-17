@@ -21,7 +21,6 @@ function replacePastedText( pastedData, checkIndex = false ) {
 		const matchesCheck = pastedData.includes( check.checkText );
 
 		if ( hasTag && matchesCheck ) {
-
 			// check if there/s a coustom function to handle this type:
 			const customFunction = window[ prop + 'Process' ];
 
@@ -71,7 +70,6 @@ function displayInterceptMessage( element, message ) {
 jQuery( document ).ready( function( $ ) {
 	// anytime the user pastes into the HTML view check if the value has a youtube iframe.
 	$( document ).on( 'paste', 'textarea.wp-editor-area', function( e ) {
-
 		// access the clipboard using the api
 		const pastedData = e.originalEvent.clipboardData.getData( 'text' );
 		const output = replacePastedText( pastedData );
