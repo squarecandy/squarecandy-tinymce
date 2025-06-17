@@ -12,10 +12,6 @@ function replacePastedText( pastedData, checkIndex = false ) {
 	// if we're passing in a particular item to search for via checkIndex, replace the full array with an arry with just that item's info
 	const interceptChecks = checkIndex ? { [ checkIndex ]: globalChecks[ checkIndex ] } : globalChecks;
 
-	console.log( 'pasteIntercept', pastedData );
-	console.log( 'globalChecks', globalChecks, 'checkIndex', checkIndex );
-	console.log( 'interceptChecks', interceptChecks );
-
 	for ( const prop in interceptChecks ) {
 		const check = interceptChecks[ prop ];
 		const findTag = check.checkTag;
@@ -24,20 +20,11 @@ function replacePastedText( pastedData, checkIndex = false ) {
 
 		const matchesCheck = pastedData.includes( check.checkText );
 
-		console.log( 'check', check );
-		console.log( check.checkText, hasTag, matchesCheck );
-
 		if ( hasTag && matchesCheck ) {
-			console.log( 'found!' );
 
 			// check if there/s a coustom function to handle this type:
 			const customFunction = window[ prop + 'Process' ];
-			console.log(
-				'customFunction ' + prop + 'Process',
-				customFunction,
-				typeof customFunction,
-				typeof customFunction === 'function'
-			);
+
 			let output = '';
 
 			if ( check.replaceRegex ) {
@@ -47,8 +34,6 @@ function replacePastedText( pastedData, checkIndex = false ) {
 				const re = new RegExp( check.replaceRegex );
 				const matches = pastedData.match( re );
 
-				console.log( 'matches', check.replaceRegex, re, matches );
-
 				// get the youtube video id from the iframe
 				if ( matches ) {
 					output = matches[ 1 ];
@@ -56,9 +41,9 @@ function replacePastedText( pastedData, checkIndex = false ) {
 			} else {
 				output = pastedData;
 			}
-			console.log( 'output', output );
+
 			if ( typeof customFunction === 'function' ) {
-				output = customFunction( output );
+				output = customFunction( output, pastedData ); // is it ok if custom functions don't have 2nd param in definition?
 			}
 
 			output = '\n' + check.replacePre + output + check.replacePost + '\n\n'; // line breaks not working?
@@ -86,7 +71,7 @@ function displayInterceptMessage( element, message ) {
 jQuery( document ).ready( function( $ ) {
 	// anytime the user pastes into the HTML view check if the value has a youtube iframe.
 	$( document ).on( 'paste', 'textarea.wp-editor-area', function( e ) {
-		console.log( 'pasted' );
+
 		// access the clipboard using the api
 		const pastedData = e.originalEvent.clipboardData.getData( 'text' );
 		const output = replacePastedText( pastedData );
