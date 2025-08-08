@@ -4,7 +4,7 @@ Plugin Name: Square Candy TinyMCE Reboot
 Plugin URI: https://github.com/squarecandy/squarecandy-tinymce
 GitHub Plugin URI: https://github.com/squarecandy/squarecandy-tinymce
 Description: An opinionated reconfiguration of the default WordPress TinyMCE settings.
-Version: 2.1.0
+Version: 2.1.1-dev.0
 Author: Peter Wise
 Author URI: http://squarecandydesign.com
 License: GPLv3
