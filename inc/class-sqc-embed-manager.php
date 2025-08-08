@@ -128,7 +128,7 @@ class SQC_Embed_Manager {
 	}
 
 	private function register_embed_class_item( $item, $file_path ) {
-		sqcdy_log( $file_path, 'register_embed_class_item ' . $item );
+
 		if ( is_string( $item ) ) {
 
 			// try to load the file
@@ -184,7 +184,6 @@ class SQC_Embed_Manager {
 	public function toolbar_button_init() {
 		//Abort early if the user will never see TinyMCE
 		if ( ! current_user_can( 'edit_posts' ) && ! current_user_can( 'edit_pages' ) && get_user_option( 'rich_editing' ) === 'true' ) {
-			sqcdy_log( 'Abort adding shortcode button' );
 			return;
 		}
 
