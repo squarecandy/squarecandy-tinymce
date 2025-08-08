@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.1](https://github.com/squarecandy/squarecandy-tinymce/compare/v2.1.0...v2.1.1) (2025-08-08)
+
+
+### Bug Fixes
+
+* remove logging ([bbfb2b7](https://github.com/squarecandy/squarecandy-tinymce/commit/bbfb2b79d91f41eea892539c03efaaa0f830d1e0))
+
 ## 2.1.0 (2025-06-30)
 
 
