@@ -184,29 +184,29 @@ function squarecandy_tinymce_add_editor_styles() {
 	$stylesheet_directory_uri = get_stylesheet_directory_uri();
 	$stylesheet_directory     = get_stylesheet_directory();
 	$template_directory       = get_template_directory();
+	$template_directory_uri   = get_template_directory_uri();
+	$editor_styles            = array();
+	$is_views2                = function_exists( 'sqcdy_is_views2' ) && sqcdy_is_views2();
+	$file_name_base           = $is_views2 ? 'squarecandy-tinymce-editor-style-views2' : 'squarecandy-tinymce-editor-style';
 
 	$sqcdy_include_theme_style_css = get_option( 'sqcdy_include_theme_style_css' );
 	if ( 'on' === $sqcdy_include_theme_style_css ) {
-		add_editor_style( $stylesheet_directory_uri . '/style.css' );
+		$editor_styles['sqcdy_include_theme_style_css'] = $stylesheet_directory_uri . '/style.css';
 	}
 
 	$sqcdy_theme_colwidth = get_option( 'sqcdy_theme_colwidth' );
 	if ( ! empty( $sqcdy_theme_colwidth ) ) {
-		add_editor_style( SQUARECANDY_TINYMCE_DIR_URL . 'inc/dynamic.css.php' );
+		$editor_styles['sqcdy_theme_colwidth'] = SQUARECANDY_TINYMCE_DIR_URL . 'inc/dynamic.css.php';
 	}
 
 	$sqcdy_theme_css = get_option( 'sqcdy_theme_css' );
 	if ( ! empty( $sqcdy_theme_css ) ) {
 		$all_css = explode( "\n", $sqcdy_theme_css );
-		foreach ( $all_css as $css ) {
+		sqcdy_log( $all_css, '$all_css' );
+		foreach ( $all_css as $k => $css ) {
 			$css = preg_replace( '/\s/', '', $css );
-			add_editor_style( $css );
+			$editor_styles[ 'sqcdy_theme_css-' . $k ] = $css;
 		}
-	}
-
-	$file_name_base = 'squarecandy-tinymce-editor-style';
-	if ( function_exists( 'sqcdy_is_views2' ) && sqcdy_is_views2() ) {
-		$file_name_base = 'squarecandy-tinymce-editor-style-views2';
 	}
 
 	// if both child and parent override files exist (meaning a child theme is active), load both
@@ -215,32 +215,37 @@ function squarecandy_tinymce_add_editor_styles() {
 		file_exists( $template_directory . '/' . $file_name_base . '.css' ) &&
 		$stylesheet_directory !== $template_directory
 	) {
-		add_editor_style( get_template_directory_uri() . '/' . $file_name_base . '.css' );
+		$editor_styles['child_theme_css'] = $template_directory_uri . '/' . $file_name_base . '.css';
 	} elseif (
 		file_exists( $stylesheet_directory . '/dist/css/' . $file_name_base . '.min.css' ) &&
 		file_exists( $template_directory . '/dist/css/' . $file_name_base . '.min.css' ) &&
 		$stylesheet_directory !== $template_directory
 	) {
-		add_editor_style( get_template_directory_uri() . '/dist/css/' . $file_name_base . '.min.css' );
+		$editor_styles['child_theme_css_dist'] = $template_directory_uri . '/dist/css/' . $file_name_base . '.min.css';
 	}
 
 	// add override stylesheets from theme or child theme directory locations
 	if ( file_exists( $stylesheet_directory . '/' . $file_name_base . '.css' ) ) {
-		add_editor_style( $stylesheet_directory_uri . '/' . $file_name_base . '.css' );
+		$editor_styles['override_stylesheets'] = $stylesheet_directory_uri . '/' . $file_name_base . '.css';
 	} elseif ( file_exists( $stylesheet_directory . '/dist/css/' . $file_name_base . '.min.css' ) ) {
-		add_editor_style( $stylesheet_directory_uri . '/dist/css/' . $file_name_base . '.min.css' );
+		$editor_styles['override_stylesheets_dist'] = $stylesheet_directory_uri . '/dist/css/' . $file_name_base . '.min.css';
 	} else {
-		add_editor_style( SQUARECANDY_TINYMCE_DIR_URL . 'css/' . $file_name_base . '.css' );
+		$editor_styles['override_stylesheets_tinymce'] = SQUARECANDY_TINYMCE_DIR_URL . 'css/' . $file_name_base . '.css';
 	}
 
-	// fontend-style overrides
+	// frontend-style overrides
 	if ( ! get_option( 'sqcdy_remove_frontend_style_css', false ) ) :
 		if ( file_exists( $stylesheet_directory . '/frontend-style.css' ) ) {
-			add_editor_style( $stylesheet_directory_uri . '/frontend-style.css' );
+			$editor_styles['frontend_overrides'] = $stylesheet_directory_uri . '/frontend-style.css';
 		} else {
-			add_editor_style( SQUARECANDY_TINYMCE_DIR_URL . 'css/frontend-style.css' );
+			$editor_styles['frontend_overrides_tinymce'] = SQUARECANDY_TINYMCE_DIR_URL . 'css/frontend-style.css';
 		}
 	endif;
+
+	sqcdy_log( $editor_styles, 'editor_styles' );
+	foreach ( $editor_styles as $key => $editor_style ) {		
+		add_editor_style( $editor_style );
+	}
 
 }
 add_action( 'admin_init', 'squarecandy_tinymce_add_editor_styles' );
