@@ -225,7 +225,7 @@ function squarecandy_tinymce_add_editor_styles() {
 		) :
 
 			//load parent theme css
-			$editor_styles['child_theme_css'] = $template_directory_uri . $regular_css_path;
+			$editor_styles['parent_theme_css'] = $template_directory_uri . $regular_css_path;
 
 		elseif ( // this assumes both parent and child have /dist/css, what if parent has and child doesn't?
 			$has_child_theme_dist_css_file &&
@@ -233,27 +233,27 @@ function squarecandy_tinymce_add_editor_styles() {
 		) :
 
 			//load parent theme dist/css
-			$editor_styles['child_theme_css_dist'] = $template_directory_uri . $dist_css_path;
+			$editor_styles['parent_theme_css_dist'] = $template_directory_uri . $dist_css_path;
 
 		endif;
 	endif;
 
 	// add override stylesheets from standalone theme or child theme directory locations
 	if ( $has_child_theme_css_file ) {
-		$editor_styles['override_stylesheets'] = $stylesheet_directory_uri . $regular_css_path;
+		$editor_styles['active_theme_stylesheet'] = $stylesheet_directory_uri . $regular_css_path;
 	} elseif ( $has_child_theme_dist_css_file ) {
-		$editor_styles['override_stylesheets_dist'] = $stylesheet_directory_uri . $dist_css_path;
+		$editor_styles['active_theme_stylesheet_dist'] = $stylesheet_directory_uri . $dist_css_path;
 	} else {
-		$editor_styles['override_stylesheets_tinymce'] = SQUARECANDY_TINYMCE_DIR_URL . 'css/' . $file_name_base . '.css';
+		$editor_styles['default_tinymce_stylesheet'] = SQUARECANDY_TINYMCE_DIR_URL . 'css/' . $file_name_base . '.css';
 	}
 
 	// frontend-style overrides
 	if ( ! get_option( 'sqcdy_remove_frontend_style_css', false ) ) :
 		$frontend_style_filename = '/frontend-style.css';
 		if ( file_exists( $stylesheet_directory . $frontend_style_filename ) ) {
-			$editor_styles['frontend_overrides'] = $stylesheet_directory_uri . $frontend_style_filename;
+			$editor_styles['theme_frontend_stylesheet'] = $stylesheet_directory_uri . $frontend_style_filename;
 		} else {
-			$editor_styles['frontend_overrides_tinymce'] = SQUARECANDY_TINYMCE_DIR_URL . 'css/frontend-style.css';
+			$editor_styles['tinymce_frontend_stylesheet'] = SQUARECANDY_TINYMCE_DIR_URL . 'css/frontend-style.css';
 		}
 	endif;
 
