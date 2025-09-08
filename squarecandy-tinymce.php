@@ -274,11 +274,13 @@ function squarecandy_tinymce_frontendstyle() {
 
 	if ( file_exists( get_stylesheet_directory() . '/frontend-style.css' ) ) {
 		// check if an override exists
-		wp_enqueue_style( 'squarecandy-tinymce-style', get_stylesheet_directory_uri() . '/frontend-style.css', array(), SQUARECANDY_TINYMCE_VERSION );
+		$frontend_style_file = get_stylesheet_directory_uri() . '/frontend-style.css';
 	} else {
 		// load the default copy
-		wp_enqueue_style( 'squarecandy-tinymce-style', SQUARECANDY_TINYMCE_DIR_URL . 'css/frontend-style.css', array(), SQUARECANDY_TINYMCE_VERSION );
+		$frontend_style_file = SQUARECANDY_TINYMCE_DIR_URL . 'css/frontend-style.css';
 	}
+
+	wp_enqueue_style( 'squarecandy-tinymce-style', $frontend_style_file, array(), SQUARECANDY_TINYMCE_VERSION );
 }
 add_action( 'wp_enqueue_scripts', 'squarecandy_tinymce_frontendstyle' );
 
