@@ -277,7 +277,7 @@ function squarecandy_tinymce_frontendstyle() {
 		wp_enqueue_style( 'squarecandy-tinymce-style', get_stylesheet_directory_uri() . '/frontend-style.css', array(), SQUARECANDY_TINYMCE_VERSION );
 	} else {
 		// load the default copy
-		wp_enqueue_style( 'squarecandy-tinymce-style', SQUARECANDY_TINYMCE_DIR_URL . 'frontend-style.css', array(), SQUARECANDY_TINYMCE_VERSION );
+		wp_enqueue_style( 'squarecandy-tinymce-style', SQUARECANDY_TINYMCE_DIR_URL . 'css/frontend-style.css', array(), SQUARECANDY_TINYMCE_VERSION );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'squarecandy_tinymce_frontendstyle' );
