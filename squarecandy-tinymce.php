@@ -196,7 +196,7 @@ function squarecandy_tinymce_add_editor_styles() {
 
 	$regular_css_path              = '/' . $file_name_base . '.css';
 	$dist_css_path                 = '/dist/css/' . $file_name_base . '.min.css';
-	$has_child_theme_css_file      = file_exists( $stylesheet_directory . $regular_css_path;
+	$has_child_theme_css_file      = file_exists( $stylesheet_directory . $regular_css_path );
 	$has_child_theme_dist_css_file = file_exists( $stylesheet_directory . $dist_css_path );
 
 	if ( 'on' === $sqcdy_include_theme_style_css ) {
