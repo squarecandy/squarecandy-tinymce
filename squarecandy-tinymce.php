@@ -188,62 +188,76 @@ function squarecandy_tinymce_add_editor_styles() {
 	$editor_styles            = array();
 	$is_views2                = function_exists( 'sqcdy_is_views2' ) && sqcdy_is_views2();
 	$file_name_base           = $is_views2 ? 'squarecandy-tinymce-editor-style-views2' : 'squarecandy-tinymce-editor-style';
+	$is_child_theme           = $stylesheet_directory !== $template_directory;
 
 	$sqcdy_include_theme_style_css = get_option( 'sqcdy_include_theme_style_css' );
+	$sqcdy_theme_colwidth          = get_option( 'sqcdy_theme_colwidth' );
+	$sqcdy_theme_css               = get_option( 'sqcdy_theme_css' );
+
+	$regular_css_path              = '/' . $file_name_base . '.css';
+	$dist_css_path                 = '/dist/css/' . $file_name_base . '.min.css';
+	$has_child_theme_css_file      = file_exists( $stylesheet_directory . $regular_css_path;
+	$has_child_theme_dist_css_file = file_exists( $stylesheet_directory . $dist_css_path );
+
 	if ( 'on' === $sqcdy_include_theme_style_css ) {
 		$editor_styles['sqcdy_include_theme_style_css'] = $stylesheet_directory_uri . '/style.css';
 	}
 
-	$sqcdy_theme_colwidth = get_option( 'sqcdy_theme_colwidth' );
 	if ( ! empty( $sqcdy_theme_colwidth ) ) {
 		$editor_styles['sqcdy_theme_colwidth'] = SQUARECANDY_TINYMCE_DIR_URL . 'inc/dynamic.css.php';
 	}
 
-	$sqcdy_theme_css = get_option( 'sqcdy_theme_css' );
 	if ( ! empty( $sqcdy_theme_css ) ) {
 		$all_css = explode( "\n", $sqcdy_theme_css );
-		sqcdy_log( $all_css, '$all_css' );
 		foreach ( $all_css as $k => $css ) {
-			$css = preg_replace( '/\s/', '', $css );
+			$css                                      = preg_replace( '/\s/', '', $css );
 			$editor_styles[ 'sqcdy_theme_css-' . $k ] = $css;
 		}
 	}
 
-	// if both child and parent override files exist (meaning a child theme is active), load both
-	if (
-		file_exists( $stylesheet_directory . '/' . $file_name_base . '.css' ) &&
-		file_exists( $template_directory . '/' . $file_name_base . '.css' ) &&
-		$stylesheet_directory !== $template_directory
-	) {
-		$editor_styles['child_theme_css'] = $template_directory_uri . '/' . $file_name_base . '.css';
-	} elseif (
-		file_exists( $stylesheet_directory . '/dist/css/' . $file_name_base . '.min.css' ) &&
-		file_exists( $template_directory . '/dist/css/' . $file_name_base . '.min.css' ) &&
-		$stylesheet_directory !== $template_directory
-	) {
-		$editor_styles['child_theme_css_dist'] = $template_directory_uri . '/dist/css/' . $file_name_base . '.min.css';
-	}
+	// if both child and parent override files exist (meaning a child theme is active)
+	// we want to load bpth, so first we load the parent files:
+	if ( $is_child_theme ) :
 
-	// add override stylesheets from theme or child theme directory locations
-	if ( file_exists( $stylesheet_directory . '/' . $file_name_base . '.css' ) ) {
-		$editor_styles['override_stylesheets'] = $stylesheet_directory_uri . '/' . $file_name_base . '.css';
-	} elseif ( file_exists( $stylesheet_directory . '/dist/css/' . $file_name_base . '.min.css' ) ) {
-		$editor_styles['override_stylesheets_dist'] = $stylesheet_directory_uri . '/dist/css/' . $file_name_base . '.min.css';
+		if ( // both parent & child theme use .css in theme directory
+			$has_child_theme_css_file &&
+			file_exists( $template_directory . $regular_css_path )
+		) :
+
+			//load parent theme css
+			$editor_styles['child_theme_css'] = $template_directory_uri . $regular_css_path;
+
+		elseif ( // this assumes both parent and child have /dist/css, what if parent has and child doesn't?
+			$has_child_theme_dist_css_file &&
+			file_exists( $template_directory . $dist_css_path )
+		) :
+
+			//load parent theme dist/css
+			$editor_styles['child_theme_css_dist'] = $template_directory_uri . $dist_css_path;
+
+		endif;
+	endif;
+
+	// add override stylesheets from standalone theme or child theme directory locations
+	if ( $has_child_theme_css_file ) {
+		$editor_styles['override_stylesheets'] = $stylesheet_directory_uri . $regular_css_path;
+	} elseif ( $has_child_theme_dist_css_file ) {
+		$editor_styles['override_stylesheets_dist'] = $stylesheet_directory_uri . $dist_css_path;
 	} else {
 		$editor_styles['override_stylesheets_tinymce'] = SQUARECANDY_TINYMCE_DIR_URL . 'css/' . $file_name_base . '.css';
 	}
 
 	// frontend-style overrides
 	if ( ! get_option( 'sqcdy_remove_frontend_style_css', false ) ) :
-		if ( file_exists( $stylesheet_directory . '/frontend-style.css' ) ) {
-			$editor_styles['frontend_overrides'] = $stylesheet_directory_uri . '/frontend-style.css';
+		$frontend_style_filename = '/frontend-style.css';
+		if ( file_exists( $stylesheet_directory . $frontend_style_filename ) ) {
+			$editor_styles['frontend_overrides'] = $stylesheet_directory_uri . $frontend_style_filename;
 		} else {
 			$editor_styles['frontend_overrides_tinymce'] = SQUARECANDY_TINYMCE_DIR_URL . 'css/frontend-style.css';
 		}
 	endif;
 
-	sqcdy_log( $editor_styles, 'editor_styles' );
-	foreach ( $editor_styles as $key => $editor_style ) {		
+	foreach ( $editor_styles as $key => $editor_style ) {
 		add_editor_style( $editor_style );
 	}
 
