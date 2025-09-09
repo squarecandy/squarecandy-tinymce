@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.2](https://github.com/squarecandy/squarecandy-tinymce/compare/v2.1.1...v2.1.2) (2025-09-09)
+
+
+### Bug Fixes
+
+* fix non-updated css file url ([d1465ba](https://github.com/squarecandy/squarecandy-tinymce/commit/d1465ba676fee8a955f677c61599848596ead644))
+* fix typo ([7ec6ddd](https://github.com/squarecandy/squarecandy-tinymce/commit/7ec6dddc2954b94bac26e7ed648bed51fe8c754d))
+* lint & refactor admin editor styles to be easier to read ([30a06ea](https://github.com/squarecandy/squarecandy-tinymce/commit/30a06ea5e80e7ce303ff3598f59aec8f694c951c))
+* more descriptive css file indexs ([3af9d0b](https://github.com/squarecandy/squarecandy-tinymce/commit/3af9d0b4a2e86101b7401946e4c566e4473d494d))
+* refactor admin add editor style to be easier to debug ([84e7767](https://github.com/squarecandy/squarecandy-tinymce/commit/84e77674df1881e38783444aef843bb561fec2a7))
+* refactor frontend editor style add to be easier to debug ([e7eb97b](https://github.com/squarecandy/squarecandy-tinymce/commit/e7eb97b89c0a6d7bb86b1fbded9741983f2c8faf))
+
 ### [2.1.1](https://github.com/squarecandy/squarecandy-tinymce/compare/v2.1.0...v2.1.1) (2025-08-08)
 
 
