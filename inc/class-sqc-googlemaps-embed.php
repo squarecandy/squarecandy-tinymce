@@ -25,13 +25,13 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 		'replaceRegex' => '', // not needed, custom process
 		'replacePre'   => '',
 		'replacePost'  => '',
-		'custom_js'    => "sqcGoogleMapsProcess = function( pastedData ) { 
-			const iframeOpen = /(?:&lt;|<)iframe/; 
-			const iframeClose = /(?:&gt;&lt;|><)\/iframe(?:&gt;|>)/; 
-			newText = pastedData.replace( iframeOpen, '[sqc-gmaps ' ); 
+		'custom_js'    => "sqcGoogleMapsProcess = function( pastedData ) {
+			const iframeOpen = /(?:&lt;|<)iframe/;
+			const iframeClose = /(?:&gt;&lt;|><)\/iframe(?:&gt;|>)/;
+			newText = pastedData.replace( iframeOpen, '[sqc-gmaps ' );
 			console.log( 'newText', newText );
-			newText = newText.replace( iframeClose, ']' ); 
-			return newText; 
+			newText = newText.replace( iframeClose, ']' );
+			return newText;
 		};",
 	);
 
@@ -58,7 +58,7 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 			'src' // accepts single att
 		);
 
-		if ( ! $src ) :
+		if ( ! $attr['src'] ) :
 			return false;
 		endif;
 
