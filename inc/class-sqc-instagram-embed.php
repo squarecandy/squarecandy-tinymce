@@ -1,17 +1,17 @@
 <?php
 /**
- * Manage embeds/shortcode for Instagram videos
+ * Manage embeds/shortcode for Instagram posts and videos
  *
  * Shortcode/Autoembed:
  *    Takes urls like:
- *       https://www.instagram.com/reel/{VIDEO_ID}/?utm_source=ig_web_copy_link
- *       https://www.instagram.com/reel/{VIDEO_ID}/?igsh=ZGUzMzM3NWJiOQ==
+ *       https://www.instagram.com/reel/{INSTA_ID}/?utm_source=ig_web_copy_link
+ *       https://www.instagram.com/reel/{INSTA_ID}/?igsh=ZGUzMzM3NWJiOQ==
  *
  * Outputs an iframe like:
  *    <iframe id="instagram-embed-1" class="instagram-media instagram-media-rendered"
  *       style="background: white; max-width: XXXpx; width: calc(100%% - 2px); border-radius: 3px; border: 1px solid #dbdbdb; box-shadow: none;
  *       display: block; margin: 0px 0px 12px; min-width: 326px; padding: 0px; position: static !important;"
- *      src="{VIDEO_ID}/embed/?cr=1&amp;v=14&amp;wp=XXX" height="YYY" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen" data-instgrm-payload-id="instagram-media-payload-0">
+ *      src="{INSTA_ID}/embed/?cr=1&amp;v=14&amp;wp=XXX" height="YYY" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen" data-instgrm-payload-id="instagram-media-payload-0">
  *    </iframe>
  *
  * NB if you copy the embed code from instagram, it's a big unwieldy <blockquote> with a <script> tag at the end that then resolves via js into an ifram similar to the above. For simplicity we are durectly creating the iframe instead of going the blockquote route, which works for now... it will not always have all the customizayion the js reslved version has (height is sometimes a bit off) so we could change it down the road.
@@ -36,8 +36,8 @@ class SQC_Instagram_Embed extends SQC_Embed {
 	);
 	public $shortcode_button_settings = array(
 		'shortcode'    => 'sqc-instagram',
-		'title'        => 'Instagram Video',
-		'notes'        => 'You can embed Instagram videos by pasting the link here.', // @TODO trim params from instagram urls here
+		'title'        => 'Instagram Embed',
+		'notes'        => 'You can embed Instagram posts & videos by pasting the link here.', // @TODO trim params from instagram urls here
 		'functionName' => 'sqcInstagramShortcodeButton',
 		'custom_js'    => 'sqcInstagramShortcodeButton = function( input = "" ) {
 			console.log( "sqcInstagramShortcodeButton input", input );
