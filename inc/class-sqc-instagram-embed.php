@@ -28,7 +28,7 @@ class SQC_Instagram_Embed extends SQC_Embed {
 		'checkTag'     => 'script',
 		'checkText'    => 'instagram',
 		'message'      => 'We have detected that you are trying to paste an Instagram iframe embed into the HTML view. For better results, we are replacing this with the appropriate URL format. To avoid this message in the future, please paste the Instagram URL into the Visual tab instead of the iframe embed code.',
-		'replaceRegex' => '(https://www\.instagram\.com/reel/[a-zA-Z0-9]+)',
+		'replaceRegex' => '(https://www\.instagram\.com/(?:reel|p)/[^\/\"]+)',
 		'replacePre'   => '[sqc-instagram ',
 		'replacePost'  => ']',
 	);
@@ -39,7 +39,7 @@ class SQC_Instagram_Embed extends SQC_Embed {
 		'functionName' => 'sqcInstagramShortcodeButton',
 		'custom_js'    => 'sqcInstagramShortcodeButton = function( input = "" ) {
 			console.log( "sqcInstagramShortcodeButton input", input );
-			const regex = /(https:\/\/www\.instagram\.com\/reel\/[\S].*)(\/.*)/gm;
+			const regex = /(https:\/\/www\.instagram\.com\/(?:reel|p)\/[\S].*)(\/.*)/gm;
 			const result = input.replace( regex, `$1` );
 			return "[sqc-instagram " + result + "]";
 		}',
@@ -53,12 +53,15 @@ class SQC_Instagram_Embed extends SQC_Embed {
 		//@TODO instagram links with / on ends aren't working here, need to fix that
 		// these are narrower than others - maybe 540 is too narrow
 
+		$unique_id = time();
+
 		$attr = $this->process_shortcode_attr(
 			$attr,
 			array(
 				'url'    => null,
 				'width'  => 540,
 				'height' => 881,
+				'id'     => $unique_id,
 			),
 			'url' // accepts single att
 		);
@@ -66,7 +69,7 @@ class SQC_Instagram_Embed extends SQC_Embed {
 		$attr['url'] = $this->validate_url( $attr['url'] );
 
 		// grab just the part we need of the url
-		$regex = '#(https://www\.instagram\.com/reel/[a-zA-Z0-9]+)#';
+		$regex = '#(https://www\.instagram\.com/(?:reel|p)/[^\/\"]+)#';
 		preg_match( $regex, $attr['url'], $matches );
 		$attr['url'] = isset( $matches[1] ) ? $matches[1] : false;
 
@@ -80,15 +83,15 @@ class SQC_Instagram_Embed extends SQC_Embed {
 		$attr['width']  = $this->maybe_add_px( $attr['width'] );
 		$attr['height'] = $this->maybe_add_px( $attr['height'] );
 
-		//@TODO set id to something unique!!
-		$iframe = '<iframe id="instagram-embed-1" class="instagram-media instagram-media-rendered" style="background: white; max-width: %s; width: calc(100%% - 2px); border-radius: 3px; border: 1px solid #dbdbdb; box-shadow: none; display: block; margin: 0px 0px 12px; min-width: 326px; padding: 0px; position: static !important;" src="%s/embed/?cr=1&amp;v=14&amp;wp=%s" height="%s" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen" data-instgrm-payload-id="instagram-media-payload-0"></iframe>';
+		$iframe = '<iframe id="instagram-embed-%5$s" class="instagram-media instagram-media-rendered" style="background: white; max-width: %1$s; width: calc(100%% - 2px); border-radius: 3px; border: 1px solid #dbdbdb; box-shadow: none; display: block; margin: 0px 0px 12px; min-width: 326px; padding: 0px; position: static !important;" src="%2$s/embed/?cr=1&amp;v=14&amp;wp=%3$s" height="%4$s" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen" data-instgrm-payload-id="instagram-media-payload-%5$s"></iframe>';
 
 		return sprintf(
 			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
 			$attr['width'],
 			$attr['url'],
 			$raw_width,
-			$raw_height
+			$raw_height,
+			$attr['id'],
 		);
 	}
 }

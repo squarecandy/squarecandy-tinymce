@@ -7,6 +7,8 @@
  * Outputs an iframe like:
  *    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeVW-_CT2cAoLYTStvT7TEwNO84kjLjPSV72mUfPsy_AHCHzQ/viewform?embedded=true"
  *       width="640" height="494" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+ *
+ * In create_iframe() we add 250px to the iframe height to avoid scrolling
  */
 
 class SQC_GoogleForms_Embed extends SQC_Embed {
@@ -60,6 +62,9 @@ class SQC_GoogleForms_Embed extends SQC_Embed {
 		if ( ! $attr['src'] ) :
 			return false;
 		endif;
+
+		$extra_height    = 250;
+		$attr['height'] += $extra_height; //add extra height since Gforms doesn't seem to include their footer in calculating height, so it always scrolls
 
 		$iframe = '<iframe src="%s" width="%s" height="%s" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>';
 		return sprintf(

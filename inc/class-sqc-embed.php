@@ -195,6 +195,9 @@ class SQC_Embed {
 			endif;
 		endif;
 
+		$defaults = apply_filters( $this->name . '_embed_defaults', $defaults ); // allow per site filtering of default embed attributes
+		//@TODO more consistent approach to hook names (namespacing?)
+
 		$attr = shortcode_atts( $defaults, $attr );
 		return $attr;
 	}

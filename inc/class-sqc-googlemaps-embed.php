@@ -6,6 +6,8 @@
  *
  * Outputs an iframe like:
  *    '<iframe src="{SRC}" width="XXX" height="YYY" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
+ *
+ * The $paste_intercept_settings sqcGoogleMapsProcess() function will strip height & width parameters out of the initially pasted code, but they can be manually re-added if we need to override the defaults
  */
 
 //@TODO take more params out of the shortcode?
@@ -29,8 +31,9 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 			const iframeOpen = /(?:&lt;|<)iframe/;
 			const iframeClose = /(?:&gt;&lt;|><)\/iframe(?:&gt;|>)/;
 			newText = pastedData.replace( iframeOpen, '[sqc-gmaps ' );
-			console.log( 'newText', newText );
 			newText = newText.replace( iframeClose, ']' );
+			const dimensions = /(height|width)=\"\d*\" ?/g;
+			newText = newText.replaceAll( dimensions, '' );
 			return newText;
 		};",
 	);
@@ -52,8 +55,8 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 			$attr,
 			array(
 				'src'    => null,
-				'width'  => 540,
-				'height' => 881,
+				'width'  => '100%',
+				'height' => 450,
 			),
 			'src' // accepts single att
 		);
