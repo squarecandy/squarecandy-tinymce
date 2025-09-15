@@ -13,6 +13,8 @@
  *       display: block; margin: 0px 0px 12px; min-width: 326px; padding: 0px; position: static !important;"
  *      src="{VIDEO_ID}/embed/?cr=1&amp;v=14&amp;wp=XXX" height="YYY" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen" data-instgrm-payload-id="instagram-media-payload-0">
  *    </iframe>
+ *
+ * NB if you copy the embed code from instagram, it's a big unwieldy <blockquote> with a <script> tag at the end that then resolves via js into an ifram similar to the above. For simplicity we are durectly creating the iframe instead of going the blockquote route, which works for now... it will not always have all the customizayion the js reslved version has (height is sometimes a bit off) so we could change it down the road.
  */
 
 class SQC_Instagram_Embed extends SQC_Embed {
