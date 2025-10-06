@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.3](https://github.com/squarecandy/squarecandy-tinymce/compare/v2.1.2...v2.1.3) (2025-10-06)
+
+
+### Bug Fixes
+
+* adjust maps, forms and instagram embeds ([ac56809](https://github.com/squarecandy/squarecandy-tinymce/commit/ac568093ef8d1d61db0a8429fe53de82e97a2202))
+* bug, google maps not displaying on front end. ([dd5bf9e](https://github.com/squarecandy/squarecandy-tinymce/commit/dd5bf9e938b4e64d4f4420b94dfcfd541de35695))
+* update embed description ([3911d46](https://github.com/squarecandy/squarecandy-tinymce/commit/3911d46ab55f3666e71494333916f2719ad2a56b))
+
 ### [2.1.2](https://github.com/squarecandy/squarecandy-tinymce/compare/v2.1.1...v2.1.2) (2025-09-09)
 
 
