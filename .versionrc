@@ -9,7 +9,15 @@
 			"type": "json"
 		},
 		{
-			"filename": "squarecandy-tinymce.php",
+			"filename": "plugin.php",
+			"updater": "version-updater.js"
+		},
+		{
+			"filename": "readme.txt",
+			"updater": "version-updater.js"
+		},
+		{
+			"filename": "functions.php",
 			"updater": "version-updater.js"
 		}
 	]

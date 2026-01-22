@@ -5,6 +5,10 @@ define( 'SQUARECANDY_TINYMCE_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SQUARECANDY_TINYMCE_DIR_URL', plugin_dir_url( __FILE__ ) );
 define( 'SQUARECANDY_TINYMCE_VERSION', 'version-2.1.3' );
 
+// squarecandy-common files
+require SQUARECANDY_TINYMCE_DIR_PATH . '/inc/sqcdy-common.php';
+require SQUARECANDY_TINYMCE_DIR_PATH . '/inc/sqcdy-plugin.php';
+
 /**
  * Add options to the Writing options page
  * @link https://trepmal.com/2011/03/07/add-field-to-general-settings-page/

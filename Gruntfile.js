@@ -7,7 +7,7 @@ module.exports = function( grunt ) {
 	grunt.initConfig( {
 		pkg: grunt.file.readJSON( 'package.json' ),
 		copy: {
-			init: {
+			preflight: {
 				files: [
 					// common
 					{
@@ -25,6 +25,14 @@ module.exports = function( grunt ) {
 							// default for all other files
 							return dest + matchedSrcPath;
 						},
+					},
+					// plugin
+					{
+						expand: true,
+						cwd: 'node_modules/squarecandy-common/plugin',
+						src: '**/*',
+						dest: '',
+						dot: true,
 					},
 				],
 			},
