@@ -219,18 +219,14 @@ function squarecandy_tinymce_add_editor_styles() {
 	// we want to load bpth, so first we load the parent files:
 	if ( $is_child_theme ) :
 
-		if ( // both parent & child theme use .css in theme directory
-			$has_child_theme_css_file &&
-			file_exists( $template_directory . $regular_css_path )
-		) :
+		// parent theme uses .css in theme directory
+		if ( file_exists( $template_directory . $regular_css_path ) ) :
 
 			//load parent theme css
 			$editor_styles['parent_theme_css'] = $template_directory_uri . $regular_css_path;
 
-		elseif ( // this assumes both parent and child have /dist/css, what if parent has and child doesn't?
-			$has_child_theme_dist_css_file &&
-			file_exists( $template_directory . $dist_css_path )
-		) :
+			// parent theme uses dist
+		elseif ( file_exists( $template_directory . $dist_css_path ) ) :
 
 			//load parent theme dist/css
 			$editor_styles['parent_theme_css_dist'] = $template_directory_uri . $dist_css_path;
