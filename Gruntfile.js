@@ -60,7 +60,7 @@ module.exports = function( grunt ) {
 			},
 			bump: {
 				cmd: 'npm',
-				args: [ 'run', 'release', '--', '--prerelease', 'dev', '--skip.tag', '--skip.changelog' ],
+				args: [ 'run', 'release', '--', '--prerelease', branch, '--skip.tag', '--skip.changelog' ],
 			},
 			ding: {
 				cmd: 'tput',
