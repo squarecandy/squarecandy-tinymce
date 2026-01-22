@@ -79,3 +79,52 @@ All notable changes to this project will be documented in this file. See [standa
 * update termageddon embed for v2 ([ceaba20](https://github.com/squarecandy/squarecandy-tinymce/commit/ceaba201ccb08b127c44583240a25a9b7ea7389d))
 * views 2 use different css override file name ([66e4b73](https://github.com/squarecandy/squarecandy-tinymce/commit/66e4b73640834865b340dddd05d21e2a85caa7ae))
 * wrap radio buttons in label ([f37f709](https://github.com/squarecandy/squarecandy-tinymce/commit/f37f709f28b57ff2ac42bb5227a7e43dae3f639b))
+
+## v2.0.0 - 2025-01-23
+
+* Force Open in New Window to always start unchecked
+* Replace YouTube and Vimeo iframes with link on paste
+* Only allow very restricted TinyMCE on front end: bold, italics, links. (For WPForms or other front end uses)
+* Square Candy Views 2: use different css override file name
+* Add version constant & add variables for reused values
+
+## v1.3.1 - 2020-10-06
+
+* don't strip br, hr, blockquote on paste
+* css file overrides, allow in both child and parent theme.
+* don't load frontend-style.css in editor if disabled in settings
+* `$_SERVER` vars must be quoted in php 7.4+
+
+## v1.3.0 - 2019-09-11
+
+* add phpcs rules and do plugin code cleanup
+* New feature: Clean HTML pasted into the visual editor
+
+## v1.2.3
+
+* add option to turn off colorpicker
+
+## v1.2.2
+
+* add option to turn off frontend-style.css
+
+## v1.2.1
+
+* Add compatibility with GitHub Updater
+
+## v1.2.0
+
+* Add clear formatting button
+* bugfixes
+* adds dotted line to define right side of editor column width
+* use tabs and other corrections to conform to WordPress coding standards
+
+## v1.1.x
+
+* Adds column width option
+* Adds checkbox to optionally add the theme style.css
+* Adds a check to optionally remove editor-style.css or editor.css from the existing theme
+
+## v1.0.0
+
+* The very first version!
