@@ -1,20 +1,9 @@
 <?php
-/*
-Plugin Name: Square Candy TinyMCE Reboot
-Plugin URI: https://github.com/squarecandy/squarecandy-tinymce
-GitHub Plugin URI: https://github.com/squarecandy/squarecandy-tinymce
-Description: An opinionated reconfiguration of the default WordPress TinyMCE settings.
-Version: 2.1.3
-Author: Peter Wise
-Author URI: http://squarecandydesign.com
-License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl.txt
-Text Domain: squarecandy-tinymce
-*/
+// main plugin file
 
 define( 'SQUARECANDY_TINYMCE_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SQUARECANDY_TINYMCE_DIR_URL', plugin_dir_url( __FILE__ ) );
-define( 'SQUARECANDY_TINYMCE_VERSION', 'version-2.1.0-dev.10' );
+define( 'SQUARECANDY_TINYMCE_VERSION', 'version-2.1.3' );
 
 /**
  * Add options to the Writing options page
