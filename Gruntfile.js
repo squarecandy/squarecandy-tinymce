@@ -4,6 +4,12 @@
 // now using grunt-sass to avoid Ruby dependency
 
 module.exports = function( grunt ) {
+	const sass = require( 'sass' );
+	const branch = require( 'child_process' )
+		.execSync( 'git branch --show-current', { encoding: 'utf8' } )
+		.trim()
+		.split( '/' )
+		.pop();
 	grunt.initConfig( {
 		pkg: grunt.file.readJSON( 'package.json' ),
 		copy: {
