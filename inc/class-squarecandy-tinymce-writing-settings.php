@@ -87,5 +87,4 @@ class SquareCandy_TinyMCE_Writing_Settings {
 		}
 		echo '>';
 	}
-
 }

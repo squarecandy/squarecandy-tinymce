@@ -144,7 +144,7 @@ class SQC_Embed {
 	public function add_auto_embed() {
 		add_action(
 			'init',
-			function() {
+			function () {
 				wp_embed_register_handler(
 					$this->name,
 					$this->embed_regex,
@@ -179,7 +179,6 @@ class SQC_Embed {
 		}
 
 		return $url;
-
 	}
 
 	/**
@@ -209,5 +208,4 @@ class SQC_Embed {
 		}
 		return $value;
 	}
-
 }

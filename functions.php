@@ -249,7 +249,6 @@ function squarecandy_tinymce_add_editor_styles() {
 	foreach ( $editor_styles as $key => $editor_style ) {
 		add_editor_style( $editor_style );
 	}
-
 }
 add_action( 'admin_init', 'squarecandy_tinymce_add_editor_styles' );
 
