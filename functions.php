@@ -197,7 +197,7 @@ function squarecandy_tinymce_add_editor_styles() {
 	}
 
 	if ( ! empty( $sqcdy_theme_colwidth ) ) {
-		$editor_styles['sqcdy_theme_colwidth'] = SQUARECANDY_TINYMCE_DIR_URL . 'inc/dynamic.css.php';
+		$editor_styles['sqcdy_theme_colwidth'] = SQUARECANDY_TINYMCE_DIR_URL . 'inc/dynamic-css.php';
 	}
 
 	if ( ! empty( $sqcdy_theme_css ) ) {
