@@ -1,11 +1,7 @@
 {
-	"sassFiles": {
-		"dist/css/main.min.css": "css/main.scss",
-		"dist/css/admin.min.css": "css/admin.scss",
-		"dist/css/squarecandy-tinymce-editor-style.min.css": "css/squarecandy-tinymce-editor-style.scss"
-	},
+	"sassFiles": {},
 	"copyType": "plugin",
-	"phpFiles": [ "*.php", "inc/*.php", "template-parts/*.php", "tribe/", "tribe-events/*.php" ],
+	"phpFiles": [ "*.php", "inc/*.php" ],
 	"additionalCopyFiles": [],
 	"copyCycle2": false,
 	"copyMagnific": false,
