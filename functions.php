@@ -3,7 +3,7 @@
 
 define( 'SQUARECANDY_TINYMCE_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SQUARECANDY_TINYMCE_DIR_URL', plugin_dir_url( __FILE__ ) );
-define( 'SQUARECANDY_TINYMCE_VERSION', 'version-2.2.0-develop.1' );
+define( 'SQUARECANDY_TINYMCE_VERSION', 'version-2.2.0-develop.2' );
 
 // squarecandy-common files
 require SQUARECANDY_TINYMCE_DIR_PATH . '/inc/sqcdy-common.php';
