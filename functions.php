@@ -26,9 +26,9 @@ function squarecandy_tinymce_enqueue_scripts() {
 	if ( get_option( 'sqcdy_allow_color_picker' ) ) :
 		// add colorpicker js to the admin
 		wp_enqueue_style( 'wp-color-picker' );
-		wp_enqueue_script( 'squarecandy-tinymce', SQUARECANDY_TINYMCE_DIR_URL . 'js/colorpick.js', array( 'wp-color-picker' ), SQUARECANDY_TINYMCE_VERSION, true );
+		wp_enqueue_script( 'squarecandy-tinymce', SQUARECANDY_TINYMCE_DIR_URL . 'dist/js/colorpick.min.js', array( 'wp-color-picker' ), SQUARECANDY_TINYMCE_VERSION, true );
 	endif;
-	wp_enqueue_script( 'squarecandy-tinymce', SQUARECANDY_TINYMCE_DIR_URL . 'js/squarecandy-tinymce.js', array(), SQUARECANDY_TINYMCE_VERSION, true );
+	wp_enqueue_script( 'squarecandy-tinymce', SQUARECANDY_TINYMCE_DIR_URL . 'dist/js/squarecandy-tinymce.min.js', array(), SQUARECANDY_TINYMCE_VERSION, true );
 
 	wp_enqueue_style( 'squarecandy-tinymce-admin-css', SQUARECANDY_TINYMCE_DIR_URL . 'css/admin.css', array(), SQUARECANDY_TINYMCE_VERSION );
 }
@@ -174,7 +174,7 @@ add_filter( 'mce_css', 'squarecandy_tinymce_remove_mce_css' );
 
 // Add styles to the TinyMCE editor window to make it look more like your site's front end
 function squarecandy_tinymce_add_editor_styles() {
-	$stylesheet_directory_uri = get_stylesheet_directory_uri();
+	$stylesheet_directory_uri = get_stylesheet_directory_uri(); // for active theme
 	$stylesheet_directory     = get_stylesheet_directory();
 	$template_directory       = get_template_directory();
 	$template_directory_uri   = get_template_directory_uri();
@@ -192,6 +192,9 @@ function squarecandy_tinymce_add_editor_styles() {
 	$has_child_theme_css_file      = file_exists( $stylesheet_directory . $regular_css_path );
 	$has_child_theme_dist_css_file = file_exists( $stylesheet_directory . $dist_css_path );
 
+	$debug = false; // set to true for debugging!
+
+	// I don't think most of our themes use style.css for css now
 	if ( 'on' === $sqcdy_include_theme_style_css ) {
 		$editor_styles['sqcdy_include_theme_style_css'] = $stylesheet_directory_uri . '/style.css';
 	}
@@ -200,6 +203,7 @@ function squarecandy_tinymce_add_editor_styles() {
 		$editor_styles['sqcdy_theme_colwidth'] = SQUARECANDY_TINYMCE_DIR_URL . 'inc/dynamic-css.php';
 	}
 
+	// include files added via sqcdy_theme_css option
 	if ( ! empty( $sqcdy_theme_css ) ) {
 		$all_css = explode( "\n", $sqcdy_theme_css );
 		foreach ( $all_css as $k => $css ) {
@@ -233,12 +237,15 @@ function squarecandy_tinymce_add_editor_styles() {
 	} elseif ( $has_child_theme_dist_css_file ) {
 		$editor_styles['active_theme_stylesheet_dist'] = $stylesheet_directory_uri . $dist_css_path;
 	} else {
+		//@TODO make and use minified file
 		$editor_styles['default_tinymce_stylesheet'] = SQUARECANDY_TINYMCE_DIR_URL . 'css/' . $file_name_base . '.css';
 	}
 
 	// frontend-style overrides
 	if ( ! get_option( 'sqcdy_remove_frontend_style_css', false ) ) :
 		$frontend_style_filename = '/frontend-style.css';
+		// if a theme-specific frontend-style.css exists, use that, otherwise use the file from this plugin
+		// @TODO add check for and use  minified file
 		if ( file_exists( $stylesheet_directory . $frontend_style_filename ) ) {
 			$editor_styles['theme_frontend_stylesheet'] = $stylesheet_directory_uri . $frontend_style_filename;
 		} else {
@@ -248,6 +255,9 @@ function squarecandy_tinymce_add_editor_styles() {
 
 	foreach ( $editor_styles as $key => $editor_style ) {
 		add_editor_style( $editor_style );
+	}
+	if ( $debug ) {
+		sqcdy_log( $editor_styles, 'editor_styles' );
 	}
 }
 add_action( 'admin_init', 'squarecandy_tinymce_add_editor_styles' );
