@@ -192,7 +192,7 @@ function squarecandy_tinymce_add_editor_styles() {
 	$has_child_theme_css_file      = file_exists( $stylesheet_directory . $regular_css_path );
 	$has_child_theme_dist_css_file = file_exists( $stylesheet_directory . $dist_css_path );
 
-	$debug = false; // set to true for debugging!
+	$debug = defined( 'SQUARECANDY_TINYMCE_DEBUG' ) && SQUARECANDY_TINYMCE_DEBUG; // set to true for debugging!
 
 	// I don't think most of our themes use style.css for css now
 	if ( 'on' === $sqcdy_include_theme_style_css ) {
