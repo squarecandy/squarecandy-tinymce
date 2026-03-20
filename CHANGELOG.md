@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/squarecandy/squarecandy-tinymce/compare/v2.1.3...v2.2.0) (2026-03-20)
+
+
+### Features
+
+* update plugin file name structure ([a43e289](https://github.com/squarecandy/squarecandy-tinymce/commit/a43e289b2cd7c9330bbc934b65128a8ca6b4d0b6))
+
+
+### Bug Fixes
+
+* add and use minified js ([f5286db](https://github.com/squarecandy/squarecandy-tinymce/commit/f5286db085ea2867f9a9b7bc82631c467b5a515a))
+* add constant for debugging ([8417b90](https://github.com/squarecandy/squarecandy-tinymce/commit/8417b90b1be22ee5c8d5f0a5112874a2db34590d))
+* don't assume both parent and child theme use same css location ([2d8e478](https://github.com/squarecandy/squarecandy-tinymce/commit/2d8e4783cc6f463a161593d3458350ec0cd40edf))
+* update, copy and use squarecandy-common files ([fc51330](https://github.com/squarecandy/squarecandy-tinymce/commit/fc513307203e85e5781092336a1ac55d8f967e23))
+
 ### [2.1.3](https://github.com/squarecandy/squarecandy-tinymce/compare/v2.1.2...v2.1.3) (2025-10-06)
 
 
