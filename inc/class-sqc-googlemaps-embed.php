@@ -28,12 +28,29 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 		'replacePre'   => '',
 		'replacePost'  => '',
 		'custom_js'    => "sqcGoogleMapsProcess = function( pastedData ) {
-			const iframeOpen = /(?:&lt;|<)iframe/;
-			const iframeClose = /(?:&gt;&lt;|><)\/iframe(?:&gt;|>)/;
-			newText = pastedData.replace( iframeOpen, '[sqc-gmaps ' );
-			newText = newText.replace( iframeClose, ']' );
-			const dimensions = /(height|width)=\"\d*\" ?/g;
-			newText = newText.replaceAll( dimensions, '' );
+			let newText = pastedData;
+			const srcRegex = /src=(?:\"|&quot;).+?(?:\"|&quot;)/g;			
+			const widthRegex = /width=(?:\"|&quot;)\d*(?:\"|&quot;)/g;			
+			const heightRegex = /height=(?:\"|&quot;)\d*(?:\"|&quot;)/g;
+
+			const srcMatches = [...newText.matchAll(srcRegex)];
+			const widthMatches = [...newText.matchAll(widthRegex)];
+			const heightMatches = [...newText.matchAll(heightRegex)];
+			maybeDebug( 'srcMatches', srcMatches );
+			maybeDebug( 'widthMatches', widthMatches );
+			maybeDebug( 'heightMatches', heightMatches );
+
+			if( srcMatches.length ) {
+				newText = '[sqc-gmaps ' + srcMatches[0];
+			}	
+			if( widthMatches.length ) {
+				newText += ' ' + widthMatches[0];
+			}
+			if( heightMatches.length ) {
+				newText += ' ' + heightMatches[0];
+			}
+			
+			newText += ' ]';	
 			return newText;
 		};",
 	);
