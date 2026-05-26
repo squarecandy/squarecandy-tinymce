@@ -7,6 +7,7 @@ function typeInTextarea( newText, el = document.activeElement ) {
 
 // detect iframes in content and replace with embed links/shortcodes where appropriate
 function replacePastedText( pastedData, checkIndex = false ) {
+	maybeDebug( 'pastedData', pastedData );
 	// read info on what to look for from localized data:
 	const globalChecks = typeof sqcEmbed !== 'undefined' ? sqcEmbed.pasteIntercept : [];
 	// if we're passing in a particular item to search for via checkIndex, replace the full array with an arry with just that item's info
@@ -46,7 +47,7 @@ function replacePastedText( pastedData, checkIndex = false ) {
 			}
 
 			output = '\n' + check.replacePre + output + check.replacePost + '\n\n'; // line breaks not working?
-
+			maybeDebug( 'output', output );
 			if ( output ) {
 				return { text: output, message: check.message };
 			}
@@ -65,6 +66,13 @@ function displayInterceptMessage( element, message ) {
 	setTimeout( function() {
 		jQuery( '.squarecandy-tinymce-alert' ).fadeOut();
 	}, 20 * 1000 );
+}
+
+function maybeDebug( ...args ){
+	const isDebug = typeof sqcEmbed !== 'undefined' ? sqcEmbed.debug : false;
+	if ( isDebug ) {
+		console.log( ...args );
+	}
 }
 
 jQuery( document ).ready( function( $ ) {

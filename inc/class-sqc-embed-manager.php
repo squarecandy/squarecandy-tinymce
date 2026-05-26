@@ -47,6 +47,7 @@ class SQC_Embed_Manager {
 	private $javascript_variables = array(
 		'pasteIntercept' => array(),
 		'mceButton'      => array(),
+		'debug'          => false,
 	);
 
 	private $custom_js = '';
@@ -87,6 +88,11 @@ class SQC_Embed_Manager {
 				$this->register_editor_button();
 			}
 
+			// add debug mode tied to WP_DEBUG
+			if ( sqcdy_is_debug() ) {
+				$this->javascript_variables['debug'] = true;
+			}
+
 			if ( $this->javascript_variables['pasteIntercept'] || $this->javascript_variables['mceButton'] ) {
 				add_action( 'admin_enqueue_scripts', array( $this, 'localize_scripts' ), 20 );
 			}
@@ -106,10 +112,8 @@ class SQC_Embed_Manager {
 				if ( output != args.content ) {
 					args.content = output.text;
 					const messageTarget = jQuery( args.target.container ).find('.mce-toolbar-grp');
-					console.log( 'PASTE ARGS', args, messageTarget );
 					displayInterceptMessage( messageTarget, output.message );
 				}
-				console.log( 'newContent', args.content );
 			}
 		";
 
