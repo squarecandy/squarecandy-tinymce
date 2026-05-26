@@ -136,6 +136,7 @@
 				sqcDialog.showModal();
 			} );
 
+			// When embed type radio button is changed
 			$( '#' + dialogID + ' input[type="radio"]' ).on( 'change', function() {
 				const shortcodeName = this.value;
 				const $allNotes = $( this )
@@ -160,6 +161,7 @@
 					$dialogInput.prop( 'required', false );
 				} else {
 					$dialogInput.prop( 'required', true );
+					$dialogInput.trigger( 'focus' );
 				}
 			} );
 
