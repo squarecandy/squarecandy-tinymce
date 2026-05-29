@@ -51,6 +51,8 @@ module.exports = function( grunt ) {
 					return ! settings.customPackageJson;
 				} else if ( filepath.includes( 'composer.json' ) ) {
 					return ! settings.customComposerJson;
+				} else if ( filepath.includes( 'phpcs.xml' ) ) {
+					return ! settings.customPhpcs;
 				} else {
 					return true;
 				}
@@ -253,11 +255,11 @@ module.exports = function( grunt ) {
 		run: {
 			stylelintfix: {
 				cmd: 'npx',
-				args: [ 'stylelint', 'css/*.scss', 'css/**/*.scss', '--fix' ],
+				args: [ 'stylelint', 'css/*.scss', 'css/**/*.scss', 'css/*.css', '--fix', '--allow-empty-input' ],
 			},
 			eslintfix: {
 				cmd: 'npx',
-				args: [ 'eslint', 'js/*.js', 'Gruntfile.js', '--fix' ],
+				args: [ 'eslint', 'js/*.js', 'Gruntfile.js', '--fix', '--no-error-on-unmatched-pattern' ],
 			},
 			phpcs: {
 				cmd: 'bash',
@@ -273,7 +275,7 @@ module.exports = function( grunt ) {
 				cmd: 'bash',
 				args: [
 					'-c',
-					'./vendor/squizlabs/php_codesniffer/bin/phpcbf ' +
+					'./vendor/squizlabs/php_codesniffer/bin/phpcbf --exclude=Universal.Operators.StrictComparisons ' +
 					'--standard=phpcs.xml ' +
 					phpPaths + ' || true',
 				],

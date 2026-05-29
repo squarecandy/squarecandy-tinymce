@@ -10,3 +10,7 @@ phpcs.phar
 /sync-staging-config.sh
 /sync-staging-*
 *.code-workspace
+# added for application-core projects
+/*.sql
+/content/
+/config*.php
