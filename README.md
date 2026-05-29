@@ -32,3 +32,7 @@ As the description states, this plugin makes **opinionated** changes to the defa
 Gutenberg will be great for some things, but we also believe that using custom fields (via ACF) and a basic WYSIWYG body editing area has a place in WordPress development.
 
 Continued use of this plugin should be used in conjunction with the [Classic Editor](https://wordpress.org/plugins/classic-editor/) plugin in most circumstances.
+
+## Debugging
+
+For debug output, add define( 'SQUARECANDY_TINYMCE_DEBUG', true ); in wp-config.php

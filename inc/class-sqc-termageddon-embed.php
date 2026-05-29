@@ -70,7 +70,7 @@ class SQC_Termageddon_Embed extends SQC_Embed {
 
 		$v1_script = '<div id="policy" data-policy-key="%1$s" data-extra="email-links=true&amp;h-align=left&amp;no-title=true&amp;table-style=accordion">Please wait while the policy is loaded. If it does not load, please <a href="https://app.termageddon.com/api/policy/%1$s?email-links=true&amp;h-align=left&amp;no-title=true&amp;table-style=accordion" target="_blank" rel="nofollow noopener">click here</a>.</div>
             <script src="https://app.termageddon.com/js/termageddon.js"></script>'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-		$v2_script = '<div id="%1$s" class="policy_embed_div" width="640" height="480"> Please wait while the policy is loaded. If it does not load, please <a rel="nofollow" href="https://policies.termageddon.com/api/policy/%1$s" target="_blank">click here</a> to view the policy.</div>
+		$v2_script = '<div id="policy"><div id="%1$s" class="policy_embed_div" width="640" height="480"> Please wait while the policy is loaded. If it does not load, please <a rel="nofollow" href="https://policies.termageddon.com/api/policy/%1$s" target="_blank">click here</a> to view the policy.</div></div>
              <script src="https://policies.termageddon.com/api/embed/%1$s.js"></script>'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 		$script    = 'v1' === $attr['version'] ? $v1_script : $v2_script;
 
