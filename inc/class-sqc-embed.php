@@ -12,6 +12,7 @@ class SQC_Embed {
 	public $add_shortcode   = true; // add a shortcode
 	public $add_to_button   = true; // add to the shortcode button in the visual editor
 	public $auto_embed      = false; // add auto embed
+	public $extra_scripts   = false; // run extra scripts
 	public $paste_intercept = false; // intercept pasted code block & replace
 
 	public $paste_intercept_settings = array();
@@ -77,6 +78,10 @@ class SQC_Embed {
 
 		if ( $this->auto_embed ) {
 			$this->add_auto_embed();
+		}
+
+		if ( $this->extra_scripts ) {
+			$this->extra_scripts();
 		}
 	}
 
@@ -207,5 +212,9 @@ class SQC_Embed {
 			$value = $value . 'px';
 		}
 		return $value;
+	}
+
+	// placeholder function to add filters etc.
+	public function extra_scripts() {
 	}
 }

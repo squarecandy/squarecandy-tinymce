@@ -33,7 +33,7 @@ function replacePastedText( pastedData, checkIndex = false ) {
 
 				const re = new RegExp( check.replaceRegex );
 				const matches = pastedData.match( re );
-
+				maybeDebug( 'replaceRegex matches', matches );
 				// get the youtube video id from the iframe
 				if ( matches ) {
 					output = matches[ 1 ];
