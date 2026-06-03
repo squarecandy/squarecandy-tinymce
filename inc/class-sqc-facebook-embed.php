@@ -33,15 +33,26 @@ class SQC_Facebook_Embed extends SQC_Embed {
 		'replaceRegex' => 'video\.php\?.*href=([^&?"]*)', //@TODO make sure trailing slash is trimmed here
 		'replacePre'   => '[sqc-facebook-video ',
 		'replacePost'  => ']',
-		'custom_js'    => "sqcFacebookVideoProcess = function( pastedData ) { 
-				const decoded = decodeURIComponent( pastedData );
+		'custom_js'    => "sqcFacebookVideoProcess = function( output, pastedData ) {
+				const decoded = decodeURIComponent( output );
 				const hasParams = decoded.indexOf( '?' );
-				console.log('sqcFacebookVideo', 'decoded', decoded, 'hasParams', hasParams );
+				const widthRegex = /width=(?:\"|&quot;)\d*(?:\"|&quot;)/g;		
+				const heightRegex = /height=(?:\"|&quot;)\d*(?:\"|&quot;)/g;
+				const widthMatches = pastedData.match(widthRegex);
+				const heightMatches = pastedData.match(heightRegex);
+				maybeDebug('sqcFacebookVideo', 'decoded', decoded, 'hasParams', hasParams, 'widthMatches', widthMatches, 'heightMatches', heightMatches );
 				if ( hasParams > -1 ) {
-					return decoded.substring( 0, hasParams - 1 );
+					output = 'url=\"' + decoded.substring( 0, hasParams - 1 ) + '\"';
 				} else {
-					return decoded;
+					output = 'url=\"' + decoded + '\"';
 				}
+				if ( widthMatches.length ) {
+					output += ' ' + widthMatches[0];
+				}
+				if ( heightMatches.length ) {
+					output += ' ' + heightMatches[0];
+				}
+				return output;
 			}",
 	);
 
@@ -83,7 +94,7 @@ class SQC_Facebook_Embed extends SQC_Embed {
 		$iframe = '<iframe src="https://www.facebook.com/plugins/video.php?href=%1$s&show_text=0&width=%2$s" width="%2$s" height="%3$s" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>';
 
 		return sprintf(
-			'<p><figure class="wp-block-embed-facebook wp-block-embed is-type-audio is-provider-facebook wp-embed-aspect-16-9 wp-has-aspect-ratio js fitvids"><div class="wp-block-embed__wrapper">' . $iframe . '</div></figure></p>',
+			'<p><figure class="wp-block-embed-facebook wp-block-embed is-type-audio is-provider-facebook wp-embed-aspect-16-9 wp-has-aspect-ratio js"><div class="wp-block-embed__wrapper aligncenter">' . $iframe . '</div></figure></p>',
 			$attr['url'],
 			$attr['width'],
 			$attr['height']
