@@ -91,10 +91,10 @@ class SQC_Facebook_Embed extends SQC_Embed {
 
 		//@TODO Maybe don't need the px adding
 
-		$iframe = '<iframe src="https://www.facebook.com/plugins/video.php?href=%1$s&show_text=0&width=%2$s" width="%2$s" height="%3$s" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>';
+		$iframe = '<iframe src="https://www.facebook.com/plugins/video.php?href=%1$s&show_text=0&width=%2$s" width="%2$s" height="%3$s" class="aligncenter" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>';
 
 		return sprintf(
-			'<p><figure class="wp-block-embed-facebook wp-block-embed is-type-audio is-provider-facebook wp-embed-aspect-16-9 wp-has-aspect-ratio js"><div class="wp-block-embed__wrapper aligncenter">' . $iframe . '</div></figure></p>',
+			'<p><figure class="wp-block-embed-facebook wp-block-embed is-type-audio is-provider-facebook wp-embed-aspect-16-9 wp-has-aspect-ratio js"><div class="wp-block-embed__wrapper">' . $iframe . '</div></figure></p>',
 			$attr['url'],
 			$attr['width'],
 			$attr['height']
