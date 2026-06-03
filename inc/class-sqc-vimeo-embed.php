@@ -85,7 +85,7 @@ class SQC_Vimeo_Embed extends SQC_Embed {
 			function( $html, $url, $args ) {
 				if ( str_contains( $url, 'vimeo' ) && str_contains( $url, '#t' ) ) {
 					preg_match( '/vimeo\.com\/(\d+).*?(#t=.*s)/', $url, $matches );
-					if ( length( $matches ) ) {
+					if ( count( $matches ) ) {
 						$args['src']      = 'https://player.vimeo.com/video/' . $matches[1] . $matches[2];
 						$args['timecode'] = true;
 						$html             = $this->create_iframe( $args );
