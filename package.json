@@ -1,5 +1,5 @@
 {
-	"version": "2.2.2-develop.5",
+	"version": "2.2.2-develop.6",
 	"scripts": {
 		"release": "standard-version"
 	},
