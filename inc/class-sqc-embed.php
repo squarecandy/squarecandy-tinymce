@@ -62,7 +62,7 @@ class SQC_Embed {
 		// set (default) wrappers for iframes ( should this be set in embed class instead? )
 		if ( ! $this->iframe_wrapper['open'] || ! $this->iframe_wrapper['close'] ) {
 			//@TODO confirm this - figure doesn't work for Termageddon, sets lh 0 for contents
-			$this->iframe_wrapper['open']  = '<p><figure class="wp-block-embed-' . $this->name . ' wp-block-embed is-type-audio is-provider-' . $this->name . ' js"><div class="wp-block-embed__wrapper">';
+			$this->iframe_wrapper['open']  = '<p><figure class="wp-block-embed-' . $this->name . ' wp-block-embed is-provider-' . $this->name . ' js"><div class="wp-block-embed__wrapper">';
 			$this->iframe_wrapper['close'] = '</div></figure></p>';
 		}
 
