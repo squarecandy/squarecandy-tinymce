@@ -24,7 +24,8 @@ class SQC_Youtube_Embed extends SQC_Embed {
 		'custom_js'    => "sqcYoutubeProcess = function( output, pastedData ) {
 			const re = new RegExp( 'embed\/([^\?]+)' ); // isolate just video id
 			const videoIdMatches = output.match( re );
-			const parsedUrl = URL.parse( output );
+			const cleanUrl = output.replaceAll( '&amp;', '&' );
+			const parsedUrl = URL.parse( cleanUrl );
 			const parsedParams = parsedUrl ? parsedUrl.searchParams : null;
 			maybeDebug(' output', output);
 			maybeDebug(' matches', videoIdMatches);
@@ -35,6 +36,7 @@ class SQC_Youtube_Embed extends SQC_Embed {
 			if ( videoIdMatches && typeof parsedParams == 'object' && parsedParams.size ) {
 				for ( const [key, value] of parsedParams ) {
 					if ( key == 't' || key == 'start' ) { // pass start param to url
+						maybeDebug( key, value );
 						output = output + '&t=' + value;
 					}
 				}
