@@ -104,13 +104,17 @@ class SQC_Embed_Manager {
 	}
 
 	// add our intercepts to the visual editor paste preprocess
+	// note line breaks added around it get stripped if the processed content ends up being a url
+	// see pastepreprocess added by wp-includes/js/tinymce/plugins/wpview/plugin.js, 
+	// no real way to get around that without completely disableing wpview (needed for preview of stuff in visual editor!)
+	// or moving to paste_postprocess (which might upset undo history)
 	public function tinymce_before_paste_preprocess( $code ) {
 
 		$visual_paste_intercept = "
 			if ( typeof replacePastedText == 'function' && typeof displayInterceptMessage == 'function' ) {
 				const output = replacePastedText( args.content );
-				if ( output != args.content ) {
-					args.content = output.text;
+				if ( output != args.content ) { // replacePastedText() didn't do any processing, if it did output would have output.text
+					args.content = '<br />' + output.text + '<br />';
 					const messageTarget = jQuery( args.target.container ).find('.mce-toolbar-grp');
 					displayInterceptMessage( messageTarget, output.message );
 				}

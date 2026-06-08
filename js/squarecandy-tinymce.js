@@ -1,15 +1,16 @@
 /* eslint-disable no-console, eqeqeq */
 /* global sqcEmbed */
 function typeInTextarea( newText, el = document.activeElement ) {
+	const newTextWithBreaks = '\n' + newText + '\n\n'; 
 	// try using execCommand so undo history is preserved 
 	// (deprecated but still only way to do this: https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand)
-	const inserted = document.execCommand( 'insertText', false, newText );
+	const inserted = document.execCommand( 'insertText', false, newTextWithBreaks );
 	maybeDebug( 'inserted', inserted );
 	// some browsers don't support, fallback to method that doesn't allow undo
 	if ( ! inserted ) {
 		maybeDebug( 'insertText didn\'t work, use fallback' );
 		const [ start, end ] = [ el.selectionStart, el.selectionEnd ];
-		el.setRangeText( newText, start, end, 'select' );
+		el.setRangeText( newTextWithBreaks, start, end, 'select' );
 	}
 }
 
@@ -54,8 +55,8 @@ function replacePastedText( pastedData, checkIndex = false ) {
 				output = customFunction( output, pastedData ); // is it ok if custom functions don't have 2nd param in definition?
 			}
 
-			output = '\n' + check.replacePre + output + check.replacePost + '\n\n'; // line breaks not working?
-			maybeDebug( 'output', output );
+			output = check.replacePre + output + check.replacePost; 
+			maybeDebug( 'output.text', output );
 			if ( output ) {
 				return { text: output, message: check.message };
 			}
