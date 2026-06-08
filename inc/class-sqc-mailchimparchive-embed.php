@@ -3,12 +3,8 @@
  * Manage embeds/shortcode for Mailchimp list archive
  *
  * Outputs style/script tags like:
- *    <style type="text/css"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span><br />
- *    <span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span>
- *    <!-- .display_archive { font-family: Source Sans Pro,sans-serif; font-size: 20px; font-size: 1.25rem; line-height: 1.4; font-weight: 400; letter-spacing: 0; }
- *    .campaign {line-height: 125%%; margin: 5px;} //--><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark"
- *    class="mce_SELRES_end">﻿</span><br /></style>'
- *    <script language="javascript" src="//firstchurchcambridge.us5.list-manage.com/generate-js/?u=e8d9144b526b20dffd6009d45&fid=20494&show=52" type="text/javascript"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span></script>
+ *    <style type="text/css"><!-- .display_archive { font-family: Source Sans Pro,sans-serif; font-size: 20px; font-size: 1.25rem; line-height: 1.4; font-weight: 400; letter-spacing: 0; } .campaign {line-height: 125%%; margin: 5px;} //--></style>'
+ *    <script language="javascript" src="//firstchurchcambridge.us5.list-manage.com/generate-js/?u=e8d9144b526b20dffd6009d45&fid=20494&show=52" type="text/javascript"></script>
  */
 
 class SQC_MailchimpArchive_Embed extends SQC_Embed {
@@ -56,9 +52,9 @@ class SQC_MailchimpArchive_Embed extends SQC_Embed {
 			return false;
 		endif;
 
-		$style = '<style type="text/css"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span><br /><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span><!-- .display_archive { font-family: Source Sans Pro,sans-serif; font-size: 20px; font-size: 1.25rem; line-height: 1.4; font-weight: 400; letter-spacing: 0; } .campaign {line-height: 125%%; margin: 5px;} //--><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_end">﻿</span><br /></style>';
+		$style = '<style type="text/css"><!-- .display_archive { font-family: Source Sans Pro,sans-serif; font-size: 20px; font-size: 1.25rem; line-height: 1.4; font-weight: 400; letter-spacing: 0; } .campaign {line-height: 125%%; margin: 5px;} //--></style>';
 
-		$script = '<script language="javascript" src="%s" type="text/javascript"><span style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;" data-mce-type="bookmark" class="mce_SELRES_start">﻿</span></script>'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+		$script = '<script language="javascript" src="%s" type="text/javascript"></script>'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 
 		return sprintf(
 			$this->iframe_wrapper['open'] . $style . $script . $this->iframe_wrapper['close'],
