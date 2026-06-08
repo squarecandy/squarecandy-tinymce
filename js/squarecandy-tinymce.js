@@ -1,8 +1,16 @@
 /* eslint-disable no-console, eqeqeq */
 /* global sqcEmbed */
 function typeInTextarea( newText, el = document.activeElement ) {
-	const [ start, end ] = [ el.selectionStart, el.selectionEnd ];
-	el.setRangeText( newText, start, end, 'select' );
+	// try using execCommand so undo history is preserved 
+	// (deprecated but still only way to do this: https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand)
+	const inserted = document.execCommand( 'insertText', false, newText );
+	maybeDebug( 'inserted', inserted );
+	// some browsers don't support, fallback to method that doesn't allow undo
+	if ( ! inserted ) {
+		maybeDebug( 'insertText didn\'t work, use fallback' );
+		const [ start, end ] = [ el.selectionStart, el.selectionEnd ];
+		el.setRangeText( newText, start, end, 'select' );
+	}
 }
 
 // detect iframes in content and replace with embed links/shortcodes where appropriate
