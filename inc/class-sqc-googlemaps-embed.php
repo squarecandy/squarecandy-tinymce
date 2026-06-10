@@ -74,6 +74,7 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 				'src'    => null,
 				'width'  => '100%',
 				'height' => 450,
+				'style'  => 'border:0;',
 			),
 			'src' // accepts single att
 		);
@@ -82,13 +83,14 @@ class SQC_GoogleMaps_Embed extends SQC_Embed {
 			return false;
 		endif;
 
-		$iframe = '<iframe src="%s" width="%s" height="%s" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
+		$iframe = '<iframe src="%s" width="%s" height="%s" style="%s" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
 
 		return sprintf(
 			$this->iframe_wrapper['open'] . $iframe . $this->iframe_wrapper['close'],
 			$attr['src'],
 			$attr['width'],
-			$attr['height']
+			$attr['height'],
+			$attr['style'],
 		);
 	}
 }
