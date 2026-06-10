@@ -62,8 +62,10 @@ class SQC_Embed {
 		// set (default) wrappers for iframes ( should this be set in embed class instead? )
 		if ( ! $this->iframe_wrapper['open'] || ! $this->iframe_wrapper['close'] ) {
 			//@TODO confirm this - figure doesn't work for Termageddon, sets lh 0 for contents
-			$this->iframe_wrapper['open']  = '<p><figure class="wp-block-embed-' . $this->name . ' wp-block-embed is-provider-' . $this->name . ' js"><div class="wp-block-embed__wrapper">';
-			$this->iframe_wrapper['close'] = '</div></figure></p>';
+			// wrapping a figure in p doesn't work, we end up with empty p on eiother side...
+			// but we do want to have paragraph style spacing after, so deliberately add a paragraph there
+			$this->iframe_wrapper['open']  = '<figure class="sqc-embed wp-block-embed-' . $this->name . ' wp-block-embed is-provider-' . $this->name . ' js"><div class="wp-block-embed__wrapper">';
+			$this->iframe_wrapper['close'] = '</div></figure><p></p>';
 		}
 
 		// parse js args
