@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.2](https://github.com/squarecandy/squarecandy-tinymce/compare/v2.2.1...v2.2.2) (2026-06-11)
+
+
+### Bug Fixes
+
+* add debug state to embed manager ([efe4349](https://github.com/squarecandy/squarecandy-tinymce/commit/efe434946bbdf20fd2590b1a223784dd41c5f61b))
+* add style attr for googlemaps embed ([9bec3ed](https://github.com/squarecandy/squarecandy-tinymce/commit/9bec3ed01770b37cfeb622a72bb288840565f9a9))
+* adjust fb video dimensions & styles ([6adf4b8](https://github.com/squarecandy/squarecandy-tinymce/commit/6adf4b80707d740737867c5c864380edfb3ccc28))
+* adjust gmaps embed to grab only src and dimension values, fix bug in visual code editor ([573c97d](https://github.com/squarecandy/squarecandy-tinymce/commit/573c97d964d5e4aec4f216ae6a90d4f1e21c3713))
+* adjust how line breaks are added ([d72b819](https://github.com/squarecandy/squarecandy-tinymce/commit/d72b819ae88b70d740f01b79d2ba4aec087a8752))
+* clean up mailchimp embed ([66d574e](https://github.com/squarecandy/squarecandy-tinymce/commit/66d574eed5c6e1bdffb51a36a1eb1704b9e70ce4))
+* fix extra empty paragraph issue ([a665d09](https://github.com/squarecandy/squarecandy-tinymce/commit/a665d09e1e6a18e5e51d9e75e15b4ddeea665d0d))
+* fix fb video embed alignment ([14e4c42](https://github.com/squarecandy/squarecandy-tinymce/commit/14e4c4238f7f7285e09ca5fdfb8505908975527a))
+* fix typo ([bfbf4fa](https://github.com/squarecandy/squarecandy-tinymce/commit/bfbf4fa4761024ae8f21fef750f0456022ac5755))
+* focus input after selection radio button ([3eb14f9](https://github.com/squarecandy/squarecandy-tinymce/commit/3eb14f903fadabd678fea7116671ac798030f166))
+* handle entities in youtube urls ([ab335d8](https://github.com/squarecandy/squarecandy-tinymce/commit/ab335d8f02c9a49d0e22eab55ec48d5f211e11d1))
+* handle more youtube parameters ([471845f](https://github.com/squarecandy/squarecandy-tinymce/commit/471845fd6e04ae2b6db648f0e46cfe1dd5a74f1a))
+* handle vimeo showcase and timecode embeds ([b1a1bb1](https://github.com/squarecandy/squarecandy-tinymce/commit/b1a1bb1816611a015df21b1d1ba7f22ac48b8dd7))
+* support undo in text editor mode ([9e94cb2](https://github.com/squarecandy/squarecandy-tinymce/commit/9e94cb225f6660835ee75867088314ba348a8ca7))
+* wrap Termageddon v2 code ([02df1d3](https://github.com/squarecandy/squarecandy-tinymce/commit/02df1d3347f1be568e81bf3362cc29689700b356))
+
 ### [2.2.1](https://github.com/squarecandy/squarecandy-tinymce/compare/v2.2.0...v2.2.1) (2026-03-26)
 
 ## [2.2.0](https://github.com/squarecandy/squarecandy-tinymce/compare/v2.1.3...v2.2.0) (2026-03-20)
