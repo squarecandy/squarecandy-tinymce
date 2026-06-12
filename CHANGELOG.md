@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.3](https://github.com/squarecandy/squarecandy-tinymce/compare/v2.2.2...v2.2.3) (2026-06-12)
+
+
+### Bug Fixes
+
+* fix vimeo showcase url handling ([13c39ab](https://github.com/squarecandy/squarecandy-tinymce/commit/13c39ab21644612116f46084b0f1f3827fb9e57e))
+
 ### [2.2.2](https://github.com/squarecandy/squarecandy-tinymce/compare/v2.2.1...v2.2.2) (2026-06-11)
 
 
