@@ -5,13 +5,15 @@
  * regular vimeo src urls like "https://player.vimeo.com/video/851112587?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
  * also showcase urls like "https://vimeo.com/showcase/8015409/embed"
  * intercept oembed of urls with timecode like "https://vimeo.com/459832142?fl=pl&fe=cm#t=28m7s"
+ * showcase urls are stored in a shortcode since WP embed doesn't handle those automatically
+ * WP embed of vimeo urls strips timecodes, so for those bypass WP embed and use our own iframe creator
  */
 
 class SQC_Vimeo_Embed extends SQC_Embed {
 
 	public $name            = 'sqc-vimeo';
 	public $js_name         = 'sqcVimeo';
-	public $add_shortcode   = false;
+	public $add_shortcode   = true;
 	public $add_to_button   = true;
 	public $auto_embed      = false;
 	public $extra_scripts   = true;
@@ -51,7 +53,6 @@ class SQC_Vimeo_Embed extends SQC_Embed {
 	);
 
 	public function create_iframe( $attr ) {
-		sqcdy_log( $attr, 'vimeo iframe attr' );
 		if ( isset( $attr['showcase'] ) || isset( $attr['timecode'] ) ) :
 			$attr = $this->process_shortcode_attr(
 				$attr,
